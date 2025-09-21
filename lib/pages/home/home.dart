@@ -1,10 +1,12 @@
-import 'package:ConnectUs/pages/chat/contactSelectionPage.dart';
+import 'package:Sutra/pages/chat/contactSelectionPage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'status.dart';
 import 'package:flutter/material.dart';
-import 'package:ConnectUs/pages/home/home_page.dart';
-import 'package:ConnectUs/pages/home/community.dart';
+import 'package:Sutra/utils/app_theme.dart';
+import 'package:Sutra/pages/home/home_page.dart';
+import 'package:Sutra/pages/home/community.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
@@ -17,10 +19,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
-   
+   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+
 
   int _selectedSection = 0;
   late PageController _pageController;
+
+  
   
   // Cache widgets to prevent unnecessary rebuilds
   late final List<Widget> _pages = [
@@ -129,16 +135,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text(
-          'ConnectUs',
+  title: const Text(
+          'सूत्र',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontFamily: 'EduNSWACTCursive',
-            fontSize: 23,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color(0xFFA67B00),
+  backgroundColor: AppTheme.accentDark,
         elevation: 2,
         actions: [
           MaterialButton(
@@ -149,7 +155,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             onPressed: () {
               // Implement search functionality
             },
-            child: const Icon(Icons.dark_mode, color: Colors.white),
+            child: const Icon(Icons.dark_mode, color: Colors.black),
           ),
           MaterialButton(
             minWidth: 52,
@@ -157,19 +163,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             padding: const EdgeInsets.all(0),
             shape: const CircleBorder(),
             onPressed: _openingCamera,
-            child: const Icon(Icons.camera_alt_outlined, color: Colors.white),
+            child:  Icon(Icons.camera_alt_outlined, color: (isMobile) ? Colors.black : Colors.transparent),
           ),
           PopupMenuButton(
-            color: Colors.black,
-            icon: const Icon(Icons.settings, color: Colors.white),
+            color: AppTheme.surface,
+            icon: const Icon(Icons.settings, color: Colors.black),
             itemBuilder: (context) => [
                PopupMenuItem(
                 value: 'new_group',
-                child: Text('New Group', style: TextStyle(color: Color(0xFFFFD54F))),
+                child: Text('New Group', style: TextStyle(color: AppTheme.accent)),
               ),
                PopupMenuItem(
                 value: 'settings',
-                child: Text('Settings', style: TextStyle(color: Color(0xFFFFD54F))),
+                child: Text('Settings', style: TextStyle(color: AppTheme.accent)),
                 onTap: () {
                   // Navigate to the settings page
                   Navigator.pushNamed(context, '/settings');
@@ -177,7 +183,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
                PopupMenuItem(
                 value: 'logout',
-                child: Text('Logout', style: TextStyle(color: Color(0xFFFFD54F))),
+                child: Text('Logout', style: TextStyle(color: AppTheme.accent)),
                 onTap: () async {
     try {
       await Supabase.instance.client.auth.signOut();
@@ -198,24 +204,24 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFF1E1E1E),
+        backgroundColor: AppTheme.background,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat, color: Color(0xFFFFC107)),
+            icon: Icon(Icons.chat, color: AppTheme.accentDark),
             label: 'Chats',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications, color: Color(0xFFFFC107)),
+            icon: Icon(Icons.notifications, color: AppTheme.accentDark),
             label: 'Status',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group, color: Color(0xFFFFC107)),
+            icon: Icon(Icons.group, color: AppTheme.accentDark),
             label: 'Communities',
           ),
         ],
         currentIndex: _selectedSection,
-        unselectedItemColor: Color(0xFFFFD54F),
-        selectedItemColor: Color(0xFFA67B00),
+        unselectedItemColor: AppTheme.accent,
+        selectedItemColor: AppTheme.accentDark,
         onTap: (index) {
           _pageController.animateToPage(
             index,

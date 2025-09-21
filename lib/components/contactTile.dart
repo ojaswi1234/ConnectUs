@@ -1,79 +1,105 @@
+import 'package:Sutra/pages/chat/chatArea.dart';
 import 'package:flutter/material.dart';
+import 'package:Sutra/utils/app_theme.dart';
 
 class ContactTile extends StatelessWidget {
   final String contactName;
   final String lastMessage;
-  const ContactTile({super.key, required this.contactName, required this.lastMessage});
-
-
-  
+  final int unreadCount;
+  const ContactTile({super.key, required this.contactName, required this.lastMessage, this.unreadCount = 0});
 
   @override
   Widget build(BuildContext context) {
-    return  GestureDetector(
-      onLongPressStart: (details){
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(details.globalPosition.dx, details.globalPosition.dy, details.globalPosition.dx, details.globalPosition.dy),
-          items: [
-            PopupMenuItem(
-              value: 'delete',
-              child: Text('Delete Chat', style: TextStyle(color: Color(0xFFFFD54F))), // Text: Warm Yellow
-            ),
-            PopupMenuItem(
-              value: 'mute',
-              child: Text('Mute Notifications', style: TextStyle(color: Color(0xFFFFD54F))), // Text: Warm Yellow
-            ),
-          ],
-          color: Color(0xFF1E1E1E), // Background: Dark Gray-Black
-        ).then((value) {
-          if (value == 'delete') {
-            // Handle delete action
-          } else if (value == 'mute') {
-            // Handle mute action
-          }
-        });
-      },
-                           child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFA67B00).withOpacity(0.08), // Primary: Dark Yellow
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: ListTile(
-                            title: Text(contactName,
-                                style: TextStyle(
-                                    color: Color(0xFFFFD54F), // Text: Warm Yellow
-                                    fontWeight: FontWeight.bold)),
-                            leading: const CircleAvatar(
-                              backgroundColor: Color(0xFFFFC107), // Secondary: Amber
-                              child: Text(
-                                'A',
-                                style: TextStyle(
-                                    color: Color(0xFF1E1E1E), // Background: Dark Gray-Black
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            trailing: const CircleAvatar(
-                              backgroundColor: Colors.transparent, //Colors.cyanAccent, // Primary: Dark Yellow
-                              radius: 12,
-                              child: Center(
-                                  child: Text(
-                                '1',
-                                style: TextStyle(
-                                    color: Colors.black, // Accent: Light Amber
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12),
-                              )),
-                            ),
-                            subtitle: const Text('Hey There',
-                                style: TextStyle(color: Color(0xFFFFCA28))), // Accent: Light Amber
-                            onTap: () {
-                              Navigator.pushNamed(context, '/chat');
-                            },
-                          ),
-                        )
+    return Column(
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(15),
+            onLongPress: () async {
+              final details = await showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width - 200, 200, 20, 20),
+                items: [
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete Chat', style: AppTheme.titleStyle),
+                  ),
+                  PopupMenuItem(
+                    value: 'mute',
+                    child: Text('Mute Notifications', style: AppTheme.titleStyle),
+                  ),
+                ],
+                color: AppTheme.background,
+              );
 
-                        
-    );                
+              if (details == 'delete') {
+                // handle delete
+              } else if (details == 'mute') {
+                // handle mute
+              }
+            },
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatArea(userName: contactName),
+              ),
+            ),
+            child: Container(
+              decoration: AppTheme.cardDecoration,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              child: Row(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    child: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: AppTheme.accentDark,
+                      child: Text(
+                        contactName.isNotEmpty ? contactName[0].toUpperCase() : 'A',
+                        style: const TextStyle(
+                          color: Color(0xFF1E1E1E),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(contactName, style: AppTheme.titleStyle, overflow: TextOverflow.ellipsis),
+                        const SizedBox(height: 6),
+                        Text(lastMessage, style: AppTheme.subtitleStyle, overflow: TextOverflow.ellipsis),
+                      ],
+                    ),
+                  ),
+                  if (unreadCount > 0) ...[
+                    Container(
+                      margin: const EdgeInsets.only(left: 8, right: 8),
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          unreadCount > 99 ? '99+' : unreadCount.toString(),
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(width: 12),
+                  ]
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
   }
 }

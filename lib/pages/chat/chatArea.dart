@@ -1,19 +1,23 @@
+import 'package:Sutra/pages/chat/video.dart';
+import 'package:Sutra/pages/chat/voice.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:Sutra/utils/app_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:logger/logger.dart';
 
 String roomId = "UserA-UserB";
-// Theme colors
-const kPrimaryColor = Color(0xFFA67B00); // Dark Yellow
-const kSecondaryColor = Color(0xFFFFC107); // Amber
-const kBackgroundColor = Color(0xFF1E1E1E); // Dark Gray-Black
-const kAccentColor = Color(0xFFFFCA28); // Light Amber
-const kTextColor = Color(0xFFFFD54F); // Warm Yellow
+// Local aliases for readability (use AppTheme)
+final kPrimaryColor = AppTheme.accentDark;
+final kSecondaryColor = AppTheme.accent;
+final kBackgroundColor = AppTheme.background;
+final kAccentColor = AppTheme.hint;
+final kTextColor = AppTheme.accent;
 
 class ChatArea extends StatefulWidget {
-  const ChatArea({super.key});
+  final String userName;
+  const ChatArea({super.key, required this.userName});
 
   @override
   State<ChatArea> createState() => _ChatAreaState();
@@ -28,7 +32,7 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
 
   String statusColor = "red";
   String userStatus = "Offline";
-  String userName = "";
+ 
   bool isBlocked = false;
   
   @override
@@ -39,7 +43,7 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
   void initState() {
     super.initState();
     _initializeSocketChat();
-    getDetails(); // Get user details
+    // Get user details
   }
 
   void _initializeSocketChat() {
@@ -116,7 +120,7 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
       }
     });
     socket?.on('messages', (data) {
-      Logger().i('Received messages history: $data');
+      Logger().i('Received messages Successfully !!!');
       try {
         setState(() {
           sendmessages = (data as List).map((e) => Chat.fromJSON(e)).toList();
@@ -127,14 +131,7 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
     });
   }
 
-  void getDetails() {
-    socket?.emit('get_user_details', {});
-    socket?.on('user_details', (data) {
-      setState(() {
-        userName = data['name'];
-      });
-    });
-  }
+  
 
   
   bool isSender(){
@@ -177,7 +174,7 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
             curve: Curves.easeOut,
           );
         }
-      });
+      });    
     }
   }
 
@@ -223,6 +220,18 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
     "Contact": Icons.person,
   };
 
+  Future<void> voiceCall() async {
+  
+    if(isBlockedByMe() /* || isSender() */){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to initiate call. User is blocked/has blocked you.')),
+      );
+      
+      
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
@@ -233,17 +242,17 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'My Number',
+              widget.userName,
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
             ),
             Text(
               userStatus,
               style: TextStyle(
-                color: (userStatus == "Online" ? Colors.green : Colors.black),
+                color: (userStatus == "Online" ? AppTheme.success : AppTheme.danger),
                 fontSize: 14,
               ),
             )
@@ -251,10 +260,10 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
         ),
         leadingWidth: 72,
         elevation: 7,
-        shadowColor: kAccentColor,
+  shadowColor: kAccentColor,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: Colors.white),
+              icon: Icon(Icons.refresh, color: Colors.black),
             onPressed: () {
 
               if(isBlockedByMe()){
@@ -269,13 +278,13 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
             },
           ),
           PopupMenuButton<String>(
-                icon: Icon(Icons.voice_chat, color: Colors.white),
+                icon: Icon(Icons.voice_chat, color: Colors.black),
                 onSelected: (value) {
                   if (value == 'video_call') {
-                    Logger().i('Video call not implemented yet.');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Video()));
                   }
                   if (value == 'voice_call') {
-                    Logger().i('Voice call not implemented yet.');
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Voice()));
                   }
                 },
                 itemBuilder: (context) => <PopupMenuEntry<String>>[
@@ -292,11 +301,16 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
                   child: Row(children:[
                       Icon(Icons.call),
                       const SizedBox(width: 4),
-                       Text('Voice (in development)')]),
-                     
+                       Text('Voice (in development)')]),   
+                       onTap: () {
+                         voiceCall();
+                       },      
                   ),
-                  
+               
+
                 ],
+
+               
               ),
           PopupMenuButton<String>(
             itemBuilder: (context) => <PopupMenuEntry<String>>[
@@ -317,7 +331,7 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
                 child: Text('Back to Chats'),
               ),
             ],
-            icon: Icon(Icons.more_vert, color: Colors.white),
+            icon: Icon(Icons.more_vert, color: Colors.black),
             onSelected: (value) {
               // Handle menu selection
               if (value == 'profile_settings') {
@@ -391,9 +405,9 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
                 },
               );
             },
-            shape: CircleBorder(
+                shape: CircleBorder(
               side: BorderSide(
-                color: userStatus == "Online" ? kTextColor : Colors.red,
+                color: userStatus == "Online" ? kTextColor : AppTheme.danger,
                 width: 2.0,
               ),
             ),
@@ -403,13 +417,13 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
             ),
           ),
         ),
-        backgroundColor: kPrimaryColor,
+  backgroundColor: kPrimaryColor,
       ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
         padding: EdgeInsets.only(bottom: (width < 600 ? 32 : 0)),
-        color: kBackgroundColor,
+  color: kBackgroundColor,
         child: Column(
           children: [
             // Connection status indicator (only show when offline)
@@ -417,7 +431,7 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                color: statusColor == "red" ? Colors.red.withOpacity(0.8) : Colors.orange.withOpacity(0.8),
+                color: statusColor == "red" ? AppTheme.danger.withOpacity(0.8) : AppTheme.highlight.withOpacity(0.8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -523,7 +537,7 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
                                 children: [
                                   Text(
                                     message.message,
-                                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                                    style: TextStyle(color: isMe ? Colors.white : Colors.black, fontSize: 16),
                                   ),
                                   const SizedBox(height: 4),
                                   Row(
@@ -533,15 +547,15 @@ class _ChatAreaState extends State<ChatArea> with AutomaticKeepAliveClientMixin 
                                       Text(
                                         '${message.timestamp.hour}:${message.timestamp.minute.toString().padLeft(2, '0')}',
                                         style: TextStyle(
-                                          color: Colors.white70, 
+                                          color: isMe ? Colors.white70 : Colors.black54,
                                           fontSize: 12
                                         ),
                                       ),
                                       if (isMe) ...[
                                         const SizedBox(width: 4),
                                         Icon(
-                                          Icons.check, 
-                                          color: userStatus == "Online" ? Colors.blue : Colors.white70, 
+                                          Icons.check,
+                                          color: userStatus == "Online" ? Colors.blue : Colors.white70,
                                           size: 14
                                         ),
                                       ],

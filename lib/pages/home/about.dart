@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:Sutra/utils/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class About extends StatelessWidget {
@@ -8,17 +9,17 @@ final Uri _url = Uri.parse('mailto:Ojaswideep2020@Outlook.com');
   Widget build(BuildContext context) {
     return Scaffold(
     
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
       title: const Text('About'),
       centerTitle: true,
-      backgroundColor: Color(0xFFA67B00), // Primary: Dark Yellow
+      backgroundColor: AppTheme.accentDark,
       foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: 
       Container(
         decoration: BoxDecoration(
-          color: Color( 0xFF1E1E1E), // Background: Dark Gray-Black
+          color: AppTheme.background, // Background: Dark Gray-Black
         ),
         child: Padding(
       padding: const EdgeInsets.all(24.0),
@@ -30,15 +31,15 @@ final Uri _url = Uri.parse('mailto:Ojaswideep2020@Outlook.com');
           Icon(
           Icons.info_outline,
           size: 64,
-          color: Colors.amber,
+          color: AppTheme.highlight,
           ),
           const SizedBox(height: 24),
           Text(
-          'ConnectUs',
+          'सूत्र',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: Color(0xFFFFD54F), // Text: Warm Yellow
+            color: AppTheme.accent, // Text: Warm Yellow
           ),
           ),
           const SizedBox(height: 12),
@@ -47,7 +48,7 @@ final Uri _url = Uri.parse('mailto:Ojaswideep2020@Outlook.com');
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 16,
-            color: Color(0xFFFFD54F).withOpacity(0.9), // Text: Warm Yellow
+            color: AppTheme.accent.withOpacity(0.9), // Text: Warm Yellow
           ),
           ),
           const SizedBox(height: 24),
@@ -58,18 +59,16 @@ final Uri _url = Uri.parse('mailto:Ojaswideep2020@Outlook.com');
           ),
           ),
           const SizedBox(height: 8),
-          MaterialButton(
+          ElevatedButton(
             onPressed: () {
               // Handle email action
               launchUrl(_url);
             },
-            color: Color(0xFFA67B00), // Button: Dark Yellow
-            textColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+            style: AppTheme.elevatedButtonStyle,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Text('Ojaswideep2020@Outlook.com)'),
             ),
-            child: const Text('Ojaswideep2020@Outlook.com)'),
           ),
           const SizedBox(height: 16),
           TextButton(
@@ -77,7 +76,7 @@ final Uri _url = Uri.parse('mailto:Ojaswideep2020@Outlook.com');
               launchUrl(Uri.parse('https://github.com/ojaswi1234'));
             },
             child: Text("ojaswi1234 (GitHub)", style: TextStyle(
-              color: Color(0xFFFFD54F), // Text: Warm Yellow
+              color: AppTheme.accent, // Text: Warm Yellow
               decoration: TextDecoration.underline,
             )),
           )

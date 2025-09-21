@@ -1,15 +1,18 @@
 import 'dart:core';
 import 'dart:async';
 import 'dart:io';
+import 'package:Sutra/pages/chat/chatArea.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'dart:collection';
+import 'package:Sutra/utils/app_theme.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:hive/hive.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ConnectUs/components/contactTile.dart';
-import 'package:ConnectUs/pages/contacts_page.dart';
+import 'package:Sutra/components/contactTile.dart';
+import 'package:Sutra/pages/contacts_page.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:ConnectUs/models/contact.dart' as HiveContact;
+import 'package:Sutra/models/contact.dart' as HiveContact;
 
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});
@@ -28,7 +31,8 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
   Box<HiveContact.Contact>? contactBox;
   
   List<Contact> _contacts = [];
-  final List<Chats> _chats = [];
+  // Use LinkedHashSet to avoid duplicate chats while preserving insertion order
+  final LinkedHashSet<Chats> _chats = LinkedHashSet<Chats>();
 
 
 
@@ -217,9 +221,14 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
   void _createChatWithContact(Contact contact) {
     setState(() {
 
-      _chats.add(Chats(contactName: contact.displayName, lastMessage: 'Click here to start chatting'));
+  _chats.add(Chats(contactName: contact.displayName, lastMessage: 'Click here to start chatting'));
     });
-    Navigator.pushNamed(context, '/chat');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatArea(userName: contact.displayName),
+      ),
+    );
   }
 
   void _inviteContact(Contact contact) {
@@ -311,12 +320,12 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
                 child: Form(
                   key: _formKey,
                   child: TextFormField(
-                    style: const TextStyle(color: Color(0xFFFFD54F)),
-                    cursorColor: const Color(0xFFFFD54F),
+                    style: const TextStyle(color: AppTheme.accent),
+                    cursorColor: AppTheme.accent,
                     onChanged: (_) => _onSearchChanged(),
                     decoration: InputDecoration(
                       hintText: 'Search Name/Number.....',
-                      hintStyle: const TextStyle(color: Color(0xFFFFCA28)),
+                      hintStyle: const TextStyle(color: AppTheme.hint),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
@@ -344,10 +353,11 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
                         ? ListView.builder(
                             itemCount: _chats.length,
                             itemBuilder: (context, index) {
-                              final chat = _chats[index];
+                              final chat = _chats.elementAt(index);
                               return ContactTile(
                                 contactName: chat.contactName,
                                 lastMessage: chat.lastMessage,
+                                unreadCount: 0,
                               );
                             },
                           )
@@ -416,4 +426,13 @@ class Chats {
   final String lastMessage;
 
   Chats({required this.contactName, required this.lastMessage});
+
+  // Deduplicate chats by contactName (consider using a unique id or phone in future)
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Chats && runtimeType == other.runtimeType && contactName == other.contactName;
+
+  @override
+  int get hashCode => contactName.hashCode;
 }

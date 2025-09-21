@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 
@@ -14,18 +18,28 @@ class Landing extends StatelessWidget {
   const Landing({
     super.key
     });
+    
+ bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
-  @override
     @override
     Widget build(BuildContext context) {
+      
       return Scaffold(
         backgroundColor: kBackgroundColor,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
+
             children: [
-              ClipOval(
+              AvatarGlow(
+                glowColor: kSecondaryColor,
+                duration: const Duration(seconds: 2),
+                repeat: true,
+                animate: true,
+                glowRadiusFactor: 0.2,
+
+              child:ClipOval(
              child:  Image.asset(
                 'assets/images/removebg.png',
                 width: 220,
@@ -35,9 +49,10 @@ class Landing extends StatelessWidget {
                 colorBlendMode: BlendMode.difference
               ),
               ),
+              ),
               const SizedBox(height: 30),
               const Text(
-                "ConnectUs",
+                "सूत्र",
                 style: TextStyle(
                   color: kTextColor,
                   fontFamily: 'EduNSWACTCursive',

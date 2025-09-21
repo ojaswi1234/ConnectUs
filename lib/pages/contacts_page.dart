@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:Sutra/utils/app_theme.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'dart:async';
 
@@ -68,39 +69,58 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
   }
 
   Widget _buildContactTile(Contact contact, bool isRegistered) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      color: isRegistered ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: isRegistered ? Colors.green : Colors.orange,
-          child: Text(
-            contact.displayName.isNotEmpty ? contact.displayName[0].toUpperCase() : '?',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    // small entrance animation using AnimatedOpacity + AnimatedSlide
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, (1 - value) * 8),
+              child: child,
+            ),
+          );
+        },
+        child: Card(
+          color: isRegistered ? AppTheme.accentDark.withOpacity(0.08) : AppTheme.accent.withOpacity(0.04),
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: isRegistered ? Colors.green : AppTheme.accentDark,
+              child: Text(
+                contact.displayName.isNotEmpty ? contact.displayName[0].toUpperCase() : '?',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+            title: Text(
+              contact.displayName,
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            ),
+            subtitle: contact.phones.isNotEmpty
+                ? Text(
+                    contact.phones.first.number,
+                    style: const TextStyle(color: Colors.white70),
+                  )
+                : null,
+            trailing: Icon(
+              isRegistered ? Icons.chat_bubble : Icons.person_add,
+              color: isRegistered ? Colors.green : AppTheme.accentDark,
+            ),
+            onTap: () {
+              if (isRegistered) {
+                Navigator.pop(context);
+                widget.onContactTap(contact);  // This will now pass the name via the callback
+              } else {
+                widget.onInviteContact(contact);
+              }
+            },
           ),
         ),
-        title: Text(
-          contact.displayName,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        ),
-        subtitle: contact.phones.isNotEmpty
-            ? Text(
-                contact.phones.first.number,
-                style: const TextStyle(color: Colors.white70),
-              )
-            : null,
-        trailing: Icon(
-          isRegistered ? Icons.chat_bubble : Icons.person_add,
-          color: isRegistered ? Colors.green : Colors.orange,
-        ),
-        onTap: () {
-          if (isRegistered) {
-            Navigator.pop(context);
-            widget.onContactTap(contact);
-          } else {
-            widget.onInviteContact(contact);
-          }
-        },
       ),
     );
   }
@@ -192,7 +212,8 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (context, index) => _buildContactTile(_filteredRegistered[index], true),
+                        (context, index) => 
+                        _buildContactTile(_filteredRegistered[index], true),
                         childCount: _filteredRegistered.length,
                       ),
                     ),
