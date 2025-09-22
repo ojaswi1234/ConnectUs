@@ -1,3 +1,4 @@
+import 'package:Sutra/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {
@@ -14,7 +15,7 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     // Define color scheme
-    const primaryColor = Color(0xFFA67B00);
+    const primaryColor = AppTheme.accentDark;
     const accentColor = Color(0xFFF5E6C0);
     const tileColor = Color(0xFF1E1E1E);
 
@@ -24,7 +25,7 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 45, 45, 45),
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Settings', style: TextStyle(fontWeight: FontWeight.w600)),
         backgroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,

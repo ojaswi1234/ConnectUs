@@ -245,7 +245,7 @@ void _validateUser() async {
                     onPressed: () {
                       Navigator.of(context).pushReplacementNamed('/getStarted');
                     },
-                    child: Text("Don't have an Account? Sign Up", style: TextStyle(color: kTextColor)),
+                    child: Text("Don't have an Account? Sign Up", style: TextStyle(color: kTextColor, fontSize: (width > 600) ? 18 : 12, fontWeight: FontWeight.w500)),
                   ),
                   const SizedBox(height: 20),
                  /*  MaterialButton(

@@ -32,6 +32,7 @@ class Landing extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
 
             children: [
+             const SizedBox(height: 200),
               AvatarGlow(
                 glowColor: kSecondaryColor,
                 duration: const Duration(seconds: 2),
@@ -67,21 +68,24 @@ class Landing extends StatelessWidget {
                 style: TextStyle(
                   color: kAccentColor,
                   fontSize: 13,
+                  fontWeight: FontWeight.w500,
                   decoration: TextDecoration.none,
                 ),
               ),
-              const SizedBox(height: 30),
-              ElevatedButton(
+              const SizedBox(height: 130),
+              MaterialButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/getStarted');
                 },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: kBackgroundColor,
-                  backgroundColor: kSecondaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
                 ),
-                child: const Text("Get Started", style: TextStyle(color: kBackgroundColor, fontSize: 16)),
+                color: kSecondaryColor,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                textColor: const Color.fromARGB(255, 41, 24, 24),
+                minWidth: isMobile ?  330 : 150,
+                child: const Text("Get Started", style: TextStyle(color: kBackgroundColor, fontSize: 18, fontWeight: FontWeight.bold),),
               ),
             ],
           ),

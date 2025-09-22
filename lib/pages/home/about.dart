@@ -14,7 +14,7 @@ final Uri _url = Uri.parse('mailto:Ojaswideep2020@Outlook.com');
       title: const Text('About'),
       centerTitle: true,
       backgroundColor: AppTheme.accentDark,
-      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+      foregroundColor: Colors.black,
       ),
       body: 
       Container(
