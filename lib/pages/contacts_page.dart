@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:Sutra/utils/app_theme.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -45,7 +48,7 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
     _searchController.dispose();
     super.dispose();
   }
-
+  bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
   void _filterContacts(String query) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
@@ -181,7 +184,9 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
           ),
           
           // Contact List
+          (isMobile) ?
           Expanded(
+            
             child: CustomScrollView(
               cacheExtent: 1000.0, // Performance optimization
               slivers: [
@@ -269,6 +274,12 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
                   ),
               ],
             ),
+          )
+          :
+          Container(
+            child: Center(
+              child: Text("Search via UserName")
+            )
           ),
         ],
       ),
