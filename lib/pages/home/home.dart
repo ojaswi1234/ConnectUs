@@ -18,16 +18,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-
-   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
-
+  bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  bool get isDesktop =>
+      kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
   int _selectedSection = 0;
   late PageController _pageController;
 
-  
-  
   // Cache widgets to prevent unnecessary rebuilds
   late final List<Widget> _pages = [
     const Home_Page(),
@@ -51,72 +48,68 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
   File? _imageFile;
 
   Future<void> _openingCamera() async {
-    if(Platform.isAndroid || Platform.isIOS){
-    if (!mounted) return;
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-     
-    }
+    if (Platform.isAndroid || Platform.isIOS) {
+      if (!mounted) return;
+      final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
+      }
       showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              // Display the captured image
-              if (_imageFile != null)
-                Image.file(
-                  _imageFile!,
-                  height: 200,
-                ),
-              // Buttons for Retake and Use Photo
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    child: const Text('Retake'),
-                    onPressed: () {
-                      // Close the current dialog
-                      Navigator.of(context).pop();
-                      // Re-open the camera
-                      _openingCamera();
-                    },
-                  ),
-                  TextButton(
-                    child: const Text('Use Photo'),
-                    onPressed: () {
-                      // Close the dialog before navigating
-                      Navigator.of(context).pop();
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  // Display the captured image
+                  if (_imageFile != null) Image.file(_imageFile!, height: 200),
+                  // Buttons for Retake and Use Photo
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        child: const Text('Retake'),
+                        onPressed: () {
+                          // Close the current dialog
+                          Navigator.of(context).pop();
+                          // Re-open the camera
+                          _openingCamera();
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Use Photo'),
+                        onPressed: () {
+                          // Close the dialog before navigating
+                          Navigator.of(context).pop();
 
-                      // Navigate to the contact selection page, passing the image file
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ContactSelectionPage(
-                            imageFile: _imageFile!,
-                          ),
-                        ),
-                      );
-                    },
+                          // Navigate to the contact selection page, passing the image file
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ContactSelectionPage(imageFile: _imageFile!),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       );
-    },
-  );
     } else {
       // Handle non-mobile platforms if necessary
-     AlertDialog(
+      AlertDialog(
         title: const Text('Camera Not Supported'),
-        content: const Text('Camera functionality is only available on mobile devices.'),
+        content: const Text(
+          'Camera functionality is only available on mobile devices.',
+        ),
         actions: <Widget>[
           TextButton(
             child: const Text('OK'),
@@ -127,7 +120,6 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
         ],
       );
     }
-     
   }
 
   @override
@@ -135,7 +127,7 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-  title: const Text(
+        title: const Text(
           'सूत्र',
           style: TextStyle(
             color: Colors.black,
@@ -144,7 +136,7 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
             fontWeight: FontWeight.bold,
           ),
         ),
-  backgroundColor: AppTheme.accentDark,
+        backgroundColor: AppTheme.accentDark,
         elevation: 2,
         actions: [
           MaterialButton(
@@ -152,54 +144,56 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
             height: 52,
             padding: const EdgeInsets.all(0),
             shape: const CircleBorder(),
-            onPressed: () {
-              // Implement search functionality
-            },
-            child: const Icon(Icons.dark_mode, color: Colors.black),
-          ),
-          MaterialButton(
-            minWidth: 52,
-            height: 52,
-            padding: const EdgeInsets.all(0),
-            shape: const CircleBorder(),
             onPressed: _openingCamera,
-            child:  Icon(Icons.camera_alt_outlined, color: (isMobile) ? Colors.black : Colors.transparent),
+            child: Icon(
+              Icons.camera_alt_outlined,
+              color: (isMobile) ? Colors.black : Colors.transparent,
+            ),
           ),
           PopupMenuButton(
             color: AppTheme.surface,
             icon: const Icon(Icons.settings, color: Colors.black),
             itemBuilder: (context) => [
-               PopupMenuItem(
+              PopupMenuItem(
                 value: 'new_group',
-                child: Text('New Group', style: TextStyle(color: AppTheme.accent)),
+                child: Text(
+                  'New Group',
+                  style: TextStyle(color: AppTheme.accent),
+                ),
               ),
-               PopupMenuItem(
+              PopupMenuItem(
                 value: 'settings',
-                child: Text('Settings', style: TextStyle(color: AppTheme.accent)),
+                child: Text(
+                  'Settings',
+                  style: TextStyle(color: AppTheme.accent),
+                ),
                 onTap: () {
                   // Navigate to the settings page
                   Navigator.pushNamed(context, '/settings');
                 },
               ),
-               PopupMenuItem(
+              PopupMenuItem(
                 value: 'logout',
                 child: Text('Logout', style: TextStyle(color: AppTheme.accent)),
                 onTap: () async {
-    try {
-      await Supabase.instance.client.auth.signOut();
-      if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Logout failed: $e'), backgroundColor: Colors.red),
-      );
-    }
-  },
-               ),
-               
+                  try {
+                    await Supabase.instance.client.auth.signOut();
+                    if (mounted) {
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil('/', (route) => false);
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Logout failed: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+              ),
             ],
-            
           ),
         ],
       ),
