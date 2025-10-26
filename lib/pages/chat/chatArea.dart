@@ -1,8 +1,8 @@
-import 'package:Sutra/pages/chat/video.dart';
-import 'package:Sutra/pages/chat/voice.dart';
+import 'package:ConnectUs/pages/chat/video.dart';
+import 'package:ConnectUs/pages/chat/voice.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:Sutra/utils/app_theme.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:logger/logger.dart';

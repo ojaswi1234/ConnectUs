@@ -1,6 +1,6 @@
-import 'package:Sutra/pages/chat/chatArea.dart';
+import 'package:ConnectUs/pages/chat/chatArea.dart';
 import 'package:flutter/material.dart';
-import 'package:Sutra/utils/app_theme.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 
 class ContactTile extends StatelessWidget {
   final String contactName;

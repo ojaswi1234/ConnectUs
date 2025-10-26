@@ -1,4 +1,4 @@
-import 'package:Sutra/utils/app_theme.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {

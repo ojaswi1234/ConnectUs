@@ -1,26 +1,26 @@
 // main.dart
-import 'package:Sutra/models/contact.dart';
-import 'package:Sutra/pages/AI_page.dart';
-import 'package:Sutra/pages/config/account.dart';
-import 'package:Sutra/pages/home/about.dart';
+import 'package:ConnectUs/pages/AI_page.dart';
+import 'package:ConnectUs/pages/config/account.dart';
+import 'package:ConnectUs/pages/home/about.dart';
+import 'package:ConnectUs/models/contact.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 
-import 'package:Sutra/services/AuthChecker.dart';
-import 'package:Sutra/pages/auth/profile.dart';
-import 'package:Sutra/pages/config/settings.dart';
-import 'package:Sutra/pages/home/home.dart';
-import 'package:Sutra/pages/landing.dart';
-import 'package:Sutra/pages/auth/login.dart';
-import 'package:Sutra/pages/auth/register.dart';
-import 'package:Sutra/pages/auth/loginPhone.dart';
-import 'package:Sutra/pages/auth/registerPhone.dart';
-import 'package:Sutra/pages/contacts_page.dart';
+import 'package:ConnectUs/services/AuthChecker.dart';
+import 'package:ConnectUs/pages/auth/profile.dart';
+import 'package:ConnectUs/pages/config/settings.dart';
+import 'package:ConnectUs/pages/home/home.dart';
+import 'package:ConnectUs/pages/landing.dart';
+import 'package:ConnectUs/pages/auth/login.dart';
+import 'package:ConnectUs/pages/auth/loginPhone.dart';
+import 'package:ConnectUs/pages/auth/register.dart';
+import 'package:ConnectUs/pages/auth/registerPhone.dart';
+import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:Sutra/services/socketService.dart';
+import 'package:ConnectUs/services/socketService.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

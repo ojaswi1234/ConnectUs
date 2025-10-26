@@ -1,12 +1,12 @@
-import 'package:Sutra/pages/chat/contactSelectionPage.dart';
+import 'package:ConnectUs/pages/chat/contactSelectionPage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'status.dart';
 import 'package:flutter/material.dart';
-import 'package:Sutra/utils/app_theme.dart';
-import 'package:Sutra/pages/home/home_page.dart';
-import 'package:Sutra/pages/home/community.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
+import 'package:ConnectUs/pages/home/home_page.dart';
+import 'package:ConnectUs/pages/home/community.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 

@@ -1,6 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:Sutra/utils/app_theme.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 
 class AI_Page extends StatefulWidget {
   const AI_Page({super.key});

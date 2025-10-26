@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:Sutra/services/session_manager.dart';
+import 'package:ConnectUs/services/session_manager.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});

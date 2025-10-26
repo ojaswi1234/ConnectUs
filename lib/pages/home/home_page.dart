@@ -1,18 +1,18 @@
 import 'dart:core';
 import 'dart:async';
 import 'dart:io';
-import 'package:Sutra/pages/chat/chatArea.dart';
+import 'package:ConnectUs/pages/chat/chatArea.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:collection';
-import 'package:Sutra/utils/app_theme.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:hive/hive.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:Sutra/components/contactTile.dart';
-import 'package:Sutra/pages/contacts_page.dart';
+import 'package:ConnectUs/components/contactTile.dart';
+import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:Sutra/models/contact.dart' as HiveContact;
+import 'package:ConnectUs/models/contact.dart' as HiveContact;
 
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});

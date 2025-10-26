@@ -1,4 +1,4 @@
-import 'package:Sutra/services/session_manager.dart';
+import 'package:ConnectUs/services/session_manager.dart';
 import 'package:flutter/material.dart';
 
 const kPrimaryColor = Color(0xFFA67B00); // Dark Yellow

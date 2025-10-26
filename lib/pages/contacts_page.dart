@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:Sutra/utils/app_theme.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'dart:async';
 
@@ -26,12 +26,13 @@ class ContactsPage extends StatefulWidget {
   State<ContactsPage> createState() => _ContactsPageState();
 }
 
-class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClientMixin {
+class _ContactsPageState extends State<ContactsPage>
+    with AutomaticKeepAliveClientMixin {
   final TextEditingController _searchController = TextEditingController();
   List<Contact> _filteredRegistered = [];
   List<Contact> _filteredNonRegistered = [];
   Timer? _debounceTimer;
-  
+
   @override
   bool get wantKeepAlive => true;
 
@@ -48,6 +49,7 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
     _searchController.dispose();
     super.dispose();
   }
+
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
   void _filterContacts(String query) {
     _debounceTimer?.cancel();
@@ -60,10 +62,16 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
           } else {
             final lowerQuery = query.toLowerCase();
             _filteredRegistered = widget.registeredContacts
-                .where((contact) => contact.displayName.toLowerCase().contains(lowerQuery))
+                .where(
+                  (contact) =>
+                      contact.displayName.toLowerCase().contains(lowerQuery),
+                )
                 .toList();
             _filteredNonRegistered = widget.nonRegisteredContacts
-                .where((contact) => contact.displayName.toLowerCase().contains(lowerQuery))
+                .where(
+                  (contact) =>
+                      contact.displayName.toLowerCase().contains(lowerQuery),
+                )
                 .toList();
           }
         });
@@ -89,20 +97,34 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
           );
         },
         child: Card(
-          color: isRegistered ? AppTheme.accentDark.withOpacity(0.08) : AppTheme.accent.withOpacity(0.04),
+          color: isRegistered
+              ? AppTheme.accentDark.withOpacity(0.08)
+              : AppTheme.accent.withOpacity(0.04),
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: isRegistered ? Colors.green : AppTheme.accentDark,
+              backgroundColor: isRegistered
+                  ? Colors.green
+                  : AppTheme.accentDark,
               child: Text(
-                contact.displayName.isNotEmpty ? contact.displayName[0].toUpperCase() : '?',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                contact.displayName.isNotEmpty
+                    ? contact.displayName[0].toUpperCase()
+                    : '?',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             title: Text(
               contact.displayName,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: contact.phones.isNotEmpty
                 ? Text(
@@ -117,7 +139,9 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
             onTap: () {
               if (isRegistered) {
                 Navigator.pop(context);
-                widget.onContactTap(contact);  // This will now pass the name via the callback
+                widget.onContactTap(
+                  contact,
+                ); // This will now pass the name via the callback
               } else {
                 widget.onInviteContact(contact);
               }
@@ -131,12 +155,15 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-    
+
     if (widget.isLoading) {
       return Scaffold(
         backgroundColor: const Color(0xFF1E1E1E),
         appBar: AppBar(
-          title: const Text('Select Contact', style: TextStyle(color: Colors.white)),
+          title: const Text(
+            'Select Contact',
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: const Color(0xFFA67B00),
           iconTheme: const IconThemeData(color: Colors.white),
         ),
@@ -146,7 +173,10 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
             children: [
               CircularProgressIndicator(color: Color(0xFFFFC107)),
               SizedBox(height: 16),
-              Text('Loading contacts...', style: TextStyle(color: Colors.white)),
+              Text(
+                'Loading contacts...',
+                style: TextStyle(color: Colors.white),
+              ),
             ],
           ),
         ),
@@ -156,7 +186,10 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
     return Scaffold(
       backgroundColor: const Color(0xFF1E1E1E),
       appBar: AppBar(
-        title: const Text('Select Contact', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Select Contact',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color(0xFFA67B00),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -169,7 +202,10 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
               controller: _searchController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Search contacts...',
+                hintText: isMobile
+                    ? 'Search contacts...'
+                    : 'Search via UserName',
+
                 hintStyle: TextStyle(color: Colors.grey.shade500),
                 prefixIcon: Icon(Icons.search, color: Colors.grey.shade500),
                 filled: true,
@@ -182,105 +218,129 @@ class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClie
               onChanged: _filterContacts,
             ),
           ),
-          
+
           // Contact List
-          (isMobile) ?
-          Expanded(
-            
-            child: CustomScrollView(
-              cacheExtent: 1000.0, // Performance optimization
-              slivers: [
-                // Registered Contacts Section
-                if (_filteredRegistered.isNotEmpty) ...[
-                  SliverToBoxAdapter(
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.green.shade400, Colors.green.shade600],
+          (isMobile)
+              ? Expanded(
+                  child: CustomScrollView(
+                    cacheExtent: 1000.0, // Performance optimization
+                    slivers: [
+                      // Registered Contacts Section
+                      if (_filteredRegistered.isNotEmpty) ...[
+                        SliverToBoxAdapter(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.green.shade400,
+                                  Colors.green.shade600,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'On ConnectUs (${_filteredRegistered.length})',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'On ConnectUs (${_filteredRegistered.length})',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => _buildContactTile(
+                                _filteredRegistered[index],
+                                true,
+                              ),
+                              childCount: _filteredRegistered.length,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      ],
+
+                      // Non-Registered Contacts Section
+                      if (_filteredNonRegistered.isNotEmpty) ...[
+                        SliverToBoxAdapter(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.orange.shade400,
+                                  Colors.orange.shade600,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'Invite to ConnectUs (${_filteredNonRegistered.length})',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => _buildContactTile(
+                                _filteredNonRegistered[index],
+                                false,
+                              ),
+                              childCount: _filteredNonRegistered.length,
+                            ),
+                          ),
+                        ),
+                      ],
+
+                      // Empty state
+                      if (_filteredRegistered.isEmpty &&
+                          _filteredNonRegistered.isEmpty)
+                        const SliverToBoxAdapter(
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(32),
+                              child: Text(
+                                'No contacts found',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
+                )
+              : Container(
                   
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => 
-                        _buildContactTile(_filteredRegistered[index], true),
-                        childCount: _filteredRegistered.length,
-                      ),
+                  child: Center(
+                    
+                    child: Text(
+                      "Search via UserName",
+                      style: TextStyle(color: const Color.fromARGB(255, 233, 191, 39)),
                     ),
                   ),
-                ],
-                
-                // Non-Registered Contacts Section
-                if (_filteredNonRegistered.isNotEmpty) ...[
-                  SliverToBoxAdapter(
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.orange.shade400, Colors.orange.shade600],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Invite to ConnectUs (${_filteredNonRegistered.length})',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                  
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => _buildContactTile(_filteredNonRegistered[index], false),
-                        childCount: _filteredNonRegistered.length,
-                      ),
-                    ),
-                  ),
-                ],
-                
-                // Empty state
-                if (_filteredRegistered.isEmpty && _filteredNonRegistered.isEmpty)
-                  const SliverToBoxAdapter(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32),
-                        child: Text(
-                          'No contacts found',
-                          style: TextStyle(color: Colors.white70, fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          )
-          :
-          Container(
-            child: Center(
-              child: Text("Search via UserName")
-            )
-          ),
+                ),
         ],
       ),
     );
