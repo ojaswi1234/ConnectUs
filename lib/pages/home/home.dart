@@ -128,11 +128,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
-          'सूत्र',
+          'ConnectUs',
           style: TextStyle(
             color: Colors.black,
             fontFamily: 'EduNSWACTCursive',
-            fontSize: 30,
+            fontSize: 23,
             fontWeight: FontWeight.bold,
           ),
         ),

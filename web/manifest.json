@@ -1,6 +1,6 @@
 {
-    "name": "wassup",
-    "short_name": "wassup",
+    "name": "connectus",
+    "short_name": "connectus",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

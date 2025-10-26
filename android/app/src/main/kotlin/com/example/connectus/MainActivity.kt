@@ -1,4 +1,4 @@
-package com.example.wassup
+package com.example.connectus
 
 import io.flutter.embedding.android.FlutterActivity
 

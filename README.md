@@ -1,4 +1,4 @@
-# wassup
+# connectus
 
 A new Flutter project.
 
