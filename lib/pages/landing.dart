@@ -21,80 +21,74 @@ class Landing extends StatelessWidget {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-
-            children: [
-              const SizedBox(height: 200),
-              AvatarGlow(
-                glowColor: kSecondaryColor,
-                duration: const Duration(seconds: 2),
-                repeat: true,
-                animate: true,
-                glowRadiusFactor: 0.2,
-
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/images/removebg.png',
-                    width: 220,
-                    height: 220,
-                    color: Colors.yellow,
-
-                    colorBlendMode: BlendMode.difference,
-                  ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: !isMobile ? 20 : 170),
+            AvatarGlow(
+              glowColor: kSecondaryColor,
+              duration: const Duration(seconds: 2),
+              repeat: true,
+              animate: true,
+              glowRadiusFactor: 0.2,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/removebg.png',
+                  width: 220,
+                  height: 220,
+                  color: Colors.yellow,
+                  colorBlendMode: BlendMode.difference,
                 ),
               ),
-              const SizedBox(height: 30),
-              const Text(
-                "ConnectUs",
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              "ConnectUs",
+              style: TextStyle(
+                color: kTextColor,
+                fontFamily: 'EduNSWACTCursive',
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.none,
+              ),
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              "A place to connect with friends",
+              style: TextStyle(
+                color: kAccentColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                decoration: TextDecoration.none,
+              ),
+            ),
+            const SizedBox(height: 130),
+            MaterialButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/getStarted');
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              color: kSecondaryColor,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 15,
+              ),
+              textColor: const Color.fromARGB(255, 41, 24, 24),
+              minWidth: isMobile ? 330 : 150,
+              child: const Text(
+                "Get Started",
                 style: TextStyle(
-                  color: kTextColor,
-                  fontFamily: 'EduNSWACTCursive',
-                  fontSize: 40,
+                  color: kBackgroundColor,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   decoration: TextDecoration.none,
                 ),
               ),
-              const SizedBox(height: 30),
-              const Text(
-                "A place to connect with friends",
-                style: TextStyle(
-                  color: kAccentColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  decoration: TextDecoration.none,
-                ),
-              ),
-              const SizedBox(height: 130),
-              MaterialButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/getStarted');
-                },
-
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                color: kSecondaryColor,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 15,
-                ),
-                textColor: const Color.fromARGB(255, 41, 24, 24),
-                minWidth: isMobile ? 330 : 150,
-                child: const Text(
-                  "Get Started",
-                  style: TextStyle(
-                    color: kBackgroundColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.none,
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -7,7 +7,10 @@
   packages = [
     pkgs.jdk21
     pkgs.unzip
+    
+  
   ];
+  services.docker.enable = true;
   # Sets environment variables in the workspace
   env = {};
   idx = {
@@ -35,5 +38,6 @@
         };
       };
     };
+    
   };
 }
