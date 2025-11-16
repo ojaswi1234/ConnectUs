@@ -62,7 +62,7 @@ class Register extends StatelessWidget {
       backgroundColor: kBackgroundColor,
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal:  isMobile ? 44 :  500.0 ),
+          padding: EdgeInsets.symmetric(horizontal:  isMobile ? 44 :  400.0 ),
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
