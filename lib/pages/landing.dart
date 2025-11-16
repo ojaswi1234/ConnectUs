@@ -21,6 +21,8 @@ class Landing extends StatelessWidget {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: Center(
+      child: SingleChildScrollView( 
+        clipBehavior: Clip.none,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,6 +92,7 @@ class Landing extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

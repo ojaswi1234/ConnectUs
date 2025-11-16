@@ -101,7 +101,7 @@ class MainApp extends StatelessWidget {
         '/loginPhone': (context) => LoginPhone(),
         '/profile': (context) => Profile(),
         '/settings': (context) => Settings(),
-        '/ai': (context) => AI_Page(),
+        '/ai': (context) => AIPage(),
         '/about': (context) => About(),
         '/account': (context) => Account(),
       },
