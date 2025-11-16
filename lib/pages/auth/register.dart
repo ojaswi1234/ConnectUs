@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -11,7 +14,7 @@ const kTextColor = Color(0xFFFFD54F); // Warm Yellow
 
 class Register extends StatelessWidget {
   Register({super.key});
-
+   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _email = '';
@@ -59,7 +62,7 @@ class Register extends StatelessWidget {
       backgroundColor: kBackgroundColor,
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 44.0),
+          padding: EdgeInsets.symmetric(horizontal:  isMobile ? 44 :  500.0 ),
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -262,12 +265,12 @@ class Register extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
-                      textStyle: TextStyle(fontSize: (width > 600) ? 18 : 12, fontWeight: FontWeight.bold),
+                      textStyle: TextStyle(fontSize: (!isMobile) ? 18 : 12, fontWeight: FontWeight.bold),
                     ),
                     onPressed: () {
                       Navigator.of(context).pushReplacementNamed('/login');
                     },
-                    child: Text("Already have an account? Click here to login", style: TextStyle(color: kTextColor)),
+                    child: Text("Already have an account? Click here to login", style: TextStyle(color: kTextColor, fontSize: (!isMobile) ? 16 : 12)),
                   ),
                   const SizedBox(height: 20),
                  

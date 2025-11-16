@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:ConnectUs/utils/app_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AIPage extends StatefulWidget {
@@ -11,8 +15,9 @@ class _AIPageState extends State<AIPage> {
   // Define colors and constants for reuse and consistency
   static const Color primaryColor = Color.fromARGB(255, 245, 210, 105);
   static const Color accentColor = Color.fromARGB(255, 207, 168, 79);
-  static const Color secondaryBackground = Color.fromARGB(255, 245, 229, 183);
+
   static const double borderRadius = 16.0;
+  bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +25,17 @@ class _AIPageState extends State<AIPage> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: primaryColor,
+      backgroundColor: Colors.yellow,
       appBar: AppBar(
         // AppBar Styling
         backgroundColor: Colors.transparent,
         elevation: 0, // Removes the shadow under the AppBar
-        title: const Text(
+        title: Text(
           "Connectify",
           style: TextStyle(
             fontFamily: "EduNSWACTCursive",
             fontWeight: FontWeight.w900, // Make it bolder
-            fontSize: 30, // Increase title size
+            fontSize: isMobile ? 24 : 30 , // Increase title size
             color: Colors.black87, // Better text color
           ),
         ),
@@ -51,7 +56,7 @@ class _AIPageState extends State<AIPage> {
           },
         ),
       ),
-      
+
       // ---------------------------------
       // Drawer Styling (Sidebar)
       // ---------------------------------
@@ -79,14 +84,14 @@ class _AIPageState extends State<AIPage> {
                   Text(
                     'User Menu',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ],
               ),
             ),
-            
+
             // Drawer List Tile
             ListTile(
               leading: const Icon(Icons.home_rounded, color: primaryColor),
@@ -95,7 +100,7 @@ class _AIPageState extends State<AIPage> {
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               onTap: () {
-                Navigator.pop(context);
+               Navigator.pushNamed(context, '/home');
               },
             ),
             // Example of another list item
@@ -112,7 +117,7 @@ class _AIPageState extends State<AIPage> {
           ],
         ),
       ),
-      
+
       // ---------------------------------
       // Body Content
       // ---------------------------------
@@ -121,33 +126,33 @@ class _AIPageState extends State<AIPage> {
         child: Column(
           children: [
             // AI Banner/Logo Container
-            Container(
-              height: size.height * 0.5, // Use screen height for better responsiveness
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: secondaryBackground,
-                borderRadius: BorderRadius.circular(borderRadius),
-                // Optional: Subtle shadow for depth
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3), 
+            // *** MODIFIED: Wrapped in Expanded ***
+            Expanded(
+              child: Container(
+                
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppTheme.accent,
+                  borderRadius: BorderRadius.circular(borderRadius),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(borderRadius),
+                  child: Image.asset(
+                    'assets/images/bee.png',
+                    // Use BoxFit.contain or BoxFit.fitHeight/fitWidth if needed, 
+                    // but BoxFit.contain generally ensures the whole image is visible
+                    // without cropping. If you want it to fill the container completely
+                    // (potentially cropping the edges), use BoxFit.cover. 
+                    // Sticking with BoxFit.contain for now to avoid cropping the bee.
+                    fit: BoxFit.contain, 
+                    colorBlendMode: BlendMode.colorBurn,
                   ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(borderRadius),
-                child: Image.asset(
-                  'assets/images/removebg.png',
-                  fit: BoxFit.contain,
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 30),
-            
+
             // Input Text Field
             TextField(
               cursorColor: accentColor,
@@ -157,7 +162,7 @@ class _AIPageState extends State<AIPage> {
                 hintStyle: TextStyle(color: Colors.black54.withOpacity(0.6)),
                 filled: true,
                 fillColor: Colors.white,
-                
+
                 // Border Styling
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0), // Highly rounded corners
@@ -177,12 +182,12 @@ class _AIPageState extends State<AIPage> {
                     width: 1.0,
                   ),
                 ),
-                
+
                 // Add a send button icon inside the input field
                 suffixIcon: Container(
                   margin: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: accentColor,
+                  decoration: const BoxDecoration(
+                    color: Colors.black,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
@@ -192,7 +197,7 @@ class _AIPageState extends State<AIPage> {
                     },
                   ),
                 ),
-                
+
                 // Add leading icon (optional)
                 prefixIcon: const Icon(Icons.mic, color: primaryColor),
                 contentPadding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 20.0),

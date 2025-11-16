@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:ConnectUs/services/session_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 const kPrimaryColor = Color(0xFFA67B00); // Dark Yellow
@@ -21,7 +24,7 @@ class _LoginState extends State<Login> {
   String _password = '';
   bool _isLoading = false;
   bool _rememberMe = false;
-
+ bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
   final _sessionManager = SessionManager();
 
   @override
@@ -94,7 +97,7 @@ void _validateUser() async {
       backgroundColor: kBackgroundColor,
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 44.0),
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 44 :  500.0 ),
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -240,12 +243,12 @@ void _validateUser() async {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
-                      textStyle: TextStyle(fontSize: (width > 600) ? 18 : 12),
+                      textStyle: TextStyle(fontSize: (!isMobile) ? 18 : 12),
                     ),
                     onPressed: () {
                       Navigator.of(context).pushReplacementNamed('/getStarted');
                     },
-                    child: Text("Don't have an Account? Sign Up", style: TextStyle(color: kTextColor, fontSize: (width > 600) ? 18 : 12, fontWeight: FontWeight.w500)),
+                    child: Text("Don't have an Account? Sign Up", style: TextStyle(color: kTextColor, fontSize: (!isMobile) ? 16 : 12, fontWeight: FontWeight.w500)),
                   ),
                   const SizedBox(height: 20),
                  /*  MaterialButton(
