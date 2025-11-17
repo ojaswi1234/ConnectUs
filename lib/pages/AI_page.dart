@@ -13,8 +13,8 @@ class AIPage extends StatefulWidget {
 
 class _AIPageState extends State<AIPage> {
   // Define colors and constants for reuse and consistency
-  static const Color primaryColor = Color.fromARGB(255, 245, 210, 105);
-  static const Color accentColor = Color.fromARGB(255, 207, 168, 79);
+  static const Color primaryColor = AppTheme.accentDark;
+  static const Color accentColor = AppTheme.accent;
 
   static const double borderRadius = 16.0;
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
@@ -25,7 +25,7 @@ class _AIPageState extends State<AIPage> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.yellow,
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
         // AppBar Styling
         backgroundColor: Colors.transparent,
