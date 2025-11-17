@@ -1,16 +1,11 @@
 import 'dart:io';
 
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-// Theme colors
-const kPrimaryColor = Color(0xFFA67B00); // Dark Yellow
-const kSecondaryColor = Color(0xFFFFC107); // Amber
-const kBackgroundColor = Color(0xFF1E1E1E); // Dark Gray-Black
-const kAccentColor = Color(0xFFFFCA28); // Light Amber
-const kTextColor = Color(0xFFFFD54F); // Warm Yellow
 
 class Register extends StatelessWidget {
   Register({super.key});
@@ -59,7 +54,7 @@ class Register extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: AppTheme.background,
       body: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal:  isMobile ? 44 :  400.0 ),
@@ -75,7 +70,7 @@ class Register extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: kTextColor,
+                      color: AppTheme.accentDark,
                     ),
                   ),
                   const SizedBox(height: 60),
@@ -101,27 +96,27 @@ class Register extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    style: TextStyle(color: kTextColor),
+                    style: TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person, color: kAccentColor),
+                      prefixIcon: Icon(Icons.person, color: AppTheme.accent),
                       labelText: "Username",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kTextColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accentDark, width: 2.0),
                       ),
                       filled: true,
-                      fillColor: kBackgroundColor,
+                      fillColor: AppTheme.background,
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                       errorStyle: TextStyle(color: Colors.redAccent),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kAccentColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accent, width: 2.0),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide(color: Colors.red, width: 2.0),
                       ),
-                      labelStyle: TextStyle(color: kAccentColor, fontSize: 16.0),
+                      labelStyle: TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
                     keyboardType: TextInputType.text,
                     validator: (value) {
@@ -142,31 +137,31 @@ class Register extends StatelessWidget {
                       LengthLimitingTextInputFormatter(10),
 
                     ],
-                    style: TextStyle(color: kTextColor),
+                    style: TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.phone, color: kAccentColor),
+                      prefixIcon: Icon(Icons.phone, color: AppTheme.accent),
                       prefix: SizedBox(
                         width: 70,
-                        child: Text("+91", style: TextStyle(color: kAccentColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 10,),                          
+                        child: Text("+91", style: TextStyle(color: AppTheme.accentDark, fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 10,),                          
                       ),
                       labelText: "Phone Number",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kTextColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accent, width: 2.0),
                       ),
                       filled: true,
-                      fillColor: kBackgroundColor,
+                      fillColor: AppTheme.background,
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                       errorStyle: TextStyle(color: Colors.redAccent),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kAccentColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accent, width: 2.0),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide(color: Colors.red, width: 2.0),
                       ),
-                      labelStyle: TextStyle(color: kAccentColor, fontSize: 16.0),
+                      labelStyle: TextStyle(color: AppTheme.accentDark, fontSize: 16.0),
                     ),
                     keyboardType: TextInputType.phone,
                     validator: (value) {
@@ -181,27 +176,27 @@ class Register extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    style: TextStyle(color: kTextColor),
+                    style: TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.email, color: kAccentColor),
+                      prefixIcon: Icon(Icons.email, color: AppTheme.accent),
                       labelText: "Email",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kTextColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accentDark, width: 2.0),
                       ),
                       filled: true,
-                      fillColor: kBackgroundColor,
+                      fillColor: AppTheme.background,
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                       errorStyle: TextStyle(color: Colors.redAccent),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kAccentColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accentDark, width: 2.0),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide(color: Colors.red, width: 2.0),
                       ),
-                      labelStyle: TextStyle(color: kAccentColor, fontSize: 16.0),
+                      labelStyle: TextStyle(color: AppTheme.accentDark, fontSize: 16.0),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
@@ -217,27 +212,27 @@ class Register extends StatelessWidget {
                   const SizedBox(height: 20),
                   TextFormField(
 
-                    style: TextStyle(color: kTextColor),
+                    style: TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock, color: kAccentColor),
+                      prefixIcon: Icon(Icons.lock, color: AppTheme.accent),
                       labelText: "Password",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kTextColor, width: 2.0),
+                        borderSide: BorderSide(color:AppTheme.accentDark, width: 2.0),
                       ),
                       filled: true,
-                      fillColor: kBackgroundColor,
+                      fillColor: AppTheme.background,
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                       errorStyle: TextStyle(color: Colors.redAccent),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kAccentColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accentDark, width: 2.0),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide(color: Colors.red, width: 2.0),
                       ),
-                      labelStyle: TextStyle(color: kAccentColor, fontSize: 16.0),
+                      labelStyle: TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: true,
@@ -254,11 +249,11 @@ class Register extends StatelessWidget {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: kSecondaryColor,
+                      backgroundColor: AppTheme.accentDark,
                       padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
                     ),
                     onPressed: () => _submitForm(context),
-                    child: Text("Register", style: TextStyle(color: Colors.black, fontSize: 16.0)),
+                    child: Text("Register", style: TextStyle(color: AppTheme.background, fontSize: 16.0)),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
@@ -270,7 +265,7 @@ class Register extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).pushReplacementNamed('/login');
                     },
-                    child: Text("Already have an account? Click here to login", style: TextStyle(color: kTextColor, fontSize: (!isMobile) ? 16 : 12)),
+                    child: Text("Already have an account? Click here to login", style: TextStyle(color: AppTheme.accentDark, fontSize: (!isMobile) ? 16 : 12)),
                   ),
                   const SizedBox(height: 20),
                  

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // Core palette (kept from existing app)
-  static const Color background = Color(0xFF1E1E1E);
-  static const Color accent = Color(0xFFFFD54F);
-  static const Color accentDark = Color(0xFFFFC107);
+  static const Color background = Color.fromARGB(255, 0, 32, 31);
+  static const Color accent = Color.fromARGB(255, 44, 227, 252);
+  static const Color accentDark = Color.fromARGB(255, 7, 226, 255);
   static const Color hint = Color(0xFFFFCA28);
   // Extended semantic palette
   static const Color success = Color(0xFF4CAF50);

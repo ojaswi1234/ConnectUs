@@ -1,15 +1,12 @@
 import 'dart:io';
 
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // Theme colors
-const kPrimaryColor = Color(0xFFA67B00); // Dark Yellow
-const kSecondaryColor = Color(0xFFFFC107); // Amber
-const kBackgroundColor = Color(0xFF1E1E1E); // Dark Gray-Black
-const kAccentColor = Color(0xFFFFCA28); // Light Amber
-const kTextColor = Color(0xFFFFD54F); // Warm Yellow
+
 
 class Landing extends StatelessWidget {
   const Landing({super.key});
@@ -19,7 +16,7 @@ class Landing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: AppTheme.background,
       body: Center(
       child: SingleChildScrollView( 
         clipBehavior: Clip.none,
@@ -29,7 +26,7 @@ class Landing extends StatelessWidget {
           children: [
             SizedBox(height: !isMobile ? 20 : 170),
             AvatarGlow(
-              glowColor: kSecondaryColor,
+              glowColor: AppTheme.accent,
               duration: const Duration(seconds: 2),
               repeat: true,
               animate: true,
@@ -39,8 +36,9 @@ class Landing extends StatelessWidget {
                   'assets/images/removebg.png',
                   width: 220,
                   height: 220,
-                  color: Colors.yellow,
-                  colorBlendMode: BlendMode.difference,
+                  color: AppTheme.accentDark,
+                  colorBlendMode: BlendMode.softLight,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -48,7 +46,7 @@ class Landing extends StatelessWidget {
             const Text(
               "ConnectUs",
               style: TextStyle(
-                color: kTextColor,
+                color: AppTheme.accentDark,
                 fontFamily: 'EduNSWACTCursive',
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
@@ -57,10 +55,10 @@ class Landing extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             const Text(
-              "A place to connect with friends",
+              "Chat, Connect, Grow",
               style: TextStyle(
-                color: kAccentColor,
-                fontSize: 13,
+                color: AppTheme.accent,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
                 decoration: TextDecoration.none,
               ),
@@ -73,7 +71,7 @@ class Landing extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              color: kSecondaryColor,
+              color: AppTheme.accentDark,
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
                 vertical: 15,
@@ -83,7 +81,7 @@ class Landing extends StatelessWidget {
               child: const Text(
                 "Get Started",
                 style: TextStyle(
-                  color: kBackgroundColor,
+                  color: AppTheme.background,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   decoration: TextDecoration.none,

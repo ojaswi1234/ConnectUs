@@ -131,7 +131,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           'ConnectUs',
           style: TextStyle(
             color: Colors.black,
-            fontFamily: 'EduNSWACTCursive',
+            fontFamily: 'Poppins',
             fontSize: 23,
             fontWeight: FontWeight.bold,
           ),
@@ -158,14 +158,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 value: 'new_group',
                 child: Text(
                   'New Group',
-                  style: TextStyle(color: AppTheme.accent),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
               PopupMenuItem(
                 value: 'settings',
                 child: Text(
                   'Settings',
-                  style: TextStyle(color: AppTheme.accent),
+                  style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
                   // Navigate to the settings page
@@ -174,7 +174,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
               PopupMenuItem(
                 value: 'logout',
-                child: Text('Logout', style: TextStyle(color: AppTheme.accent)),
+                child: Text('Logout', style: TextStyle(color: Colors.white)),
                 onTap: () async {
                   try {
                     await Supabase.instance.client.auth.signOut();

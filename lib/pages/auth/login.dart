@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:ConnectUs/services/session_manager.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-const kPrimaryColor = Color(0xFFA67B00); // Dark Yellow
-const kSecondaryColor = Color(0xFFFFC107); // Amber
-const kBackgroundColor = Color(0xFF1E1E1E); // Dark Gray-Black
-const kAccentColor = Color(0xFFFFCA28); // Light Amber
-const kTextColor = Color(0xFFFFD54F); // Warm Yellow
+
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -94,7 +91,7 @@ void _validateUser() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: AppTheme.background,
       body: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: isMobile ? 44 :  400.0 ),
@@ -110,7 +107,7 @@ void _validateUser() async {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: kTextColor,
+                      color: AppTheme.accentDark,
                     ),
                   ),
                   const SizedBox(height: 60),
@@ -128,29 +125,29 @@ void _validateUser() async {
                   const SizedBox(height: 20),
                   TextFormField(
                     initialValue: _email,
-                    style: TextStyle(color: kTextColor),
+                    style: TextStyle(color: AppTheme.accentDark),
 
                     decoration: InputDecoration(
                       
-                      prefixIcon: Icon(Icons.email, color: kAccentColor),
+                      prefixIcon: Icon(Icons.email, color: AppTheme.accent),
                       labelText: "Email",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kTextColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accent, width: 2.0),
                       ),
                       filled: true,
-                      fillColor: kBackgroundColor,
+                      fillColor: AppTheme.background,
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                       errorStyle: TextStyle(color: Colors.redAccent),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kAccentColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accent, width: 2.0),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide(color: Colors.red, width: 2.0),
                       ),
-                      labelStyle: TextStyle(color: kAccentColor, fontSize: 16.0),
+                      labelStyle: TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
@@ -165,30 +162,30 @@ void _validateUser() async {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    style: TextStyle(color: kTextColor),
+                    style: TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock, color: kAccentColor),
+                      prefixIcon: Icon(Icons.lock, color: AppTheme.accent),
           
                       labelText: "Password",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
 
-                        borderSide: BorderSide(color: kTextColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accentDark, width: 2.0),
                       ),
                       
                       filled: true,
-                      fillColor: kBackgroundColor,
+                      fillColor: AppTheme.background,
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                       errorStyle: TextStyle(color: Colors.redAccent),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: kAccentColor, width: 2.0),
+                        borderSide: BorderSide(color: AppTheme.accent, width: 2.0),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide(color: Colors.red, width: 2.0),
                       ),
-                      labelStyle: TextStyle(color: kAccentColor, fontSize: 16.0),
+                      labelStyle: TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: true,
@@ -213,13 +210,13 @@ void _validateUser() async {
                             _rememberMe = value ?? false;
                           });
                         },
-                        activeColor: kSecondaryColor,
-                        checkColor: kBackgroundColor,
+                        activeColor: AppTheme.accent,
+                        checkColor: AppTheme.background,
                       ),
                       Text(
                         'Remember me',
                         style: TextStyle(
-                          color: kTextColor,
+                          color: AppTheme.accent,
                           fontSize: 16,
                         ),
                       ),
@@ -228,14 +225,14 @@ void _validateUser() async {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: kSecondaryColor,
+                      backgroundColor: AppTheme.accentDark,
                       padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
                     ),
                     onPressed: _isLoading ? null : () {
                       _validateUser();
                     },
                     child: _isLoading 
-                      ? CircularProgressIndicator(color: kBackgroundColor) 
+                      ? CircularProgressIndicator(color: AppTheme.accentDark) 
                       : Text("Login", style: TextStyle(color: Color(0xFF1E1E1E), fontSize: 16)),
                   ),
                   const SizedBox(height: 20),
@@ -248,7 +245,7 @@ void _validateUser() async {
                     onPressed: () {
                       Navigator.of(context).pushReplacementNamed('/getStarted');
                     },
-                    child: Text("Don't have an Account? Sign Up", style: TextStyle(color: kTextColor, fontSize: (!isMobile) ? 16 : 12, fontWeight: FontWeight.w500)),
+                    child: Text("Don't have an Account? Sign Up", style: TextStyle(color: AppTheme.accentDark, fontSize: (!isMobile) ? 16 : 12, fontWeight: FontWeight.w500)),
                   ),
                   const SizedBox(height: 20),
                  /*  MaterialButton(

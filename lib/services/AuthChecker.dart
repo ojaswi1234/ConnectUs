@@ -1,3 +1,4 @@
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ConnectUs/pages/landing.dart';
@@ -98,7 +99,7 @@ class _AuthCheckerState extends State<AuthChecker> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-         backgroundColor: Color(0xFF1E1E1E),
+         backgroundColor: AppTheme.background,
       body: Center(
         
         child: Column(
@@ -108,10 +109,10 @@ class _AuthCheckerState extends State<AuthChecker> {
             Image(image: AssetImage('assets/images/logo.png'), height: 250, width: 250,),
              SizedBox(height: 32,),
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow),
+              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentDark),
             ),
             SizedBox(height: 32,),
-        Text("Checking Authentication Please Wait.....", style: TextStyle(color: Colors.yellow)),
+        Text("Checking Authentication Please Wait.....", style: TextStyle(color: AppTheme.accent)),
         ]
 
       ),

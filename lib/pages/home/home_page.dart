@@ -325,14 +325,14 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
                     onChanged: (_) => _onSearchChanged(),
                     decoration: InputDecoration(
                       hintText: 'Search Name/Number.....',
-                      hintStyle: const TextStyle(color: AppTheme.hint),
+                      hintStyle: const TextStyle(color: AppTheme.accent),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
                       ),
                       prefixIcon: const Icon(
                         Icons.search,
-                        color: Color(0xFFA67B00),
+                        color: AppTheme.accentDark,
                       ),
                       filled: true,
                       fillColor: const Color.fromARGB(255, 41, 41, 41),
@@ -393,21 +393,21 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
                 
                 shape: const CircleBorder(
                   side: BorderSide(
-                    color: Color(0xFFFFD54F),
+                    color: AppTheme.accentDark,
                   ),
                 ),
 
-               child: const Icon(Icons.assistant, size: 20, color: Color(0xFFFFD54F)),
+               child: const Icon(Icons.assistant, size: 20, color: AppTheme.accent),
                 ),
                 const SizedBox(height: 14),
                 FloatingActionButton(
                   shape: const CircleBorder(
                     side: BorderSide(
-                  color: Color(0xFFFFD54F),
+                  color: AppTheme.accentDark,
                 ),
               ),
               onPressed: _showContactFlowDialog,
-              backgroundColor: const Color(0xFFFFC107),
+              backgroundColor: AppTheme.accent,
               child: const Icon(Icons.chat_bubble_outline_rounded,
                   color: Color(0xFF1E1E1E), size: 24),
             ),
