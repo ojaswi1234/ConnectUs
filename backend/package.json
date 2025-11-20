@@ -13,7 +13,10 @@
   "dependencies": {
     "express": "^5.1.0",
     "http": "^0.0.1-security",
+<<<<<<< HEAD
     "langchain": "^1.0.6",
+=======
+>>>>>>> origin/main
     "node": "^24.6.0",
     "socket.io": "^4.8.1",
     "ws": "^8.18.3"

@@ -4,7 +4,10 @@
 *.pyc
 *.swp
 .DS_Store
+<<<<<<< HEAD
 .env
+=======
+>>>>>>> origin/main
 .atom/
 .build/
 .buildlog/

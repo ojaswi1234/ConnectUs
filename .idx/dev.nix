@@ -7,7 +7,11 @@
   packages = [
     pkgs.jdk21
     pkgs.unzip
+<<<<<<< HEAD
     pkgs.nodejs
+=======
+    
+>>>>>>> origin/main
   
   ];
   services.docker.enable = true;

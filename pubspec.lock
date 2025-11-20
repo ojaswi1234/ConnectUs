@@ -384,6 +384,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+<<<<<<< HEAD
   freezed_annotation:
     dependency: transitive
     description:
@@ -392,6 +393,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
+=======
+>>>>>>> origin/main
   frontend_server_client:
     dependency: transitive
     description:
@@ -584,6 +587,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
+<<<<<<< HEAD
   langchain:
     dependency: "direct main"
     description:
@@ -624,6 +628,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+=======
+>>>>>>> origin/main
   leak_tracker:
     dependency: transitive
     description:
@@ -704,6 +710,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+<<<<<<< HEAD
   ollama_dart:
     dependency: transitive
     description:
@@ -712,6 +719,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0+1"
+=======
+>>>>>>> origin/main
   open_file:
     dependency: "direct main"
     description:
@@ -776,6 +785,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.3"
+<<<<<<< HEAD
   openai_dart:
     dependency: transitive
     description:
@@ -784,6 +794,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0+1"
+=======
+>>>>>>> origin/main
   package_config:
     dependency: transitive
     description:
@@ -1261,6 +1273,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.4"
+<<<<<<< HEAD
   uuid:
     dependency: transitive
     description:
@@ -1269,6 +1282,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.2"
+=======
+>>>>>>> origin/main
   vector_math:
     dependency: transitive
     description:

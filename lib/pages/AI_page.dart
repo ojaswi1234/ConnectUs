@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:langchain/langchain.dart';
 // We use the OpenAI package because Groq's API is OpenAI-compatible
 import 'package:langchain_openai/langchain_openai.dart';
+=======
+>>>>>>> origin/main
 
 class AIPage extends StatefulWidget {
   const AIPage({super.key});
@@ -16,6 +19,7 @@ class AIPage extends StatefulWidget {
 }
 
 class _AIPageState extends State<AIPage> {
+<<<<<<< HEAD
   // AI-related state variables
   final TextEditingController _textController = TextEditingController();
   String _response = '';
@@ -97,21 +101,46 @@ class _AIPageState extends State<AIPage> {
 
   @override
   Widget build(BuildContext context) {
+=======
+  // Define colors and constants for reuse and consistency
+  static const Color primaryColor = AppTheme.accentDark;
+  static const Color accentColor = AppTheme.accent;
+
+  static const double borderRadius = 16.0;
+  bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
+  @override
+  Widget build(BuildContext context) {
+    // Determine screen size for responsive elements if needed later
+>>>>>>> origin/main
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
+<<<<<<< HEAD
       // Your existing AppBar
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+=======
+      appBar: AppBar(
+        // AppBar Styling
+        backgroundColor: Colors.transparent,
+        elevation: 0, // Removes the shadow under the AppBar
+>>>>>>> origin/main
         title: Text(
           "Connectify",
           style: TextStyle(
             fontFamily: "EduNSWACTCursive",
+<<<<<<< HEAD
             fontWeight: FontWeight.w900,
             fontSize: isMobile ? 24 : 30,
             color: AppTheme.accentDark,
+=======
+            fontWeight: FontWeight.w900, // Make it bolder
+            fontSize: isMobile ? 24 : 30 , // Increase title size
+            color: Colors.black87, // Better text color
+>>>>>>> origin/main
           ),
         ),
         centerTitle: true,
@@ -119,8 +148,13 @@ class _AIPageState extends State<AIPage> {
           builder: (BuildContext context) {
             return IconButton(
               icon: const Icon(
+<<<<<<< HEAD
                 Icons.view_sidebar_outlined,
                 color: AppTheme.accent,
+=======
+                Icons.view_sidebar_outlined, // Using a more modern menu icon
+                color: Colors.black87,
+>>>>>>> origin/main
                 size: 28,
               ),
               onPressed: () {
@@ -132,7 +166,13 @@ class _AIPageState extends State<AIPage> {
         ),
       ),
 
+<<<<<<< HEAD
       // Your existing Drawer
+=======
+      // ---------------------------------
+      // Drawer Styling (Sidebar)
+      // ---------------------------------
+>>>>>>> origin/main
       drawer: Drawer(
         backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(
@@ -144,6 +184,10 @@ class _AIPageState extends State<AIPage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
+<<<<<<< HEAD
+=======
+            // Custom Drawer Header for visual appeal
+>>>>>>> origin/main
             DrawerHeader(
               decoration: const BoxDecoration(
                 color: accentColor,
@@ -163,6 +207,11 @@ class _AIPageState extends State<AIPage> {
                 ],
               ),
             ),
+<<<<<<< HEAD
+=======
+
+            // Drawer List Tile
+>>>>>>> origin/main
             ListTile(
               leading: const Icon(Icons.home_rounded, color: primaryColor),
               title: const Text(
@@ -170,12 +219,21 @@ class _AIPageState extends State<AIPage> {
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               onTap: () {
+<<<<<<< HEAD
                 Navigator.pushNamed(context, '/home');
               },
             ),
             ListTile(
               leading:
                   const Icon(Icons.info_outline_rounded, color: primaryColor),
+=======
+               Navigator.pushNamed(context, '/home');
+              },
+            ),
+            // Example of another list item
+            ListTile(
+              leading: const Icon(Icons.info_outline_rounded, color: primaryColor),
+>>>>>>> origin/main
               title: const Text(
                 "About AI",
                 style: TextStyle(fontWeight: FontWeight.w600),
@@ -188,11 +246,18 @@ class _AIPageState extends State<AIPage> {
         ),
       ),
 
+<<<<<<< HEAD
       // --- Body with AI Integration ---
+=======
+      // ---------------------------------
+      // Body Content
+      // ---------------------------------
+>>>>>>> origin/main
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Column(
           children: [
+<<<<<<< HEAD
             // --- AI Response Area ---
             Expanded(
               child: Container(
@@ -222,11 +287,59 @@ class _AIPageState extends State<AIPage> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   borderSide: BorderSide.none,
+=======
+            // AI Banner/Logo Container
+            // *** MODIFIED: Wrapped in Expanded ***
+            Expanded(
+              child: Container(
+                
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppTheme.accent,
+                  borderRadius: BorderRadius.circular(borderRadius),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(borderRadius),
+                  child: Image.asset(
+                    'assets/images/bee.png',
+                    // Use BoxFit.contain or BoxFit.fitHeight/fitWidth if needed, 
+                    // but BoxFit.contain generally ensures the whole image is visible
+                    // without cropping. If you want it to fill the container completely
+                    // (potentially cropping the edges), use BoxFit.cover. 
+                    // Sticking with BoxFit.contain for now to avoid cropping the bee.
+                    fit: BoxFit.contain, 
+                    colorBlendMode: BlendMode.colorBurn,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            // Input Text Field
+            TextField(
+              cursorColor: accentColor,
+              style: const TextStyle(color: Colors.black87),
+              decoration: InputDecoration(
+                hintText: "Hey There, I am B-127.....",
+                hintStyle: TextStyle(color: Colors.black54.withOpacity(0.6)),
+                filled: true,
+                fillColor: Colors.white,
+
+                // Border Styling
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0), // Highly rounded corners
+                  borderSide: BorderSide.none, // Remove default border line
+>>>>>>> origin/main
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   borderSide: const BorderSide(
+<<<<<<< HEAD
                     color: accentColor,
+=======
+                    color: accentColor, // Highlight color when focused
+>>>>>>> origin/main
                     width: 2.5,
                   ),
                 ),
@@ -237,6 +350,11 @@ class _AIPageState extends State<AIPage> {
                     width: 1.0,
                   ),
                 ),
+<<<<<<< HEAD
+=======
+
+                // Add a send button icon inside the input field
+>>>>>>> origin/main
                 suffixIcon: Container(
                   margin: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
@@ -245,6 +363,7 @@ class _AIPageState extends State<AIPage> {
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.send, color: Colors.white, size: 24),
+<<<<<<< HEAD
                     onPressed: _isLoading || _textController.text.isEmpty
                         ? null
                         : () => _handleSend(),
@@ -255,12 +374,25 @@ class _AIPageState extends State<AIPage> {
                     vertical: 18.0, horizontal: 20.0),
               ),
               onSubmitted: (value) => _handleSend(),
+=======
+                    onPressed: () {
+                      // Logic to send message
+                    },
+                  ),
+                ),
+
+                // Add leading icon (optional)
+                prefixIcon: const Icon(Icons.mic, color: primaryColor),
+                contentPadding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 20.0),
+              ),
+>>>>>>> origin/main
             ),
           ],
         ),
       ),
     );
   }
+<<<<<<< HEAD
 
   // Helper to trigger response generation
   void _handleSend() {
@@ -293,3 +425,6 @@ class _AIPageState extends State<AIPage> {
     }
   }
 }
+=======
+}
+>>>>>>> origin/main
