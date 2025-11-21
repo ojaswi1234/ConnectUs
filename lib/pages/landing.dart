@@ -24,7 +24,7 @@ class Landing extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: !isMobile ? 20 : 170),
+            SizedBox(height: !isMobile ? 100 : 170),
             AvatarGlow(
               glowColor: AppTheme.accent,
               duration: const Duration(seconds: 2),

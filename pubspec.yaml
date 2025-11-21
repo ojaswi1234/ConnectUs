@@ -52,12 +52,9 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_webrtc: ^1.1.0
   avatar_glow: ^3.0.1
-<<<<<<< HEAD
   langchain: ^0.8.0+1
   langchain_ollama: ^0.4.0+1
   langchain_openai: ^0.8.0+1
-=======
->>>>>>> origin/main
  
   # Firebase packages for chat storage
 
@@ -81,10 +78,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
-<<<<<<< HEAD
-    - .env
-=======
->>>>>>> origin/main
+    - ./.env
     - assets/images/
 
   # The following line ensures that the Material Icons font is

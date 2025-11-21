@@ -17,10 +17,6 @@ import 'package:ConnectUs/pages/auth/loginPhone.dart';
 import 'package:ConnectUs/pages/auth/register.dart';
 import 'package:ConnectUs/pages/auth/registerPhone.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
-<<<<<<< HEAD
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-=======
->>>>>>> origin/main
 import 'package:hive_flutter/adapters.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -45,11 +41,7 @@ Future<void> _initializeApp() async {
   // Performance optimization: Enable GPU rendering
   debugProfileBuildsEnabled = false;
   debugProfilePaintsEnabled = false;
-<<<<<<< HEAD
-
-=======
   
->>>>>>> origin/main
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -60,20 +52,10 @@ Future<void> _initializeApp() async {
   Hive.registerAdapter(ContactAdapter());
   await Hive.openBox<Contact>('contacts');
 
-<<<<<<< HEAD
-  await dotenv.load(fileName: ".env");
-
-  // Initialize Supabase
-  await Supabase.initialize(
-    url: 'https://hkxvlihyacqpfdviyycy.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhreHZsaWh5YWNxcGZkdml5eWN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4OTQxMzksImV4cCI6MjA3MTQ3MDEzOX0.vQDz72Zu6IVglI43t2VUTYVxzeMZbBPRki9zm4_VxF8',
-=======
   // Initialize Supabase
   await Supabase.initialize(
     url: 'https://hkxvlihyacqpfdviyycy.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhreHZsaWh5YWNxcGZkdml5eWN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4OTQxMzksImV4cCI6MjA3MTQ3MDEzOX0.vQDz72Zu6IVglI43t2VUTYVxzeMZbBPRki9zm4_VxF8',
->>>>>>> origin/main
     debug: false,
   );
 
@@ -91,12 +73,7 @@ class MainApp extends StatelessWidget {
       // Performance optimizations
       builder: (context, child) {
         return MediaQuery(
-<<<<<<< HEAD
-          data: MediaQuery.of(context)
-              .copyWith(textScaler: TextScaler.linear(1.0)),
-=======
           data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
->>>>>>> origin/main
           child: child!,
         );
       },
@@ -107,26 +84,11 @@ class MainApp extends StatelessWidget {
         visualDensity: VisualDensity.compact,
       ),
       routes: {
-<<<<<<< HEAD
-        '/': (context) =>
-            const AuthChecker(), // Use AuthChecker for session persistence
-=======
         '/': (context) => const AuthChecker(), // Use AuthChecker for session persistence
->>>>>>> origin/main
         '/landing': (context) => const Landing(),
         '/getStarted': (context) => Register(),
         '/login': (context) => Login(),
         '/home': (context) => Home(),
-<<<<<<< HEAD
-
-        '/contacts': (context) => ContactsPage(
-              registeredContacts: [],
-              nonRegisteredContacts: [],
-              onContactTap: (contact) {},
-              onInviteContact: (contact) {},
-              isLoading: false,
-            ),
-=======
         
         '/contacts': (context) => ContactsPage(
           registeredContacts: [],
@@ -135,7 +97,6 @@ class MainApp extends StatelessWidget {
           onInviteContact: (contact) {},
           isLoading: false,
         ),
->>>>>>> origin/main
         '/registerPhone': (context) => RegisterPhone(),
         '/loginPhone': (context) => LoginPhone(),
         '/profile': (context) => Profile(),
@@ -146,8 +107,4 @@ class MainApp extends StatelessWidget {
       },
     );
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main

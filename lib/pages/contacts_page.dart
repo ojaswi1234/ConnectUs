@@ -158,16 +158,6 @@ class _ContactsPageState extends State<ContactsPage>
 
     if (widget.isLoading) {
       return Scaffold(
-<<<<<<< HEAD
-        backgroundColor: AppTheme.background,
-        appBar: AppBar(
-          title: const Text(
-            'Select Contact',
-            style: TextStyle(color: Colors.black),
-          ),
-          backgroundColor: AppTheme.accentDark ,
-          iconTheme: const IconThemeData(color: Colors.black),
-=======
         backgroundColor: const Color(0xFF1E1E1E),
         appBar: AppBar(
           title: const Text(
@@ -176,25 +166,16 @@ class _ContactsPageState extends State<ContactsPage>
           ),
           backgroundColor: const Color(0xFFA67B00),
           iconTheme: const IconThemeData(color: Colors.white),
->>>>>>> origin/main
         ),
         body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-<<<<<<< HEAD
-              CircularProgressIndicator(color: AppTheme.accent),
-              SizedBox(height: 16),
-              Text(
-                'Loading contacts...',
-                style: TextStyle(color: AppTheme.accent),
-=======
               CircularProgressIndicator(color: Color(0xFFFFC107)),
               SizedBox(height: 16),
               Text(
                 'Loading contacts...',
                 style: TextStyle(color: Colors.white),
->>>>>>> origin/main
               ),
             ],
           ),
@@ -299,13 +280,8 @@ class _ContactsPageState extends State<ContactsPage>
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-<<<<<<< HEAD
-                                  Colors.red.shade400,
-                                  Colors.red.shade600,
-=======
                                   Colors.orange.shade400,
                                   Colors.orange.shade600,
->>>>>>> origin/main
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(12),
@@ -361,11 +337,7 @@ class _ContactsPageState extends State<ContactsPage>
                     
                     child: Text(
                       "Search via UserName",
-<<<<<<< HEAD
-                      style: TextStyle(color: AppTheme.accent),
-=======
                       style: TextStyle(color: const Color.fromARGB(255, 233, 191, 39)),
->>>>>>> origin/main
                     ),
                   ),
                 ),
