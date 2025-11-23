@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:langchain/langchain.dart';
-// We use the OpenAI package because Groq's API is OpenAI-compatible
 import 'package:langchain_openai/langchain_openai.dart';
 
 class AIPage extends StatefulWidget {
@@ -15,62 +14,56 @@ class AIPage extends StatefulWidget {
 }
 
 class _AIPageState extends State<AIPage> {
-  // AI-related state variables
   final TextEditingController _textController = TextEditingController();
   String _response = '';
   bool _isLoading = false;
 
-  // --- IMPORTANT: Store your API key securely! ---
-  // Get your free key from https://console.groq.com/keys
-  final String? _apiKey = dotenv.env['GROQ_API_KEY'];
+  // Get API key from environment
+  String? _apiKey = dotenv.env['GROQ_API_KEY'];
 
-  // UI Styling constants
   static const Color primaryColor = AppTheme.accentDark;
   static const Color accentColor = AppTheme.accent;
   static const double borderRadius = 16.0;
+
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
-  // --- LangChain & Groq Integration ---
   Future<void> _generateResponse(String prompt) async {
-    // FIXED: This now correctly checks for the placeholder string.
-    if (_apiKey == "YOUR_GROQ_API_KEY") {
+    // Check if API key exists and is valid
+    if (_apiKey == null || _apiKey!.isEmpty || _apiKey == "YOUR_GROQ_API_KEY") {
       setState(() {
-        _response =
-            "Error: Please add your Groq API Key to the _apiKey variable in lib/pages/AI_page.dart";
+        _response = "Error: Please add your Groq API Key to the .env file.\n\n"
+            "Steps:\n"
+            "1. Create a .env file in your project root\n"
+            "2. Add: GROQ_API_KEY=your_actual_key_here\n"
+            "3. Get your key from https://console.groq.com/keys";
+        _isLoading = false;
       });
       return;
     }
 
     setState(() {
       _isLoading = true;
+      _response = '';
     });
 
     try {
-      // Initialize the ChatOpenAI model, but point it to Groq's API
       final chat = ChatOpenAI(
-        apiKey: _apiKey,
-        baseUrl: 'https://api.groq.com/openai/v1', // The key change is here
+        apiKey: _apiKey!,
+        baseUrl: 'https://api.groq.com/openai/v1',
         defaultOptions: const ChatOpenAIOptions(
-          // One of the fast models available on Groq
-          model: 'openai/gpt-oss-20b',
+          model: 'llama-3.3-70b-versatile', // Updated to a valid Groq model
           temperature: 0.7,
         ),
       );
 
-      // Create a prompt template
       final promptTemplate = PromptTemplate.fromTemplate(
-          'You are a chatty chatbot and a part of ConnectUs App, your name is Connectify. Chat Casually as much posible and also help user in his queries. The user has asked: {question}');
+        'You are a chatty chatbot and a part of ConnectUs App, your name is Connectify. '
+        'Chat casually as much as possible and also help user in their queries. '
+        'The user has asked: {question}'
+      );
 
-      // Create a chain
       final chain = promptTemplate.pipe(chat).pipe(const StringOutputParser());
-
-      // Invoke the chain with a stream for real-time updates
       final stream = chain.stream({'question': prompt});
-
-      // Clear previous response and build new one from stream
-      setState(() {
-        _response = '';
-      });
 
       await for (final chunk in stream) {
         setState(() {
@@ -79,12 +72,43 @@ class _AIPageState extends State<AIPage> {
       }
     } catch (e) {
       setState(() {
-        _response = 'Error: ${e.toString()}';
+        _response = 'Too bad !!! \n Server Error';
       });
     } finally {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  void _handleSend() {
+    if (_textController.text.isNotEmpty && !_isLoading) {
+      final prompt = _textController.text;
+      _textController.clear(); // Clear input after sending
+      _generateResponse(prompt);
+    }
+  }
+
+  Widget _buildResponseArea() {
+    if (_isLoading && _response.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(color: accentColor),
+      );
+    } else if (_response.isNotEmpty) {
+      return SingleChildScrollView(
+        child: SelectableText(
+          _response,
+          style: const TextStyle(fontSize: 16.0, color: Colors.black87),
+        ),
+      );
+    } else {
+      return Opacity(
+        opacity: 0.5,
+        child: Image.asset(
+          'assets/images/bee.png',
+          fit: BoxFit.contain,
+        ),
+      );
     }
   }
 
@@ -96,11 +120,8 @@ class _AIPageState extends State<AIPage> {
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
       backgroundColor: AppTheme.background,
-      // Your existing AppBar
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -130,8 +151,6 @@ class _AIPageState extends State<AIPage> {
           },
         ),
       ),
-
-      // Your existing Drawer
       drawer: Drawer(
         backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(
@@ -173,8 +192,7 @@ class _AIPageState extends State<AIPage> {
               },
             ),
             ListTile(
-              leading:
-                  const Icon(Icons.info_outline_rounded, color: primaryColor),
+              leading: const Icon(Icons.info_outline_rounded, color: primaryColor),
               title: const Text(
                 "About AI",
                 style: TextStyle(fontWeight: FontWeight.w600),
@@ -186,13 +204,10 @@ class _AIPageState extends State<AIPage> {
           ],
         ),
       ),
-
-      // --- Body with AI Integration ---
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Column(
           children: [
-            // --- AI Response Area ---
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(16.0),
@@ -205,10 +220,7 @@ class _AIPageState extends State<AIPage> {
                 child: _buildResponseArea(),
               ),
             ),
-
             const SizedBox(height: 10),
-
-            // --- Your styled Input Text Field ---
             TextField(
               controller: _textController,
               cursorColor: accentColor,
@@ -246,49 +258,20 @@ class _AIPageState extends State<AIPage> {
                     icon: const Icon(Icons.send, color: Colors.white, size: 24),
                     onPressed: _isLoading || _textController.text.isEmpty
                         ? null
-                        : () => _handleSend(),
+                        : _handleSend,
                   ),
                 ),
                 prefixIcon: const Icon(Icons.mic, color: primaryColor),
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 18.0, horizontal: 20.0),
+                  vertical: 18.0,
+                  horizontal: 20.0,
+                ),
               ),
-              onSubmitted: (value) => _handleSend(),
+              onSubmitted: (_) => _handleSend(),
             ),
           ],
         ),
       ),
     );
-  }
-
-  // Helper to trigger response generation
-  void _handleSend() {
-    if (_textController.text.isNotEmpty && !_isLoading) {
-      final prompt = _textController.text;
-      _generateResponse(prompt);
-    }
-  }
-
-  // Helper to build the content of the response area
-  Widget _buildResponseArea() {
-    if (_isLoading && _response.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: accentColor));
-    } else if (_response.isNotEmpty) {
-      return SingleChildScrollView(
-        child: Text(
-          _response,
-          style: const TextStyle(fontSize: 16.0, color: Colors.black87),
-        ),
-      );
-    } else {
-      // Show the bee image as a placeholder
-      return Opacity(
-        opacity: 0.5,
-        child: Image.asset(
-          'assets/images/bee.png',
-          fit: BoxFit.contain,
-        ),
-      );
-    }
   }
 }
