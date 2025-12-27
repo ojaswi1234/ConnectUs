@@ -18,8 +18,7 @@ class _AIPageState extends State<AIPage> {
   String _response = '';
   bool _isLoading = false;
 
-  // Get API key from environment
-  String? _apiKey = dotenv.env['GROQ_API_KEY'];
+  // No longer initializing API key here to avoid race condition
 
   static const Color primaryColor = AppTheme.accentDark;
   static const Color accentColor = AppTheme.accent;
@@ -28,8 +27,11 @@ class _AIPageState extends State<AIPage> {
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   Future<void> _generateResponse(String prompt) async {
+    // Get API key from environment inside the method
+    final String? apiKey = dotenv.env['GROQ_API_KEY'];
+
     // Check if API key exists and is valid
-    if (_apiKey == null || _apiKey!.isEmpty || _apiKey == "YOUR_GROQ_API_KEY") {
+    if (apiKey == null || apiKey.isEmpty || apiKey == "YOUR_GROQ_API_KEY") {
       setState(() {
         _response = "Error: Please add your Groq API Key to the .env file.\n\n"
             "Steps:\n"
@@ -48,7 +50,7 @@ class _AIPageState extends State<AIPage> {
 
     try {
       final chat = ChatOpenAI(
-        apiKey: _apiKey!,
+        apiKey: apiKey,
         baseUrl: 'https://api.groq.com/openai/v1',
         defaultOptions: const ChatOpenAIOptions(
           model: 'llama-3.3-70b-versatile', // Updated to a valid Groq model
@@ -267,7 +269,7 @@ class _AIPageState extends State<AIPage> {
                   horizontal: 20.0,
                 ),
               ),
-              onSubmitted: (_) => _handleSend(),
+              onSubmitted: (_) => _handleSend,
             ),
           ],
         ),

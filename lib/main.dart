@@ -17,6 +17,7 @@ import 'package:ConnectUs/pages/auth/loginPhone.dart';
 import 'package:ConnectUs/pages/auth/register.dart';
 import 'package:ConnectUs/pages/auth/registerPhone.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -51,7 +52,13 @@ Future<void> _initializeApp() async {
   await Hive.initFlutter();
   Hive.registerAdapter(ContactAdapter());
   await Hive.openBox<Contact>('contacts');
-
+  try {
+    // Replace 'assets/.env' with the correct path to your .env file
+    await dotenv.load(fileName: "assets/.env");
+  } catch (e) {
+    // Handle the case where the .env file might not be found
+    print("Error loading .env file: $e");
+  }
   // Initialize Supabase
   await Supabase.initialize(
     url: 'https://hkxvlihyacqpfdviyycy.supabase.co',
