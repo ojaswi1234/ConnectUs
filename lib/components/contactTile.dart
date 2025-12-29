@@ -6,7 +6,13 @@ class ContactTile extends StatelessWidget {
   final String contactName;
   final String lastMessage;
   final int unreadCount;
-  const ContactTile({super.key, required this.contactName, required this.lastMessage, this.unreadCount = 0});
+  final String roomId;
+  const ContactTile(
+      {super.key,
+      required this.contactName,
+      required this.lastMessage,
+      this.unreadCount = 0,
+      required this.roomId});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +25,8 @@ class ContactTile extends StatelessWidget {
             onLongPress: () async {
               final details = await showMenu(
                 context: context,
-                position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width - 200, 200, 20, 20),
+                position: RelativeRect.fromLTRB(
+                    MediaQuery.of(context).size.width - 200, 200, 20, 20),
                 items: [
                   PopupMenuItem(
                     value: 'delete',
@@ -27,7 +34,8 @@ class ContactTile extends StatelessWidget {
                   ),
                   PopupMenuItem(
                     value: 'mute',
-                    child: Text('Mute Notifications', style: AppTheme.titleStyle),
+                    child:
+                        Text('Mute Notifications', style: AppTheme.titleStyle),
                   ),
                 ],
                 color: AppTheme.background,
@@ -42,7 +50,10 @@ class ContactTile extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ChatArea(userName: contactName),
+                builder: (context) => ChatArea(
+                  userName: contactName,
+                  roomId: roomId,
+                ),
               ),
             ),
             child: Container(
@@ -56,7 +67,9 @@ class ContactTile extends StatelessWidget {
                       radius: 24,
                       backgroundColor: AppTheme.accentDark,
                       child: Text(
-                        contactName.isNotEmpty ? contactName[0].toUpperCase() : 'A',
+                        contactName.isNotEmpty
+                            ? contactName[0].toUpperCase()
+                            : 'A',
                         style: const TextStyle(
                           color: Color(0xFF1E1E1E),
                           fontWeight: FontWeight.bold,
@@ -69,9 +82,13 @@ class ContactTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(contactName, style: AppTheme.titleStyle, overflow: TextOverflow.ellipsis),
+                        Text(contactName,
+                            style: AppTheme.titleStyle,
+                            overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 6),
-                        Text(lastMessage, style: AppTheme.subtitleStyle, overflow: TextOverflow.ellipsis),
+                        Text(lastMessage,
+                            style: AppTheme.subtitleStyle,
+                            overflow: TextOverflow.ellipsis),
                       ],
                     ),
                   ),
@@ -86,7 +103,10 @@ class ContactTile extends StatelessWidget {
                       child: Center(
                         child: Text(
                           unreadCount > 99 ? '99+' : unreadCount.toString(),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12),
                         ),
                       ),
                     ),

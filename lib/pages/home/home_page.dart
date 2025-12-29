@@ -11,7 +11,7 @@ import 'package:hive/hive.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ConnectUs/components/contactTile.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:ConnectUs/services/socketService.dart';
 import 'package:ConnectUs/models/contact.dart' as HiveContact;
 
 class Home_Page extends StatefulWidget {
@@ -21,36 +21,36 @@ class Home_Page extends StatefulWidget {
   State<Home_Page> createState() => _Home_PageState();
 }
 
-class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixin {
+class _Home_PageState extends State<Home_Page>
+    with AutomaticKeepAliveClientMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _searchController = TextEditingController();
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+  bool get isDesktop =>
+      kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
-  IO.Socket? socket;
+  final SocketService _socketService = SocketService();
   Box<HiveContact.Contact>? contactBox;
-  
+
   List<Contact> _contacts = [];
   // Use LinkedHashSet to avoid duplicate chats while preserving insertion order
   final LinkedHashSet<Chats> _chats = LinkedHashSet<Chats>();
 
-
-
-
   bool _isLoading = false;
   List<Contact> _registeredContacts = [];
   List<Contact> _nonRegisteredContacts = [];
-  
+
   // Performance optimization: Cache registered phone numbers
   Set<String>? _cachedRegisteredNumbers;
   Timer? _debounceTimer;
-  
+
   @override
   bool get wantKeepAlive => true; // Keep state alive when switching tabs
 
   @override
   void initState() {
     super.initState();
+    _socketService.initializeSocket();
     _initializeHive();
     _loadContacts(); // Load from cache first!
   }
@@ -70,21 +70,22 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
       final hiveContacts = contactBox!.values.toList();
       _contacts = hiveContacts.map((hiveContact) {
         final contact = Contact();
-        final contactName = hiveContact.name.isNotEmpty ? hiveContact.name : 'Unknown Contact';
+        final contactName =
+            hiveContact.name.isNotEmpty ? hiveContact.name : 'Unknown Contact';
         contact.name.first = contactName;
         contact.displayName = contactName; // Set displayName for UI
         contact.phones = [Phone(hiveContact.phoneNumber)];
         return contact;
       }).toList();
-      
+
       setState(() {
         _isLoading = false;
       });
-      
+
       await _categorizeContacts();
       return; // Exit early - no need to fetch from device
     }
-    
+
     // Only fetch from device if cache is empty
     await _fetchContactsFromDevice();
   }
@@ -94,12 +95,11 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
     if (_cachedRegisteredNumbers != null) {
       return _cachedRegisteredNumbers!;
     }
-    
+
     try {
       print('Fetching registered phone numbers from Supabase...');
-      final response = await Supabase.instance.client
-          .from('users')
-          .select('phone_number');
+      final response =
+          await Supabase.instance.client.from('users').select('phone_number');
 
       print('Supabase response Success!!');
 
@@ -128,18 +128,20 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
     // Use more efficient processing
     for (final contact in _contacts) {
       bool isRegistered = false;
-      
+
       for (final phone in contact.phones) {
         final normalizedContactPhone = _normalizePhoneNumber(phone.number);
-        
+
         if (registeredNumbers.contains(normalizedContactPhone) ||
             registeredNumbers.contains('91$normalizedContactPhone') ||
-            (normalizedContactPhone.length > 2 && registeredNumbers.contains(normalizedContactPhone.substring(2)))) {
+            (normalizedContactPhone.length > 2 &&
+                registeredNumbers
+                    .contains(normalizedContactPhone.substring(2)))) {
           isRegistered = true;
           break;
         }
       }
-      
+
       if (isRegistered) {
         _registeredContacts.add(contact);
       } else {
@@ -150,65 +152,66 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
 
   String _normalizePhoneNumber(String phoneNumber) {
     String normalized = phoneNumber.replaceAll(RegExp(r'\D'), '');
-    
+
     if (normalized.startsWith('0')) {
       normalized = normalized.substring(1);
     }
-    
+
     if (normalized.startsWith('91') && normalized.length == 12) {
       return normalized.substring(2);
     }
-    
+
     return normalized;
   }
 
   Future<void> _fetchContactsFromDevice() async {
-    if(isMobile){    
-    if (!await FlutterContacts.requestPermission()) {
-      print("Permission Denied");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Permission denied to access contacts.')),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-      _registeredContacts = [];
-    });
-
-    try {
-      final contacts = await FlutterContacts.getContacts(
-        withProperties: true,
-        withPhoto: false, // Avoid photos for performance
-      );
-      
-      // Store in Hive for next time
-      if (contactBox != null) {
-        await contactBox!.clear(); // Clear old data
-        for (final contact in contacts) {
-          final hiveContact = HiveContact.Contact(
-            name: contact.displayName.isNotEmpty ? contact.displayName : 'Unknown Contact',
-            phoneNumber: contact.phones.isNotEmpty ? contact.phones.first.number : '',
-          );
-          await contactBox!.add(hiveContact); // Use add() instead of put()
-        }
+    if (isMobile) {
+      if (!await FlutterContacts.requestPermission()) {
+        print("Permission Denied");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Permission denied to access contacts.')),
+        );
+        return;
       }
-      
-      _contacts = contacts; // Use fresh data directly
-      await _categorizeContacts();
-    } finally {
+
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
+        _registeredContacts = [];
       });
-    }
-    }
-    else if(isDesktop){
+
+      try {
+        final contacts = await FlutterContacts.getContacts(
+          withProperties: true,
+          withPhoto: false, // Avoid photos for performance
+        );
+
+        // Store in Hive for next time
+        if (contactBox != null) {
+          await contactBox!.clear(); // Clear old data
+          for (final contact in contacts) {
+            final hiveContact = HiveContact.Contact(
+              name: contact.displayName.isNotEmpty
+                  ? contact.displayName
+                  : 'Unknown Contact',
+              phoneNumber:
+                  contact.phones.isNotEmpty ? contact.phones.first.number : '',
+            );
+            await contactBox!.add(hiveContact); // Use add() instead of put()
+          }
+        }
+
+        _contacts = contacts; // Use fresh data directly
+        await _categorizeContacts();
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else if (isDesktop) {
       // Desktop contact fetching logic (if any)
       print("Desktop platform detected - contact fetching not implemented.");
-      
-    }
-    else{
+    } else {
       print("Web platform detected - contact fetching not implemented.");
     }
   }
@@ -219,14 +222,32 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
   }
 
   void _createChatWithContact(Contact contact) {
-    setState(() {
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    if (currentUser == null) {
+      // Handle case where user is not logged in
+      return;
+    }
+    final currentUserId = currentUser.id;
+    final otherUserId =
+        contact.phones.isNotEmpty ? contact.phones.first.number : contact.id;
 
-  _chats.add(Chats(contactName: contact.displayName, lastMessage: 'Click here to start chatting'));
+    // Create a consistent and unique room ID
+    final ids = [currentUserId, otherUserId];
+    ids.sort();
+    final roomId = ids.join('-');
+
+    setState(() {
+      _chats.add(Chats(
+        contactName: contact.displayName,
+        lastMessage: 'Click here to start chatting',
+        roomId: roomId,
+      ));
     });
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChatArea(userName: contact.displayName),
+        builder: (context) =>
+            ChatArea(userName: contact.displayName, roomId: roomId),
       ),
     );
   }
@@ -272,22 +293,20 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
     }
   }
 
-
   Future<void> _refreshChatList() async {
-    socket?.emit('get_list', {});
-    socket?.once('list', (data) {
+    _socketService.socket?.emit('get_list', {});
+    _socketService.socket?.once('list', (data) {
       setState(() {
-      _chats.add(
-        Chats(
-          contactName: data['name'],
-          lastMessage: data['lastMessage'],
-        ),
-      );
+        _chats.add(
+          Chats(
+            contactName: data['name'],
+            lastMessage: data['lastMessage'],
+            roomId: data['roomId'],
+          ),
+        );
       });
     });
   }
-
-  
 
   void _onSearchChanged() {
     _debounceTimer?.cancel();
@@ -316,7 +335,8 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
           Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Form(
                   key: _formKey,
                   child: TextFormField(
@@ -349,7 +369,7 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: RefreshIndicator(
                     onRefresh: _refreshChatList,
-                    child: _chats.isNotEmpty 
+                    child: _chats.isNotEmpty
                         ? ListView.builder(
                             itemCount: _chats.length,
                             itemBuilder: (context, index) {
@@ -358,12 +378,15 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
                                 contactName: chat.contactName,
                                 lastMessage: chat.lastMessage,
                                 unreadCount: 0,
+                                roomId: chat.roomId,
                               );
                             },
                           )
                         : ListView(
                             children: [
-                              SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                              SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.3),
                               Center(
                                 child: Text(
                                   'No chats available. Start a new chat!',
@@ -386,34 +409,33 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
             right: 20,
             child: Column(
               children: [
-                MaterialButton(onPressed: (){
-                  Navigator.pushNamed(context, '/ai');
-                }, 
-                padding: EdgeInsets.all(18),
-                
-                shape: const CircleBorder(
-                  side: BorderSide(
-                    color: AppTheme.accentDark,
+                MaterialButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/ai');
+                  },
+                  padding: EdgeInsets.all(18),
+                  shape: const CircleBorder(
+                    side: BorderSide(
+                      color: AppTheme.accentDark,
+                    ),
                   ),
-                ),
-
-               child: const Icon(Icons.assistant, size: 20, color: AppTheme.accent),
+                  child: const Icon(Icons.assistant,
+                      size: 20, color: AppTheme.accent),
                 ),
                 const SizedBox(height: 14),
                 FloatingActionButton(
                   shape: const CircleBorder(
                     side: BorderSide(
-                  color: AppTheme.accentDark,
+                      color: AppTheme.accentDark,
+                    ),
+                  ),
+                  onPressed: _showContactFlowDialog,
+                  backgroundColor: AppTheme.accent,
+                  child: const Icon(Icons.chat_bubble_outline_rounded,
+                      color: Color(0xFF1E1E1E), size: 24),
                 ),
-              ),
-              onPressed: _showContactFlowDialog,
-              backgroundColor: AppTheme.accent,
-              child: const Icon(Icons.chat_bubble_outline_rounded,
-                  color: Color(0xFF1E1E1E), size: 24),
-            ),
               ],
-          )
-        
+            ),
           )
         ],
       ),
@@ -424,14 +446,20 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
 class Chats {
   final String contactName;
   final String lastMessage;
+  final String roomId;
 
-  Chats({required this.contactName, required this.lastMessage});
+  Chats(
+      {required this.contactName,
+      required this.lastMessage,
+      required this.roomId});
 
   // Deduplicate chats by contactName (consider using a unique id or phone in future)
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Chats && runtimeType == other.runtimeType && contactName == other.contactName;
+      other is Chats &&
+          runtimeType == other.runtimeType &&
+          contactName == other.contactName;
 
   @override
   int get hashCode => contactName.hashCode;

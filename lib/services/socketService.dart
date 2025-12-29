@@ -1,4 +1,5 @@
 // socket_service.dart
+import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:logger/logger.dart';
 
@@ -7,12 +8,16 @@ class SocketService {
   factory SocketService() => _instance;
   SocketService._internal();
 
-  io.Socket? socket;
+  io.Socket? _socket;
   final Logger _logger = Logger();
+  final StreamController<Map<String, dynamic>> _messageController =
+      StreamController.broadcast();
+
+  Stream<Map<String, dynamic>> get messages => _messageController.stream;
 
   void initializeSocket() {
-    if (socket != null) return; // Prevent multiple initializations
-    socket = io.io(
+    if (_socket != null) return; // Prevent multiple initializations
+    _socket = io.io(
       'https://wassup-backend-5isl.onrender.com',
       io.OptionBuilder()
           .setTransports(['websocket'])
@@ -23,40 +28,43 @@ class SocketService {
           .build(),
     );
 
-    socket?.onConnect((_) {
+    _socket?.onConnect((_) {
       _logger.i('Socket connected');
     });
 
-    socket?.onDisconnect((_) {
+    _socket?.onDisconnect((_) {
       _logger.e('Socket disconnected');
     });
 
-    socket?.onError((error) {
+    _socket?.onError((error) {
       _logger.e('Socket error: $error');
+    });
+
+    _socket?.on('message', (data) {
+      _messageController.add(data);
     });
   }
 
   void joinRoom(String roomId) {
-    socket?.emit('join_room', roomId);
+    _socket?.emit('join_room', roomId);
   }
 
   void sendMessage(String roomId, Map<String, dynamic> message) {
-    socket?.emit('message', {
+    _socket?.emit('message', {
       'room': roomId,
       'message': message,
     });
   }
 
   void getMessages(String roomId) {
-    socket?.emit('get_messages', {'roomId': roomId});
-  }
-
-  void getUserDetails() {
-    socket?.emit('get_user_details', {});
+    _socket?.emit('get_messages', {'room': roomId});
   }
 
   void dispose() {
-    socket?.dispose();
-    socket = null;
+    _socket?.dispose();
+    _socket = null;
+    _messageController.close();
   }
+
+  io.Socket? get socket => _socket;
 }
