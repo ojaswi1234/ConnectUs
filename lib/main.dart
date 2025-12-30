@@ -42,7 +42,7 @@ Future<void> _initializeApp() async {
   // Performance optimization: Enable GPU rendering
   debugProfileBuildsEnabled = false;
   debugProfilePaintsEnabled = false;
-  
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -53,8 +53,7 @@ Future<void> _initializeApp() async {
   Hive.registerAdapter(ContactAdapter());
   await Hive.openBox<Contact>('contacts');
   try {
-    // Replace 'assets/.env' with the correct path to your .env file
-    await dotenv.load(fileName: "assets/.env");
+    await dotenv.load(fileName: ".env");
   } catch (e) {
     // Handle the case where the .env file might not be found
     print("Error loading .env file: $e");
@@ -62,7 +61,8 @@ Future<void> _initializeApp() async {
   // Initialize Supabase
   await Supabase.initialize(
     url: 'https://hkxvlihyacqpfdviyycy.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhreHZsaWh5YWNxcGZkdml5eWN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4OTQxMzksImV4cCI6MjA3MTQ3MDEzOX0.vQDz72Zu6IVglI43t2VUTYVxzeMZbBPRki9zm4_VxF8',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhreHZsaWh5YWNxcGZkdml5eWN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4OTQxMzksImV4cCI6MjA3MTQ3MDEzOX0.vQDz72Zu6IVglI43t2VUTYVxzeMZbBPRki9zm4_VxF8',
     debug: false,
   );
 
@@ -80,7 +80,8 @@ class MainApp extends StatelessWidget {
       // Performance optimizations
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(1.0)),
           child: child!,
         );
       },
@@ -91,19 +92,20 @@ class MainApp extends StatelessWidget {
         visualDensity: VisualDensity.compact,
       ),
       routes: {
-        '/': (context) => const AuthChecker(), // Use AuthChecker for session persistence
+        '/': (context) =>
+            const AuthChecker(), // Use AuthChecker for session persistence
         '/landing': (context) => const Landing(),
         '/getStarted': (context) => Register(),
         '/login': (context) => Login(),
         '/home': (context) => Home(),
-        
+
         '/contacts': (context) => ContactsPage(
-          registeredContacts: [],
-          nonRegisteredContacts: [],
-          onContactTap: (contact) {},
-          onInviteContact: (contact) {},
-          isLoading: false,
-        ),
+              registeredContacts: [],
+              nonRegisteredContacts: [],
+              onContactTap: (contact) {},
+              onInviteContact: (contact) {},
+              isLoading: false,
+            ),
         '/registerPhone': (context) => RegisterPhone(),
         '/loginPhone': (context) => LoginPhone(),
         '/profile': (context) => Profile(),
