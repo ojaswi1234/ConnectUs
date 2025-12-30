@@ -1,3 +1,4 @@
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class Account extends StatefulWidget {
@@ -11,16 +12,14 @@ class _AccountState extends State<Account> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: Color.fromARGB(255, 45, 45, 45),
+      backgroundColor: Color.fromARGB(255, 45, 45, 45),
       appBar: AppBar(
         leading: Icon(Icons.arrow_back),
         title: Text("Account"),
         centerTitle: true,
-        backgroundColor: Colors.amberAccent,
+        backgroundColor: AppTheme.accentDark,
       ),
-      body: Container(
-        
-      ),
+      body: Container(),
     );
   }
 }
