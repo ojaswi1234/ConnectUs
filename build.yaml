@@ -1,0 +1,14 @@
+targets:
+  $default:
+    builders:
+      # Correct name: ferry_generator (not ferry_builder)
+      ferry_generator|graphql_builder:
+        enabled: true
+        options:
+          # Case-sensitive: Match your pubspec.yaml name "ConnectUs"
+          schema: ConnectUs|lib/graphql/schema.graphql
+          
+      ferry_generator|serializer_builder:
+        enabled: true
+        options:
+          schema: ConnectUs|lib/graphql/schema.graphql
