@@ -21,7 +21,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ConnectUs/services/socketService.dart';
+//import 'package:ConnectUs/services/socketService.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +67,7 @@ Future<void> _initializeApp() async {
   );
 
   // Initialize socket service (don't await - let it connect in background)
-  SocketService().initializeSocket();
+  //SocketService().initializeSocket();
 }
 
 class MainApp extends StatelessWidget {

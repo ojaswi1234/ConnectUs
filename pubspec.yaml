@@ -42,7 +42,6 @@ dependencies:
   open_file: ^3.5.10
   flutter_screenutil: ^5.9.3
   flutter_contacts: ^1.1.9+2
-  socket_io_client: ^2.0.0
   logger: ^2.6.1
   image_picker: ^1.0.7
   flutter_dotenv: ^6.0.0
@@ -55,6 +54,11 @@ dependencies:
   langchain: ^0.8.0+1
   langchain_ollama: ^0.4.0+1
   langchain_openai: ^0.8.0+1
+  graphql: ^5.2.3
+  graphql_flutter: ^5.2.1
+  ferry: ^0.16.0+1
+  gql_http_link: ^1.2.0
+  gql_code_builder_serializers: ^0.1.0+1
  
   # Firebase packages for chat storage
 
