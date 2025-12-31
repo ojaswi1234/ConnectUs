@@ -1,0 +1,16 @@
+// lib/services/ferry_client.dart (new file)
+import 'package:ferry/ferry.dart';
+import 'package:gql_http_link/gql_http_link.dart';
+
+Client initFerryClient() {
+  // Your backend is running on localhost:4000
+  // Use 10.0.2.2 for Android emulator
+  final link = HttpLink('http://10.0.2.2:4000/graphql');
+
+  final client = Client(
+    link: link,
+    cache: Cache(),
+  );
+
+  return client;
+}

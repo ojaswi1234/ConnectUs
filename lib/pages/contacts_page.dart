@@ -106,9 +106,8 @@ class _ContactsPageState extends State<ContactsPage>
           ),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: isRegistered
-                  ? Colors.green
-                  : AppTheme.accentDark,
+              backgroundColor:
+                  isRegistered ? Colors.green : AppTheme.accentDark,
               child: Text(
                 contact.displayName.isNotEmpty
                     ? contact.displayName[0].toUpperCase()
@@ -162,16 +161,16 @@ class _ContactsPageState extends State<ContactsPage>
         appBar: AppBar(
           title: const Text(
             'Select Contact',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
           ),
-          backgroundColor: const Color(0xFFA67B00),
-          iconTheme: const IconThemeData(color: Colors.white),
+          backgroundColor: AppTheme.accent,
+          iconTheme: const IconThemeData(color: Colors.black),
         ),
         body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(color: Color(0xFFFFC107)),
+              CircularProgressIndicator(color: AppTheme.accentDark),
               SizedBox(height: 16),
               Text(
                 'Loading contacts...',
@@ -202,10 +201,8 @@ class _ContactsPageState extends State<ContactsPage>
               controller: _searchController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: isMobile
-                    ? 'Search contacts...'
-                    : 'Search via UserName',
-
+                hintText:
+                    isMobile ? 'Search contacts...' : 'Search via UserName',
                 hintStyle: TextStyle(color: Colors.grey.shade500),
                 prefixIcon: Icon(Icons.search, color: Colors.grey.shade500),
                 filled: true,
@@ -253,7 +250,6 @@ class _ContactsPageState extends State<ContactsPage>
                             ),
                           ),
                         ),
-
                         SliverPadding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           sliver: SliverList(
@@ -296,7 +292,6 @@ class _ContactsPageState extends State<ContactsPage>
                             ),
                           ),
                         ),
-
                         SliverPadding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           sliver: SliverList(
@@ -332,12 +327,11 @@ class _ContactsPageState extends State<ContactsPage>
                   ),
                 )
               : Container(
-                  
                   child: Center(
-                    
                     child: Text(
                       "Search via UserName",
-                      style: TextStyle(color: const Color.fromARGB(255, 233, 191, 39)),
+                      style: TextStyle(
+                          color: const Color.fromARGB(255, 233, 191, 39)),
                     ),
                   ),
                 ),

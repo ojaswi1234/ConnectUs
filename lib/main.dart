@@ -3,10 +3,11 @@ import 'package:ConnectUs/pages/AI_page.dart';
 import 'package:ConnectUs/pages/config/account.dart';
 import 'package:ConnectUs/pages/home/about.dart';
 import 'package:ConnectUs/models/contact.dart';
+import 'package:ConnectUs/services/ferry_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
-
+import 'package:provider/provider.dart';
 import 'package:ConnectUs/services/AuthChecker.dart';
 import 'package:ConnectUs/pages/auth/profile.dart';
 import 'package:ConnectUs/pages/config/settings.dart';
@@ -19,9 +20,9 @@ import 'package:ConnectUs/pages/auth/registerPhone.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
-
+import 'package:ferry/ferry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ConnectUs/services/socketService.dart';
+//import 'package:ConnectUs/services/socketService.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,8 +35,13 @@ Future<void> main() async {
     // Continue launching the app even if some services fail
     // The app will handle missing services gracefully
   }
-
-  runApp(const MainApp());
+  final client = initFerryClient();
+  runApp(
+    Provider<Client>(
+      create: (_) => client,
+      child: const MainApp(),
+    ),
+  );
 }
 
 Future<void> _initializeApp() async {
@@ -67,7 +73,7 @@ Future<void> _initializeApp() async {
   );
 
   // Initialize socket service (don't await - let it connect in background)
-  SocketService().initializeSocket();
+  //SocketService().initializeSocket();
 }
 
 class MainApp extends StatelessWidget {

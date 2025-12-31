@@ -11,7 +11,7 @@ import 'package:hive/hive.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ConnectUs/components/contactTile.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+//import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:ConnectUs/models/contact.dart' as HiveContact;
 
 class Home_Page extends StatefulWidget {
@@ -27,7 +27,7 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
-  IO.Socket? socket;
+ // IO.Socket? socket;
   Box<HiveContact.Contact>? contactBox;
   
   List<Contact> _contacts = [];
@@ -274,8 +274,8 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
 
 
   Future<void> _refreshChatList() async {
-    socket?.emit('get_list', {});
-    socket?.once('list', (data) {
+ //   socket?.emit('get_list', {});
+    /*socket?.once('list', (data) {
       setState(() {
       _chats.add(
         Chats(
@@ -284,7 +284,7 @@ bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platfo
         ),
       );
       });
-    });
+    });*/
   }
 
   
