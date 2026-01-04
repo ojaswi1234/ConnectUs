@@ -50,13 +50,15 @@ class _AuthCheckerState extends State<AuthChecker> {
       // Check if user has a phone number in the public 'users' table
       final data = await _supabase
           .from('users')
-          .select('phone_number')
+          .select('phone_number, usrname')
           .eq('id', user.id)
           .maybeSingle();
 
       if (mounted) {
         // If user record doesn't exist OR phone_number is null, go to RegisterPhone
-        if (data == null || data['phone_number'] == null) {
+        if (data == null ||
+            data['phone_number'] == null ||
+            data['usrname'] == null) {
           Navigator.of(context).pushReplacementNamed('/registerPhone');
         } else {
           // Profile complete -> Home
