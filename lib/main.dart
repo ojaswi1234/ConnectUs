@@ -14,7 +14,6 @@ import 'package:ConnectUs/pages/config/settings.dart';
 import 'package:ConnectUs/pages/home/home.dart';
 import 'package:ConnectUs/pages/landing.dart';
 import 'package:ConnectUs/pages/auth/login.dart';
-import 'package:ConnectUs/pages/auth/loginPhone.dart';
 import 'package:ConnectUs/pages/auth/register.dart';
 import 'package:ConnectUs/pages/auth/registerPhone.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
@@ -113,7 +112,6 @@ class MainApp extends StatelessWidget {
               isLoading: false,
             ),
         '/registerPhone': (context) => RegisterPhone(),
-        '/loginPhone': (context) => LoginPhone(),
         '/profile': (context) => Profile(),
         '/settings': (context) => Settings(),
         '/ai': (context) => AIPage(),

@@ -12,12 +12,13 @@ class RegisterPhone extends StatefulWidget {
 class _RegisterPhoneState extends State<RegisterPhone> {
   final TextEditingController _phoneController = TextEditingController();
   bool _isLoading = false;
+  final _supabase = Supabase.instance.client;
 
-  /// Triggers Supabase Phone OTP
-  Future<void> _sendOtp() async {
+  /// Directly saves the phone number to the database without OTP
+  Future<void> _savePhoneNumber() async {
     final phoneInput = _phoneController.text.trim();
 
-    if (phoneInput.isEmpty || phoneInput.length < 10) {
+    if (phoneInput.length != 10) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text("Please enter a valid 10-digit phone number")),
@@ -28,24 +29,32 @@ class _RegisterPhoneState extends State<RegisterPhone> {
     setState(() => _isLoading = true);
 
     try {
-      // Assuming +91 as per your UI requirement
+      final user = _supabase.auth.currentUser;
+      if (user == null) throw Exception("User not authenticated");
+
       final formattedPhone = '+91$phoneInput';
 
-      await Supabase.instance.client.auth.signInWithOtp(
-        phone: formattedPhone,
-      );
+      // Use upsert to create or update the user record
+      await _supabase.from('users').upsert({
+        'id': user.id,
+        'phone_number': formattedPhone,
+        'email': user.email,
+        'updated_at': DateTime.now().toIso8601String(),
+      });
 
       if (mounted) {
-        // Navigate to OTP screen and pass the phone number as an argument
-        Navigator.pushNamed(context, '/otpVerify', arguments: formattedPhone);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Profile updated successfully!")),
+        );
+        // Go to home
+        Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Error: ${e.toString()}"),
-            backgroundColor: AppTheme.danger,
-          ),
+              content: Text("Error: ${e.toString()}"),
+              backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -60,7 +69,6 @@ class _RegisterPhoneState extends State<RegisterPhone> {
       appBar: AppBar(
         title: const Text('Complete Profile'),
         backgroundColor: Colors.transparent,
-        elevation: 0,
         foregroundColor: AppTheme.accentDark,
       ),
       body: Padding(
@@ -69,7 +77,7 @@ class _RegisterPhoneState extends State<RegisterPhone> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.phonelink_setup, size: 80, color: AppTheme.accent),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             const Text(
               'One last step!',
               style: TextStyle(
@@ -79,7 +87,7 @@ class _RegisterPhoneState extends State<RegisterPhone> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'Verify your phone number to connect with your contacts.',
+              'Please provide your phone number to continue.',
               textAlign: TextAlign.center,
               style: TextStyle(color: AppTheme.muted, fontSize: 16),
             ),
@@ -113,10 +121,10 @@ class _RegisterPhoneState extends State<RegisterPhone> {
                   padding: WidgetStateProperty.all(
                       const EdgeInsets.symmetric(vertical: 16)),
                 ),
-                onPressed: _isLoading ? null : _sendOtp,
+                onPressed: _isLoading ? null : _savePhoneNumber,
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.black)
-                    : const Text('Send Verification Code',
+                    : const Text('Save and Finish',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
               ),
