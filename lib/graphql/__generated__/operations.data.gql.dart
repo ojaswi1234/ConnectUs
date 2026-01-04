@@ -54,6 +54,7 @@ abstract class GGetMessagesData_messages
   String get id;
   String get user;
   String get content;
+  String get createdAt;
   static Serializer<GGetMessagesData_messages> get serializer =>
       _$gGetMessagesDataMessagesSerializer;
 
@@ -81,7 +82,7 @@ abstract class GPostMessageData
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
-  String get postMessage;
+  GPostMessageData_postMessage get postMessage;
   static Serializer<GPostMessageData> get serializer =>
       _$gPostMessageDataSerializer;
 
@@ -93,6 +94,103 @@ abstract class GPostMessageData
   static GPostMessageData? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
         GPostMessageData.serializer,
+        json,
+      );
+}
+
+abstract class GPostMessageData_postMessage
+    implements
+        Built<GPostMessageData_postMessage,
+            GPostMessageData_postMessageBuilder> {
+  GPostMessageData_postMessage._();
+
+  factory GPostMessageData_postMessage(
+          [void Function(GPostMessageData_postMessageBuilder b) updates]) =
+      _$GPostMessageData_postMessage;
+
+  static void _initializeBuilder(GPostMessageData_postMessageBuilder b) =>
+      b..G__typename = 'Message';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  String get id;
+  String get user;
+  String get content;
+  String get createdAt;
+  static Serializer<GPostMessageData_postMessage> get serializer =>
+      _$gPostMessageDataPostMessageSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GPostMessageData_postMessage.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GPostMessageData_postMessage? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GPostMessageData_postMessage.serializer,
+        json,
+      );
+}
+
+abstract class GOnNewMessageData
+    implements Built<GOnNewMessageData, GOnNewMessageDataBuilder> {
+  GOnNewMessageData._();
+
+  factory GOnNewMessageData(
+          [void Function(GOnNewMessageDataBuilder b) updates]) =
+      _$GOnNewMessageData;
+
+  static void _initializeBuilder(GOnNewMessageDataBuilder b) =>
+      b..G__typename = 'Subscription';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  GOnNewMessageData_messageAdded get messageAdded;
+  static Serializer<GOnNewMessageData> get serializer =>
+      _$gOnNewMessageDataSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GOnNewMessageData.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GOnNewMessageData? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GOnNewMessageData.serializer,
+        json,
+      );
+}
+
+abstract class GOnNewMessageData_messageAdded
+    implements
+        Built<GOnNewMessageData_messageAdded,
+            GOnNewMessageData_messageAddedBuilder> {
+  GOnNewMessageData_messageAdded._();
+
+  factory GOnNewMessageData_messageAdded(
+          [void Function(GOnNewMessageData_messageAddedBuilder b) updates]) =
+      _$GOnNewMessageData_messageAdded;
+
+  static void _initializeBuilder(GOnNewMessageData_messageAddedBuilder b) =>
+      b..G__typename = 'Message';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  String get id;
+  String get content;
+  String get user;
+  String get createdAt;
+  static Serializer<GOnNewMessageData_messageAdded> get serializer =>
+      _$gOnNewMessageDataMessageAddedSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GOnNewMessageData_messageAdded.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GOnNewMessageData_messageAdded? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GOnNewMessageData_messageAdded.serializer,
         json,
       );
 }

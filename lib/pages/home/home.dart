@@ -208,10 +208,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             icon: Icon(Icons.notifications, color: AppTheme.accentDark),
             label: 'Status',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group, color: AppTheme.accentDark),
-            label: 'Communities',
-          ),
         ],
         currentIndex: _selectedSection,
         unselectedItemColor: AppTheme.accent,

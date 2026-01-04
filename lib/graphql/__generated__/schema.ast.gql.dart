@@ -36,6 +36,15 @@ const Message = _i1.ObjectTypeDefinitionNode(
         isNonNull: true,
       ),
     ),
+    _i1.FieldDefinitionNode(
+      name: _i1.NameNode(value: 'createdAt'),
+      directives: [],
+      args: [],
+      type: _i1.NamedTypeNode(
+        name: _i1.NameNode(value: 'String'),
+        isNonNull: true,
+      ),
+    ),
   ],
 );
 const Query = _i1.ObjectTypeDefinitionNode(
@@ -86,7 +95,23 @@ const Mutation = _i1.ObjectTypeDefinitionNode(
         ),
       ],
       type: _i1.NamedTypeNode(
-        name: _i1.NameNode(value: 'ID'),
+        name: _i1.NameNode(value: 'Message'),
+        isNonNull: true,
+      ),
+    )
+  ],
+);
+const Subscription = _i1.ObjectTypeDefinitionNode(
+  name: _i1.NameNode(value: 'Subscription'),
+  directives: [],
+  interfaces: [],
+  fields: [
+    _i1.FieldDefinitionNode(
+      name: _i1.NameNode(value: 'messageAdded'),
+      directives: [],
+      args: [],
+      type: _i1.NamedTypeNode(
+        name: _i1.NameNode(value: 'Message'),
         isNonNull: true,
       ),
     )
@@ -96,4 +121,5 @@ const document = _i1.DocumentNode(definitions: [
   Message,
   Query,
   Mutation,
+  Subscription,
 ]);

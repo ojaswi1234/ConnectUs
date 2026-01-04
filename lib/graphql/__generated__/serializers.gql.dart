@@ -5,11 +5,17 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart' show StandardJsonPlugin;
 import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart'
-    show GGetMessagesData, GGetMessagesData_messages, GPostMessageData;
+    show
+        GGetMessagesData,
+        GGetMessagesData_messages,
+        GOnNewMessageData,
+        GOnNewMessageData_messageAdded,
+        GPostMessageData,
+        GPostMessageData_postMessage;
 import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart'
-    show GGetMessagesReq, GPostMessageReq;
+    show GGetMessagesReq, GOnNewMessageReq, GPostMessageReq;
 import 'package:ConnectUs/graphql/__generated__/operations.var.gql.dart'
-    show GGetMessagesVars, GPostMessageVars;
+    show GGetMessagesVars, GOnNewMessageVars, GPostMessageVars;
 import 'package:ferry_exec/ferry_exec.dart';
 import 'package:gql_code_builder_serializers/gql_code_builder_serializers.dart'
     show OperationSerializer;
@@ -24,7 +30,12 @@ final SerializersBuilder _serializersBuilder = _$serializers.toBuilder()
   GGetMessagesData_messages,
   GGetMessagesReq,
   GGetMessagesVars,
+  GOnNewMessageData,
+  GOnNewMessageData_messageAdded,
+  GOnNewMessageReq,
+  GOnNewMessageVars,
   GPostMessageData,
+  GPostMessageData_postMessage,
   GPostMessageReq,
   GPostMessageVars,
 ])

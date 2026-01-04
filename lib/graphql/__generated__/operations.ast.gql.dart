@@ -37,6 +37,13 @@ const GetMessages = _i1.OperationDefinitionNode(
           directives: [],
           selectionSet: null,
         ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'createdAt'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
       ]),
     )
   ]),
@@ -80,11 +87,85 @@ const PostMessage = _i1.OperationDefinitionNode(
         ),
       ],
       directives: [],
-      selectionSet: null,
+      selectionSet: _i1.SelectionSetNode(selections: [
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'id'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'user'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'content'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'createdAt'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
+    )
+  ]),
+);
+const OnNewMessage = _i1.OperationDefinitionNode(
+  type: _i1.OperationType.subscription,
+  name: _i1.NameNode(value: 'OnNewMessage'),
+  variableDefinitions: [],
+  directives: [],
+  selectionSet: _i1.SelectionSetNode(selections: [
+    _i1.FieldNode(
+      name: _i1.NameNode(value: 'messageAdded'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: _i1.SelectionSetNode(selections: [
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'id'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'content'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'user'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'createdAt'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
     )
   ]),
 );
 const document = _i1.DocumentNode(definitions: [
   GetMessages,
   PostMessage,
+  OnNewMessage,
 ]);

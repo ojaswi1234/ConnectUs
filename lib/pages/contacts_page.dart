@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'dart:async';
+import 'package:supabase_flutter/supabase_flutter.dart'; //
 
 class ContactsPage extends StatefulWidget {
   final List<Contact> registeredContacts;
@@ -31,6 +31,10 @@ class _ContactsPageState extends State<ContactsPage>
   final TextEditingController _searchController = TextEditingController();
   List<Contact> _filteredRegistered = [];
   List<Contact> _filteredNonRegistered = [];
+
+  // Web-specific state
+  List<Contact> _webSearchResults = [];
+  bool _isWebSearching = false;
   Timer? _debounceTimer;
 
   @override
@@ -51,101 +55,119 @@ class _ContactsPageState extends State<ContactsPage>
   }
 
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
   void _filterContacts(String query) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       if (mounted) {
-        setState(() {
-          if (query.isEmpty) {
-            _filteredRegistered = widget.registeredContacts;
-            _filteredNonRegistered = widget.nonRegisteredContacts;
-          } else {
-            final lowerQuery = query.toLowerCase();
-            _filteredRegistered = widget.registeredContacts
-                .where(
-                  (contact) =>
-                      contact.displayName.toLowerCase().contains(lowerQuery),
-                )
-                .toList();
-            _filteredNonRegistered = widget.nonRegisteredContacts
-                .where(
-                  (contact) =>
-                      contact.displayName.toLowerCase().contains(lowerQuery),
-                )
-                .toList();
-          }
-        });
+        if (isMobile) {
+          // Mobile Logic: Filter local device contacts
+          setState(() {
+            if (query.isEmpty) {
+              _filteredRegistered = widget.registeredContacts;
+              _filteredNonRegistered = widget.nonRegisteredContacts;
+            } else {
+              final lowerQuery = query.toLowerCase();
+              _filteredRegistered = widget.registeredContacts
+                  .where(
+                      (c) => c.displayName.toLowerCase().contains(lowerQuery))
+                  .toList();
+              _filteredNonRegistered = widget.nonRegisteredContacts
+                  .where(
+                      (c) => c.displayName.toLowerCase().contains(lowerQuery))
+                  .toList();
+            }
+          });
+        } else {
+          // Web Logic: Search Supabase via 'usrname'
+          _searchUsersOnWeb(query);
+        }
       }
     });
   }
 
+  Future<void> _searchUsersOnWeb(String query) async {
+    if (query.trim().isEmpty) {
+      setState(() {
+        _webSearchResults = [];
+        _isWebSearching = false;
+      });
+      return;
+    }
+
+    setState(() => _isWebSearching = true);
+
+    try {
+      // Querying the 'usrname' column specifically
+      final List<dynamic> response = await Supabase.instance.client
+          .from('users')
+          .select('usrname, phone_number')
+          .ilike('usrname', '%$query%')
+          .limit(20);
+
+      final results = response.map((userData) {
+        final contact = Contact();
+        // Explicitly map 'usrname' to displayName
+        contact.displayName = userData['usrname'] ?? 'Unknown User';
+        if (userData['phone_number'] != null) {
+          contact.phones = [Phone(userData['phone_number'].toString())];
+        }
+        return contact;
+      }).toList();
+
+      if (mounted) {
+        setState(() {
+          _webSearchResults = results;
+          _isWebSearching = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Web search failed: $e');
+      if (mounted) setState(() => _isWebSearching = false);
+    }
+  }
+
   Widget _buildContactTile(Contact contact, bool isRegistered) {
-    // small entrance animation using AnimatedOpacity + AnimatedSlide
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.0, end: 1.0),
-        duration: const Duration(milliseconds: 420),
-        curve: Curves.easeOutCubic,
-        builder: (context, value, child) {
-          return Opacity(
-            opacity: value,
-            child: Transform.translate(
-              offset: Offset(0, (1 - value) * 8),
-              child: child,
-            ),
-          );
-        },
-        child: Card(
-          color: isRegistered
-              ? AppTheme.accentDark.withOpacity(0.08)
-              : AppTheme.accent.withOpacity(0.04),
-          margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor:
-                  isRegistered ? Colors.green : AppTheme.accentDark,
-              child: Text(
-                contact.displayName.isNotEmpty
-                    ? contact.displayName[0].toUpperCase()
-                    : '?',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            title: Text(
-              contact.displayName,
+      child: Card(
+        color: isRegistered
+            ? AppTheme.accentDark.withOpacity(0.08)
+            : AppTheme.accent.withOpacity(0.04),
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: isRegistered ? Colors.green : AppTheme.accentDark,
+            child: Text(
+              contact.displayName.isNotEmpty
+                  ? contact.displayName[0].toUpperCase()
+                  : '?',
               style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
-            subtitle: contact.phones.isNotEmpty
-                ? Text(
-                    contact.phones.first.number,
-                    style: const TextStyle(color: Colors.white70),
-                  )
-                : null,
-            trailing: Icon(
-              isRegistered ? Icons.chat_bubble : Icons.person_add,
-              color: isRegistered ? Colors.green : AppTheme.accentDark,
-            ),
-            onTap: () {
-              if (isRegistered) {
-                Navigator.pop(context);
-                widget.onContactTap(
-                  contact,
-                ); // This will now pass the name via the callback
-              } else {
-                widget.onInviteContact(contact);
-              }
-            },
           ),
+          title: Text(
+            contact.displayName,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w600),
+          ),
+          subtitle: contact.phones.isNotEmpty
+              ? Text(contact.phones.first.number,
+                  style: const TextStyle(color: Colors.white70))
+              : null,
+          trailing: Icon(
+            isRegistered ? Icons.chat_bubble : Icons.person_add,
+            color: isRegistered ? Colors.green : AppTheme.accentDark,
+          ),
+          onTap: () {
+            if (isRegistered || !isMobile) {
+              Navigator.pop(context);
+              widget.onContactTap(contact); // Triggers chat initiation
+            } else {
+              widget.onInviteContact(contact);
+            }
+          },
         ),
       ),
     );
@@ -153,190 +175,96 @@ class _ContactsPageState extends State<ContactsPage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required for AutomaticKeepAliveClientMixin
-
-    if (widget.isLoading) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF1E1E1E),
-        appBar: AppBar(
-          title: const Text(
-            'Select Contact',
-            style: TextStyle(color: Colors.black),
-          ),
-          backgroundColor: AppTheme.accent,
-          iconTheme: const IconThemeData(color: Colors.black),
-        ),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(color: AppTheme.accentDark),
-              SizedBox(height: 16),
-              Text(
-                'Loading contacts...',
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    super.build(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF1E1E1E),
       appBar: AppBar(
-        title: const Text(
-          'Select Contact',
-          style: TextStyle(color: Colors.black),
-        ),
+        title:
+            const Text('Select Contact', style: TextStyle(color: Colors.black)),
         backgroundColor: AppTheme.accentDark,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _searchController,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: isMobile ? Colors.white : Colors.black),
               decoration: InputDecoration(
                 hintText:
                     isMobile ? 'Search contacts...' : 'Search via UserName',
-                hintStyle: TextStyle(color: Colors.grey.shade500),
-                prefixIcon: Icon(Icons.search, color: Colors.grey.shade500),
+                prefixIcon: Icon(Icons.search,
+                    color: isMobile ? Colors.grey : Colors.black),
                 filled: true,
-                fillColor: Colors.grey.shade800,
+                fillColor:
+                    isMobile ? Colors.grey.shade800 : AppTheme.accentDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none),
               ),
               onChanged: _filterContacts,
             ),
           ),
-
-          // Contact List
-          (isMobile)
-              ? Expanded(
-                  child: CustomScrollView(
-                    cacheExtent: 1000.0, // Performance optimization
-                    slivers: [
-                      // Registered Contacts Section
-                      if (_filteredRegistered.isNotEmpty) ...[
-                        SliverToBoxAdapter(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.green.shade400,
-                                  Colors.green.shade600,
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'On ConnectUs (${_filteredRegistered.length})',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SliverPadding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) => _buildContactTile(
-                                _filteredRegistered[index],
-                                true,
-                              ),
-                              childCount: _filteredRegistered.length,
-                            ),
-                          ),
-                        ),
-                      ],
-
-                      // Non-Registered Contacts Section
-                      if (_filteredNonRegistered.isNotEmpty) ...[
-                        SliverToBoxAdapter(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.orange.shade400,
-                                  Colors.orange.shade600,
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'Invite to ConnectUs (${_filteredNonRegistered.length})',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SliverPadding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) => _buildContactTile(
-                                _filteredNonRegistered[index],
-                                false,
-                              ),
-                              childCount: _filteredNonRegistered.length,
-                            ),
-                          ),
-                        ),
-                      ],
-
-                      // Empty state
-                      if (_filteredRegistered.isEmpty &&
-                          _filteredNonRegistered.isEmpty)
-                        const SliverToBoxAdapter(
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(32),
-                              child: Text(
-                                'No contacts found',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                )
-              : Container(
-                  child: Center(
-                    child: Text(
-                      "Search via UserName",
-                      style: TextStyle(
-                          color: AppTheme.accent
-                      )
-                    ),
-                  ),
-                ),
+          Expanded(
+            child: isMobile ? _buildMobileList() : _buildWebList(),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMobileList() {
+    return CustomScrollView(
+      slivers: [
+        if (_filteredRegistered.isNotEmpty) ...[
+          _buildHeader('On ConnectUs'),
+          _buildSliverList(_filteredRegistered, true),
+        ],
+        if (_filteredNonRegistered.isNotEmpty) ...[
+          _buildHeader('Invite to ConnectUs'),
+          _buildSliverList(_filteredNonRegistered, false),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildWebList() {
+    if (_isWebSearching) {
+      return const Center(
+          child: CircularProgressIndicator(color: AppTheme.accent));
+    }
+    if (_webSearchResults.isEmpty) {
+      return const Center(
+          child: Text("No users found", style: TextStyle(color: Colors.white)));
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: _webSearchResults.length,
+      itemBuilder: (context, index) =>
+          _buildContactTile(_webSearchResults[index], true),
+    );
+  }
+
+  Widget _buildHeader(String text) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(text,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
+  Widget _buildSliverList(List<Contact> list, bool reg) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+            (c, i) => _buildContactTile(list[i], reg),
+            childCount: list.length),
       ),
     );
   }

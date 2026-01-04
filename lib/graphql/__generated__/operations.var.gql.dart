@@ -53,3 +53,26 @@ abstract class GPostMessageVars
         json,
       );
 }
+
+abstract class GOnNewMessageVars
+    implements Built<GOnNewMessageVars, GOnNewMessageVarsBuilder> {
+  GOnNewMessageVars._();
+
+  factory GOnNewMessageVars(
+          [void Function(GOnNewMessageVarsBuilder b) updates]) =
+      _$GOnNewMessageVars;
+
+  static Serializer<GOnNewMessageVars> get serializer =>
+      _$gOnNewMessageVarsSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GOnNewMessageVars.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GOnNewMessageVars? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GOnNewMessageVars.serializer,
+        json,
+      );
+}

@@ -10,6 +10,8 @@ Serializer<GGetMessagesVars> _$gGetMessagesVarsSerializer =
     new _$GGetMessagesVarsSerializer();
 Serializer<GPostMessageVars> _$gPostMessageVarsSerializer =
     new _$GPostMessageVarsSerializer();
+Serializer<GOnNewMessageVars> _$gOnNewMessageVarsSerializer =
+    new _$GOnNewMessageVarsSerializer();
 
 class _$GGetMessagesVarsSerializer
     implements StructuredSerializer<GGetMessagesVars> {
@@ -77,6 +79,27 @@ class _$GPostMessageVarsSerializer
     }
 
     return result.build();
+  }
+}
+
+class _$GOnNewMessageVarsSerializer
+    implements StructuredSerializer<GOnNewMessageVars> {
+  @override
+  final Iterable<Type> types = const [GOnNewMessageVars, _$GOnNewMessageVars];
+  @override
+  final String wireName = 'GOnNewMessageVars';
+
+  @override
+  Iterable<Object?> serialize(Serializers serializers, GOnNewMessageVars object,
+      {FullType specifiedType = FullType.unspecified}) {
+    return <Object?>[];
+  }
+
+  @override
+  GOnNewMessageVars deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    return new GOnNewMessageVarsBuilder().build();
   }
 }
 
@@ -235,6 +258,65 @@ class GPostMessageVarsBuilder
                 user, r'GPostMessageVars', 'user'),
             content: BuiltValueNullFieldError.checkNotNull(
                 content, r'GPostMessageVars', 'content'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GOnNewMessageVars extends GOnNewMessageVars {
+  factory _$GOnNewMessageVars(
+          [void Function(GOnNewMessageVarsBuilder)? updates]) =>
+      (new GOnNewMessageVarsBuilder()..update(updates))._build();
+
+  _$GOnNewMessageVars._() : super._();
+
+  @override
+  GOnNewMessageVars rebuild(void Function(GOnNewMessageVarsBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GOnNewMessageVarsBuilder toBuilder() =>
+      new GOnNewMessageVarsBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GOnNewMessageVars;
+  }
+
+  @override
+  int get hashCode {
+    return 507391016;
+  }
+
+  @override
+  String toString() {
+    return newBuiltValueToStringHelper(r'GOnNewMessageVars').toString();
+  }
+}
+
+class GOnNewMessageVarsBuilder
+    implements Builder<GOnNewMessageVars, GOnNewMessageVarsBuilder> {
+  _$GOnNewMessageVars? _$v;
+
+  GOnNewMessageVarsBuilder();
+
+  @override
+  void replace(GOnNewMessageVars other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GOnNewMessageVars;
+  }
+
+  @override
+  void update(void Function(GOnNewMessageVarsBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GOnNewMessageVars build() => _build();
+
+  _$GOnNewMessageVars _build() {
+    final _$result = _$v ?? new _$GOnNewMessageVars._();
     replace(_$result);
     return _$result;
   }

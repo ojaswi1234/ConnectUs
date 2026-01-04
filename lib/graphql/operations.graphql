@@ -1,10 +1,28 @@
+# lib/graphql/operations.graphql
+
 query GetMessages {
-    messages{
+    messages {
         id
         user
         content
+        createdAt # Added for consistency
     }
 }
+
 mutation PostMessage($user: String!, $content: String!) {
-    postMessage(user: $user, content: $content)
+    postMessage(user: $user, content: $content) {
+        id
+        user
+        content
+        createdAt
+    }
+}
+
+subscription OnNewMessage {
+  messageAdded {
+    id
+    content
+    user
+    createdAt # Now matches the schema
+  }
 }
