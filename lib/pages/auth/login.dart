@@ -1,11 +1,8 @@
 import 'dart:io';
-
 import 'package:ConnectUs/services/session_manager.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -21,7 +18,7 @@ class _LoginState extends State<Login> {
   String _password = '';
   bool _isLoading = false;
   bool _rememberMe = false;
- bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
   final _sessionManager = SessionManager();
 
   @override
@@ -39,54 +36,70 @@ class _LoginState extends State<Login> {
     });
   }
 
-  final width = WidgetsBinding.instance.window.physicalSize.width / WidgetsBinding.instance.window.devicePixelRatio;
-
-  // Update your existing Login class
-void _validateUser() async {
-  if (!_formKey.currentState!.validate()) {
-    return;
-  }
-  _formKey.currentState!.save();
-
-  try {
-    setState(() => _isLoading = true);
-    
-    // Use SessionManager for enhanced login with remember me
-    final response = await _sessionManager.signInWithEmailAndPassword(
-      email: _email.trim(),
-      password: _password.trim(),
-      rememberMe: _rememberMe,
-    );
-
-    if (response.session != null) {
-      print('✅ Login successful, session created');
-      
+  /// NEW: Handle Google Sign-In logic
+  void _handleGoogleSignIn() async {
+    try {
+      setState(() => _isLoading = true);
+      await _sessionManager.signInWithGoogle();
+      // Note: Navigation is handled automatically by AuthChecker.dart 
+      // when it detects the session change.
+    } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login successful!'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: Text('Google Login failed: ${error.toString()}'),
+            backgroundColor: Colors.red,
           ),
         );
-        // Navigate to home page
-        Navigator.of(context).pushReplacementNamed('/home');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
-  } catch (error) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login failed: ${error.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+  }
+
+  void _validateUser() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
-  } finally {
-    if (mounted) {
-      setState(() => _isLoading = false);
+    _formKey.currentState!.save();
+
+    try {
+      setState(() => _isLoading = true);
+      
+      final response = await _sessionManager.signInWithEmailAndPassword(
+        email: _email.trim(),
+        password: _password.trim(),
+        rememberMe: _rememberMe,
+      );
+
+      if (response.session != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login successful!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login failed: ${error.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +107,7 @@ void _validateUser() async {
       backgroundColor: AppTheme.background,
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: isMobile ? 44 :  400.0 ),
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 44 : 400.0),
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -112,23 +125,17 @@ void _validateUser() async {
                   ),
                   const SizedBox(height: 60),
                   MaterialButton(
-                    onPressed: () {
-                      print("Pressed");
-                    },
+                    onPressed: () {},
                     child: const CircleAvatar(
                       radius: 50,
-                      backgroundImage: AssetImage(
-                        "assets/images/profile.png",
-                      ),
+                      backgroundImage: AssetImage("assets/images/profile.png"),
                     ),
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
                     initialValue: _email,
                     style: TextStyle(color: AppTheme.accentDark),
-
                     decoration: InputDecoration(
-                      
                       prefixIcon: Icon(Icons.email, color: AppTheme.accent),
                       labelText: "Email",
                       border: OutlineInputBorder(
@@ -137,128 +144,96 @@ void _validateUser() async {
                       ),
                       filled: true,
                       fillColor: AppTheme.background,
-                      contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-                      errorStyle: TextStyle(color: Colors.redAccent),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: AppTheme.accent, width: 2.0),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Colors.red, width: 2.0),
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                       labelStyle: TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
                     keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _email = value!;
-                    },
+                    validator: (value) => value!.isEmpty ? 'Please enter your email' : null,
+                    onSaved: (value) => _email = value!,
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
                     style: TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.lock, color: AppTheme.accent),
-          
                       labelText: "Password",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-
                         borderSide: BorderSide(color: AppTheme.accentDark, width: 2.0),
                       ),
-                      
                       filled: true,
                       fillColor: AppTheme.background,
-                      contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-                      errorStyle: TextStyle(color: Colors.redAccent),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: AppTheme.accent, width: 2.0),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Colors.red, width: 2.0),
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                       labelStyle: TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
-                    keyboardType: TextInputType.visiblePassword,
                     obscureText: true,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _password = value!;
-                    },
+                    validator: (value) => value!.isEmpty ? 'Please enter your password' : null,
+                    onSaved: (value) => _password = value!,
                   ),
                   const SizedBox(height: 20),
-                  // Remember Me Checkbox
                   Row(
                     children: [
                       Checkbox(
                         value: _rememberMe,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            _rememberMe = value ?? false;
-                          });
-                        },
+                        onChanged: (bool? value) => setState(() => _rememberMe = value ?? false),
                         activeColor: AppTheme.accent,
                         checkColor: AppTheme.background,
                       ),
-                      Text(
-                        'Remember me',
-                        style: TextStyle(
-                          color: AppTheme.accent,
-                          fontSize: 16,
-                        ),
-                      ),
+                      Text('Remember me', style: TextStyle(color: AppTheme.accent, fontSize: 16)),
                     ],
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.accentDark,
-                      padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                      padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
                     ),
-                    onPressed: _isLoading ? null : () {
-                      _validateUser();
-                    },
+                    onPressed: _isLoading ? null : _validateUser,
                     child: _isLoading 
-                      ? CircularProgressIndicator(color: AppTheme.accentDark) 
-                      : Text("Login", style: TextStyle(color: Color(0xFF1E1E1E), fontSize: 16)),
+                      ? CircularProgressIndicator(color: AppTheme.background) 
+                      : const Text("Login", style: TextStyle(color: Color(0xFF1E1E1E), fontSize: 16)),
                   ),
+
+                  // NEW GOOGLE SIGN IN UI SECTION
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: AppTheme.accent.withOpacity(0.5))),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text("OR", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                      ),
+                      Expanded(child: Divider(color: AppTheme.accent.withOpacity(0.5))),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      side: BorderSide(color: AppTheme.accentDark, width: 2),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                    ),
+                    icon: const Icon(Icons.g_mobiledata, size: 32, color: Colors.blue), // Or use an Image.asset
+                    label: Text(
+                      "Continue with Google",
+                      style: TextStyle(color: AppTheme.accentDark, fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: _isLoading ? null : _handleGoogleSignIn,
+                  ),
+                  // END GOOGLE SIGN IN UI SECTION
+
                   const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
-                      textStyle: TextStyle(fontSize: (!isMobile) ? 18 : 12),
                     ),
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed('/getStarted');
-                    },
-                    child: Text("Don't have an Account? Sign Up", style: TextStyle(color: AppTheme.accentDark, fontSize: (!isMobile) ? 16 : 12, fontWeight: FontWeight.w500)),
+                    onPressed: () => Navigator.of(context).pushReplacementNamed('/getStarted'),
+                    child: Text(
+                      "Don't have an Account? Sign Up", 
+                      style: TextStyle(color: AppTheme.accentDark, fontSize: (!isMobile) ? 16 : 12, fontWeight: FontWeight.w500)
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                 /*  MaterialButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed('/loginPhone');
-                    },
-                    color: kSecondaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                    child: Text("Use Phone Number Instead", style: TextStyle(color: kBackgroundColor, fontSize: 16)),
-                  )*/
                 ],
               ),
             ),

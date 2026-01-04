@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:logger/logger.dart';
@@ -59,7 +60,7 @@ class SessionManager {
       // Check if token is expired
       final expiresAt = session.expiresAt;
       final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      
+
       if (expiresAt != null && now >= expiresAt) {
         _logger.w('Session token expired');
         return false;
@@ -88,8 +89,9 @@ class SessionManager {
       // Check if token expires within next 5 minutes
       final expiresAt = session.expiresAt;
       final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      
-      if (expiresAt != null && (expiresAt - now) < 300) { // 5 minutes
+
+      if (expiresAt != null && (expiresAt - now) < 300) {
+        // 5 minutes
         _logger.i('Refreshing session token...');
         final response = await _supabase.auth.refreshSession();
         if (response.session != null) {
@@ -130,11 +132,31 @@ class SessionManager {
     }
   }
 
+  /// NEW: Sign in with Google OAuth
+  Future<void> signInWithGoogle() async {
+    try {
+      _logger.i('Starting Google Sign-In with Deep Linking...');
+
+      await _supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        // redirectTo must match exactly what you put in Supabase Dashboard
+        redirectTo: kIsWeb ? null : 'io.supabase.connectus://login-callback/',
+        // Forces the browser to open externally so it can redirect back
+        authScreenLaunchMode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
+      );
+    } catch (e) {
+      _logger.e('Google Sign-In error: $e');
+      rethrow;
+    }
+  }
+
   /// Sign out and clear session data
   Future<void> signOut({bool clearRememberMe = false}) async {
     try {
       await _supabase.auth.signOut();
-      
+
       if (clearRememberMe) {
         await setRememberMe(false);
         await _prefs?.remove(_keyLastLoginEmail);

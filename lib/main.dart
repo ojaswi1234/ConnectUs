@@ -104,7 +104,7 @@ class MainApp extends StatelessWidget {
         '/getStarted': (context) => Register(),
         '/login': (context) => Login(),
         '/home': (context) => Home(),
-
+        'login-callback': (context) => const AuthChecker(),
         '/contacts': (context) => ContactsPage(
               registeredContacts: [],
               nonRegisteredContacts: [],

@@ -1,12 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 
 class OtpScreen extends StatefulWidget {
-  String verificationId;
-   OtpScreen({super.key
-, required this.verificationId
-  });
+  final String
+      verificationId; // This is the phone number passed from the previous screen
+  const OtpScreen({super.key, required this.verificationId});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -14,90 +13,121 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
+  bool _isLoading = false;
+
+  /// Verifies the OTP and updates the public users table
+  Future<void> _verifyOtp() async {
+    final otp = _otpController.text.trim();
+    if (otp.length < 6) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final supabase = Supabase.instance.client;
+
+      // 1. Verify the OTP session
+      await supabase.auth.verifyOTP(
+        phone: widget.verificationId,
+        token: otp,
+        type: OtpType.sms,
+      );
+
+      // 2. IMPORTANT: Update your public 'users' table with the verified number
+      final userId = supabase.auth.currentUser?.id;
+      if (userId != null) {
+        await supabase.from('users').update({
+          'phone_number': widget.verificationId,
+        }).eq('id', userId);
+      }
+
+      if (mounted) {
+        // Verification complete -> Navigate home and clear history
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Verification failed: ${e.toString()}'),
+            backgroundColor: AppTheme.danger,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Match login background
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: const Text('Enter OTP'),
-        centerTitle: true,
-        backgroundColor: Colors.blue, // Match login appbar color
+        title: const Text('Enter Code'),
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        foregroundColor: AppTheme.accentDark,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Please enter the OTP sent to your phone',
+              'Check your messages',
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold, // Match login font weight
-                color: Colors.black87, // Match login text color
-              ),
-              textAlign: TextAlign.center,
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 12),
+            Text(
+              'We sent a 6-digit code to ${widget.verificationId}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppTheme.muted, fontSize: 16),
+            ),
+            const SizedBox(height: 48),
             TextField(
               controller: _otpController,
               keyboardType: TextInputType.number,
               maxLength: 6,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  color: AppTheme.accentDark, fontSize: 24, letterSpacing: 8),
               decoration: InputDecoration(
-                labelText: 'OTP',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12), // Match login border radius
-                ),
+                counterText: "",
                 filled: true,
-                fillColor: Colors.grey[100], // Match login input background
+                fillColor: AppTheme.surface,
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppTheme.muted),
+                ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue, // Match login button color
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // Match login button radius
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                style: AppTheme.elevatedButtonStyle.copyWith(
+                  padding: WidgetStateProperty.all(
+                      const EdgeInsets.symmetric(vertical: 16)),
                 ),
-                onPressed: () async {
-                  // Handle OTP verification
-                  try {
-                    // Simulate OTP verification for demo purposes
-                    if (_otpController.text.length == 6) {
-                      print("OTP verified successfully");
-                      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a valid 6-digit OTP'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    log(e.toString());
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error: ${e.toString()}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                },
-                child: const Text(
-                  'Verify',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold, // Match login button text style
-                  ),
-                ),
+                onPressed: _isLoading ? null : _verifyOtp,
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.black)
+                    : const Text('Verify & Finish',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),
+            const SizedBox(height: 20),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Wrong number? Go back',
+                  style: TextStyle(color: AppTheme.accent)),
+            )
           ],
         ),
       ),

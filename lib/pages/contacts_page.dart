@@ -187,10 +187,10 @@ class _ContactsPageState extends State<ContactsPage>
       appBar: AppBar(
         title: const Text(
           'Select Contact',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black),
         ),
-        backgroundColor: const Color(0xFFA67B00),
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: AppTheme.accentDark,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [
@@ -331,7 +331,8 @@ class _ContactsPageState extends State<ContactsPage>
                     child: Text(
                       "Search via UserName",
                       style: TextStyle(
-                          color: const Color.fromARGB(255, 233, 191, 39)),
+                          color: AppTheme.accent
+                      )
                     ),
                   ),
                 ),

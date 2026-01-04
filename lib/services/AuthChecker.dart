@@ -23,74 +23,71 @@ class _AuthCheckerState extends State<AuthChecker> {
   }
 
   void _initializeSession() async {
-    // Initialize session manager first
     await _sessionManager.initialize();
-    
-    // Try auto-login first if remember me is enabled
+
+    // Try auto-login first
     final autoLoginSuccess = await _sessionManager.tryAutoLogin();
     if (autoLoginSuccess && mounted) {
-      Navigator.of(context).pushReplacementNamed('/home');
+      await _checkProfileAndNavigate(); // Check phone before home
       return;
     }
-    
-    // If auto-login fails, check current session
+
     _checkSession();
     _listenToAuthChanges();
   }
 
+  /// NEW: Centralized check for profile completeness
+  Future<void> _checkProfileAndNavigate() async {
+    try {
+      final user = _supabase.auth.currentUser;
+      if (user == null) {
+        if (mounted) setState(() => _isLoading = false);
+        return;
+      }
+
+      // Check if the user has a phone number in your public 'users' table
+      final data = await _supabase
+          .from('users')
+          .select('phone_number')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (mounted) {
+        if (data == null || data['phone_number'] == null) {
+          // Logged in but no phone -> Onboarding
+          Navigator.of(context).pushReplacementNamed('/registerPhone');
+        } else {
+          // Fully registered -> Home
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   void _checkSession() async {
     try {
-      // Check if user has valid session
       final session = _supabase.auth.currentSession;
-      
       if (session != null) {
-        // Verify session is still valid
         final user = await _supabase.auth.getUser();
         if (user.user != null) {
-          print('✅ Valid session found for: ${user.user!.email}');
-          // Session is valid, go to home
-          if (mounted) {
-            Navigator.of(context).pushReplacementNamed('/home');
-          }
+          await _checkProfileAndNavigate(); // Keep logic intact
           return;
         }
       }
-      
-      print('❌ No valid session found');
-      // No valid session, stay on landing/login
-      setState(() => _isLoading = false);
-      
+      if (mounted) setState(() => _isLoading = false);
     } catch (e) {
-      print('Session check error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   void _listenToAuthChanges() {
     _supabase.auth.onAuthStateChange.listen((data) {
-      final AuthChangeEvent event = data.event;
-      final Session? session = data.session;
-
-      print('Auth state changed: $event');
-
-      switch (event) {
-        case AuthChangeEvent.signedIn:
-          print('✅ User signed in: ${session?.user.email}');
-          if (mounted) {
-            Navigator.of(context).pushReplacementNamed('/home');
-          }
-          break;
-        case AuthChangeEvent.signedOut:
-          print('❌ User signed out');
-          if (mounted) {
-            Navigator.of(context).pushReplacementNamed('/landing');
-          }
-          break;
-        case AuthChangeEvent.tokenRefreshed:
-          print('🔄 Token refreshed');
-          break;
-        default:
-          break;
+      if (data.event == AuthChangeEvent.signedIn) {
+        _checkProfileAndNavigate(); // Redirect to phone check if needed
+      } else if (data.event == AuthChangeEvent.signedOut) {
+        if (mounted) Navigator.of(context).pushReplacementNamed('/landing');
       }
     });
   }
@@ -98,29 +95,28 @@ class _AuthCheckerState extends State<AuthChecker> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-         backgroundColor: AppTheme.background,
-      body: Center(
-        
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children:[
-            Image(image: AssetImage('assets/images/logo.png'), height: 250, width: 250,),
-             SizedBox(height: 32,),
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentDark),
-            ),
-            SizedBox(height: 32,),
-        Text("Checking Authentication Please Wait.....", style: TextStyle(color: AppTheme.accent)),
-        ]
-
-      ),
-      ),
+      return Scaffold(
+        backgroundColor: AppTheme.background,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Image(
+                  image: AssetImage('assets/images/logo.png'),
+                  height: 250,
+                  width: 250),
+              const SizedBox(height: 32),
+              CircularProgressIndicator(
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(AppTheme.accentDark)),
+              const SizedBox(height: 32),
+              const Text("Checking Authentication...",
+                  style: TextStyle(color: AppTheme.accent)),
+            ],
+          ),
+        ),
       );
     }
-
-    // No session found, show landing page
     return const Landing();
   }
 }
