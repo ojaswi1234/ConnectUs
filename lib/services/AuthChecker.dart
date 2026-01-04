@@ -1,7 +1,7 @@
+
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ConnectUs/pages/landing.dart';
 import 'session_manager.dart';
 
 class AuthChecker extends StatefulWidget {
@@ -12,7 +12,6 @@ class AuthChecker extends StatefulWidget {
 }
 
 class _AuthCheckerState extends State<AuthChecker> {
-  bool _isLoading = true;
   final _supabase = Supabase.instance.client;
   final _sessionManager = SessionManager();
 
@@ -23,29 +22,49 @@ class _AuthCheckerState extends State<AuthChecker> {
   }
 
   void _initializeSession() async {
+    // A small delay to ensure the widget is mounted and context is available.
+    await Future.delayed(Duration.zero);
+    if (!mounted) return;
+
     await _sessionManager.initialize();
 
-    // Try auto-login first
+    // Set up the listener for auth state changes.
+    _listenToAuthChanges();
+
+    // Attempt to log in automatically.
     final autoLoginSuccess = await _sessionManager.tryAutoLogin();
-    if (autoLoginSuccess && mounted) {
-      await _checkProfileAndNavigate(); // Check phone before home
+    if (autoLoginSuccess) {
+      // If auto-login is successful, the auth state change listener will trigger
+      // the navigation. We can return early.
       return;
     }
 
-    _checkSession();
-    _listenToAuthChanges();
+    // If auto-login fails, manually check for an existing session.
+    final session = _supabase.auth.currentSession;
+    if (session != null) {
+      await _checkProfileAndNavigate();
+    } else {
+      // If there's no session, navigate to the landing page.
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/landing');
+      }
+    }
   }
 
-  /// NEW: Centralized check for profile completeness
   Future<void> _checkProfileAndNavigate() async {
+    if (!mounted) return;
+
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) {
-        if (mounted) setState(() => _isLoading = false);
+        // If there's no user, navigate to the landing page.
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/landing');
+        }
         return;
       }
 
-      // Check if the user has a phone number in your public 'users' table
+      // Check for user profile to determine navigation.
       final data = await _supabase
           .from('users')
           .select('phone_number')
@@ -54,69 +73,61 @@ class _AuthCheckerState extends State<AuthChecker> {
 
       if (mounted) {
         if (data == null || data['phone_number'] == null) {
-          // Logged in but no phone -> Onboarding
+          // If no phone number, go to phone registration.
           Navigator.of(context).pushReplacementNamed('/registerPhone');
         } else {
-          // Fully registered -> Home
+          // If profile is complete, go to the home page.
           Navigator.of(context).pushReplacementNamed('/home');
         }
       }
     } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  void _checkSession() async {
-    try {
-      final session = _supabase.auth.currentSession;
-      if (session != null) {
-        final user = await _supabase.auth.getUser();
-        if (user.user != null) {
-          await _checkProfileAndNavigate(); // Keep logic intact
-          return;
-        }
+      // As a fallback in case of an error, navigate to the landing page.
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/landing');
       }
-      if (mounted) setState(() => _isLoading = false);
-    } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   void _listenToAuthChanges() {
     _supabase.auth.onAuthStateChange.listen((data) {
+      if (!mounted) return;
+
       if (data.event == AuthChangeEvent.signedIn) {
-        _checkProfileAndNavigate(); // Redirect to phone check if needed
+        _checkProfileAndNavigate();
       } else if (data.event == AuthChangeEvent.signedOut) {
-        if (mounted) Navigator.of(context).pushReplacementNamed('/landing');
+        // On sign out, go to the landing page.
+        Navigator.of(context).pushReplacementNamed('/landing');
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        backgroundColor: AppTheme.background,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Image(
-                  image: AssetImage('assets/images/logo.png'),
-                  height: 250,
-                  width: 250),
-              const SizedBox(height: 32),
-              CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(AppTheme.accentDark)),
-              const SizedBox(height: 32),
-              const Text("Checking Authentication...",
-                  style: TextStyle(color: AppTheme.accent)),
-            ],
-          ),
+    // This widget's sole purpose is to check auth and redirect.
+    // It should only display a loading indicator.
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Image(
+              image: AssetImage('assets/images/logo.png'),
+              height: 250,
+              width: 250,
+            ),
+            const SizedBox(height: 32),
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentDark),
+            ),
+            const SizedBox(height: 32),
+            const Text(
+              "Checking Authentication...",
+              style: TextStyle(color: AppTheme.accent),
+            ),
+          ],
         ),
-      );
-    }
-    return const Landing();
+      ),
+    );
   }
 }
