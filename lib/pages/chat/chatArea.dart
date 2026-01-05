@@ -76,7 +76,7 @@ class _ChatAreaState extends State<ChatArea> {
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
-        0.0,
+        0.0, // Because ListView is reversed, 0.0 is the bottom
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -87,7 +87,7 @@ class _ChatAreaState extends State<ChatArea> {
   Widget build(BuildContext context) {
     // 1. Get initial history
     final getMessagesReq = GGetMessagesReq();
-    // 2. Listen for new messages
+    // 2. Listen for new messages (Subscription)
     final onNewMessageReq = GOnNewMessageReq();
 
     return Scaffold(
@@ -98,6 +98,7 @@ class _ChatAreaState extends State<ChatArea> {
             backgroundColor: AppTheme.accent,
             child: const Icon(Icons.person, color: Colors.black, size: 20),
           ),
+          const SizedBox(width: 10),
           Text(widget.userName,
               style: const TextStyle(
                   color: Colors.black,
@@ -112,10 +113,10 @@ class _ChatAreaState extends State<ChatArea> {
         actions: [
           PopupMenuButton(
               itemBuilder: (context) => [
-                    PopupMenuItem(child: const Text("Delete Chat")),
-                    PopupMenuItem(child: const Text("Mute Chat")),
-                    PopupMenuItem(child: const Text("Block Chat")),
-                    PopupMenuItem(child: const Text("Clear Chat")),
+                    const PopupMenuItem(child: Text("Delete Chat")),
+                    const PopupMenuItem(child: Text("Mute Chat")),
+                    const PopupMenuItem(child: Text("Block Chat")),
+                    const PopupMenuItem(child: Text("Clear Chat")),
                   ])
         ],
         elevation: 0,
@@ -123,34 +124,41 @@ class _ChatAreaState extends State<ChatArea> {
       body: Column(
         children: [
           Expanded(
+            // ADDED LOGIC: Nest the Query Operation inside the Subscription Operation.
+            // This ensures the real-time connection stays open while you're on this screen.
             child: Operation(
               client: Provider.of<Client>(context),
-              operationRequest: getMessagesReq,
-              builder: (context, response, error) {
-                if (response?.loading ?? true) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+              operationRequest: onNewMessageReq,
+              builder: (context, subResponse, subError) {
+                // The Subscription updates the cache; this Query Operation watches the cache.
+                return Operation(
+                  client: Provider.of<Client>(context),
+                  operationRequest: getMessagesReq,
+                  builder: (context, response, error) {
+                    if (response?.loading ?? true) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                // Combine historical data with any real-time updates from cache
-                final messages = response?.data?.messages?.toList() ?? [];
+                    final messages = response?.data?.messages?.toList() ?? [];
 
-                if (messages.isEmpty) {
-                  return const Center(
-                      child: Text("No messages yet.",
-                          style: TextStyle(color: AppTheme.muted)));
-                }
+                    if (messages.isEmpty) {
+                      return const Center(
+                          child: Text("No messages yet.",
+                              style: TextStyle(color: AppTheme.muted)));
+                    }
 
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: messages.length,
-                  reverse: true, // Newest at the bottom
-                  itemBuilder: (context, index) {
-                    // Because reverse is true, index 0 is the last item in the list
-                    final message = messages[messages.length - 1 - index];
-                    final bool isMe = message.user == _myUsername;
+                    return ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(16.0),
+                      itemCount: messages.length,
+                      reverse: true, // Newest at the bottom
+                      itemBuilder: (context, index) {
+                        final message = messages[messages.length - 1 - index];
+                        final bool isMe = message.user == _myUsername;
 
-                    return _buildMessageBubble(message, isMe);
+                        return _buildMessageBubble(message, isMe);
+                      },
+                    );
                   },
                 );
               },

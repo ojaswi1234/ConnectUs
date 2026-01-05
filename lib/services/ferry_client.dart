@@ -1,17 +1,28 @@
-// lib/services/ferry_client.dart (new file)
 import 'package:ferry/ferry.dart';
 import 'package:gql_http_link/gql_http_link.dart';
+import 'package:gql_websocket_link/gql_websocket_link.dart';
+import 'package:graphql/client.dart' hide WebSocketLink; // Correct import
 
 Client initFerryClient() {
-  // Your backend is running on localhost:4000
-  // Use 10.0.2.2 for Android emulator
-  final link = HttpLink(
-      'https://3000-firebase-connectus-1767129935089.cluster-6dx7corvpngoivimwvvljgokdw.cloudworkstations.dev/graphql');
+  const httpUrl = 'https://connectus-backend-server.onrender.com/graphql';
 
-  final client = Client(
+  // Convert https://... to wss://... for the WebSocket connection
+  final wsUrl = httpUrl.replaceFirst('https', 'wss').replaceFirst('http', 'ws');
+
+  final httpLink = HttpLink(httpUrl);
+
+  // WebSocketLink handles the long-lived subscription connection
+  final wsLink = WebSocketLink(wsUrl);
+
+  // Split traffic: Subscriptions go to WebSockets, everything else to HTTP
+  final link = Link.split(
+    (request) => request.isSubscription,
+    wsLink,
+    httpLink,
+  );
+
+  return Client(
     link: link,
     cache: Cache(),
   );
-
-  return client;
 }
