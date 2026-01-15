@@ -45,6 +45,7 @@ Future<void> main() async {
 
 Future<void> _initializeApp() async {
   // Performance optimization: Enable GPU rendering
+
   debugProfileBuildsEnabled = false;
   debugProfilePaintsEnabled = false;
 
@@ -58,16 +59,15 @@ Future<void> _initializeApp() async {
   Hive.registerAdapter(ContactAdapter());
   await Hive.openBox<Contact>('contacts');
   try {
-    await dotenv.load(fileName: ".env");
+    // 1. Point to the correct asset path
+    await dotenv.load(fileName: "assets/.env");
   } catch (e) {
-    // Handle the case where the .env file might not be found
     print("Error loading .env file: $e");
   }
   // Initialize Supabase
   await Supabase.initialize(
-    url: 'https://hkxvlihyacqpfdviyycy.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhreHZsaWh5YWNxcGZkdml5eWN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4OTQxMzksImV4cCI6MjA3MTQ3MDEzOX0.vQDz72Zu6IVglI43t2VUTYVxzeMZbBPRki9zm4_VxF8',
+    url: dotenv.get('SUPABASE_URL'),
+    anonKey: dotenv.get('SUPABASE_ANON_KEY'),
     debug: false,
   );
 

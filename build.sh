@@ -26,5 +26,13 @@ if [ -n "$GROQ_API_KEY" ]; then
   echo "GROQ_API_KEY=$GROQ_API_KEY" >> .env
 fi
 
+if [ -n "$SUPABASE_URL" ]; then
+  echo "SUPABASE_URL=$SUPABASE_URL" >> assets/.env
+fi
+
+if [ -n "$SUPABASE_ANON_KEY" ]; then
+  echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> assets/.env
+fi
+
 # 6. Build the project for web
 flutter build web --release
