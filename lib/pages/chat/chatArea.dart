@@ -50,23 +50,22 @@ class _ChatAreaState extends State<ChatArea> {
     super.dispose();
   }
 
+  // Inside _ChatAreaState in chatArea.dart
+
   void _sendChat() {
     if (_controller.text.trim().isEmpty || _myUsername == null) return;
 
     final client = Provider.of<Client>(context, listen: false);
     final messageText = _controller.text.trim();
 
-    // Use the PostMessage mutation
-    final postMessageReq = GPostMessageReq(
-      (b) => b
-        ..vars.content = messageText
-        ..vars.user = _myUsername,
-    );
+    final postMessageReq = GPostMessageReq((b) => b
+      ..vars.content = messageText
+      ..vars.user = _myUsername
+      // ADD THIS: Update local cache immediately after mutation
+      ..updateCacheHandlerKey = 'updateGetMessages');
 
     client.request(postMessageReq).listen((response) {
-      if (response.hasErrors) {
-        Logger().e("Failed to send: ${response.graphqlErrors}");
-      }
+      if (response.hasErrors) Logger().e(response.graphqlErrors);
     });
 
     _controller.clear();
@@ -88,7 +87,8 @@ class _ChatAreaState extends State<ChatArea> {
     // 1. Get initial history
     final getMessagesReq = GGetMessagesReq();
     // 2. Listen for new messages (Subscription)
-    final onNewMessageReq = GOnNewMessageReq();
+    final onNewMessageReq =
+        GOnNewMessageReq((b) => b..updateCacheHandlerKey = 'updateGetMessages');
 
     return Scaffold(
       backgroundColor: AppTheme.background,

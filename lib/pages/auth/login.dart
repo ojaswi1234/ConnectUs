@@ -41,7 +41,7 @@ class _LoginState extends State<Login> {
     try {
       setState(() => _isLoading = true);
       await _sessionManager.signInWithGoogle();
-      // Note: Navigation is handled automatically by AuthChecker.dart 
+      // Note: Navigation is handled automatically by AuthChecker.dart
       // when it detects the session change.
     } catch (error) {
       if (mounted) {
@@ -67,7 +67,7 @@ class _LoginState extends State<Login> {
 
     try {
       setState(() => _isLoading = true);
-      
+
       final response = await _sessionManager.signInWithEmailAndPassword(
         email: _email.trim(),
         password: _password.trim(),
@@ -124,13 +124,7 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   const SizedBox(height: 60),
-                  MaterialButton(
-                    onPressed: () {},
-                    child: const CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage("assets/images/profile.png"),
-                    ),
-                  ),
+
                   const SizedBox(height: 20),
                   TextFormField(
                     initialValue: _email,
@@ -140,15 +134,19 @@ class _LoginState extends State<Login> {
                       labelText: "Email",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: AppTheme.accent, width: 2.0),
+                        borderSide:
+                            BorderSide(color: AppTheme.accent, width: 2.0),
                       ),
                       filled: true,
                       fillColor: AppTheme.background,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-                      labelStyle: TextStyle(color: AppTheme.accent, fontSize: 16.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 12.0),
+                      labelStyle:
+                          TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
                     keyboardType: TextInputType.emailAddress,
-                    validator: (value) => value!.isEmpty ? 'Please enter your email' : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter your email' : null,
                     onSaved: (value) => _email = value!,
                   ),
                   const SizedBox(height: 20),
@@ -159,15 +157,19 @@ class _LoginState extends State<Login> {
                       labelText: "Password",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: AppTheme.accentDark, width: 2.0),
+                        borderSide:
+                            BorderSide(color: AppTheme.accentDark, width: 2.0),
                       ),
                       filled: true,
                       fillColor: AppTheme.background,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-                      labelStyle: TextStyle(color: AppTheme.accent, fontSize: 16.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 12.0),
+                      labelStyle:
+                          TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
                     obscureText: true,
-                    validator: (value) => value!.isEmpty ? 'Please enter your password' : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter your password' : null,
                     onSaved: (value) => _password = value!,
                   ),
                   const SizedBox(height: 20),
@@ -175,35 +177,48 @@ class _LoginState extends State<Login> {
                     children: [
                       Checkbox(
                         value: _rememberMe,
-                        onChanged: (bool? value) => setState(() => _rememberMe = value ?? false),
+                        onChanged: (bool? value) =>
+                            setState(() => _rememberMe = value ?? false),
                         activeColor: AppTheme.accent,
                         checkColor: AppTheme.background,
                       ),
-                      Text('Remember me', style: TextStyle(color: AppTheme.accent, fontSize: 16)),
+                      Text('Remember me',
+                          style:
+                              TextStyle(color: AppTheme.accent, fontSize: 16)),
                     ],
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.accentDark,
-                      padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14.0, horizontal: 24.0),
                     ),
                     onPressed: _isLoading ? null : _validateUser,
-                    child: _isLoading 
-                      ? CircularProgressIndicator(color: AppTheme.background) 
-                      : const Text("Login", style: TextStyle(color: Color(0xFF1E1E1E), fontSize: 16)),
+                    child: _isLoading
+                        ? CircularProgressIndicator(color: AppTheme.background)
+                        : const Text("Login",
+                            style: TextStyle(
+                                color: Color(0xFF1E1E1E), fontSize: 16)),
                   ),
 
                   // NEW GOOGLE SIGN IN UI SECTION
                   const SizedBox(height: 24),
                   Row(
                     children: [
-                      Expanded(child: Divider(color: AppTheme.accent.withOpacity(0.5))),
+                      Expanded(
+                          child:
+                              Divider(color: AppTheme.accent.withOpacity(0.5))),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text("OR", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                        child: Text("OR",
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold)),
                       ),
-                      Expanded(child: Divider(color: AppTheme.accent.withOpacity(0.5))),
+                      Expanded(
+                          child:
+                              Divider(color: AppTheme.accent.withOpacity(0.5))),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -211,12 +226,17 @@ class _LoginState extends State<Login> {
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                       side: BorderSide(color: AppTheme.accentDark, width: 2),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0)),
                     ),
-                    icon: const Icon(Icons.g_mobiledata, size: 32, color: Colors.blue), // Or use an Image.asset
+                    icon: const Icon(Icons.g_mobiledata,
+                        size: 32, color: Colors.blue), // Or use an Image.asset
                     label: Text(
                       "Continue with Google",
-                      style: TextStyle(color: AppTheme.accentDark, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: AppTheme.accentDark,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
                     ),
                     onPressed: _isLoading ? null : _handleGoogleSignIn,
                   ),
@@ -228,11 +248,13 @@ class _LoginState extends State<Login> {
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                     ),
-                    onPressed: () => Navigator.of(context).pushReplacementNamed('/getStarted'),
-                    child: Text(
-                      "Don't have an Account? Sign Up", 
-                      style: TextStyle(color: AppTheme.accentDark, fontSize: (!isMobile) ? 16 : 12, fontWeight: FontWeight.w500)
-                    ),
+                    onPressed: () => Navigator.of(context)
+                        .pushReplacementNamed('/getStarted'),
+                    child: Text("Don't have an Account? Sign Up",
+                        style: TextStyle(
+                            color: AppTheme.accentDark,
+                            fontSize: (!isMobile) ? 16 : 12,
+                            fontWeight: FontWeight.w500)),
                   ),
                 ],
               ),

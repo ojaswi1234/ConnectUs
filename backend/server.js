@@ -18,10 +18,10 @@ const yoga = createYoga({
       Query: { messages: () => messages },
       Mutation: {
         postMessage: (parent, { user, content }) => {
-          const newMessage = { id: String(messages.length), user, content };
+          const newMessage = { id: String(messages.length), user, content,createdAt: new Date().toISOString() };
           messages.push(newMessage);
           pubSub.publish("MESSAGE_ADDED", { messageAdded: newMessage });
-          return newMessage.id;
+          return newMessage;
         }
       },
       Subscription: {

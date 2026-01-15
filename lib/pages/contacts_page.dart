@@ -153,7 +153,7 @@ class _ContactsPageState extends State<ContactsPage>
                 color: Colors.white, fontWeight: FontWeight.w600),
           ),
           subtitle: contact.phones.isNotEmpty
-              ? Text(contact.phones.first.number,
+              ? Text(isMobile ? contact.phones.first.number : "",
                   style: const TextStyle(color: Colors.white70))
               : null,
           trailing: Icon(

@@ -27,7 +27,7 @@ class _RegisterState extends State<Register> {
       _formKey.currentState!.save();
       try {
         setState(() => _isLoading = true);
-        // Only perform the Auth Sign Up here. 
+        // Only perform the Auth Sign Up here.
         // Profile data will be handled in the next step (RegisterPhone page).
         await Supabase.instance.client.auth.signUp(
           email: _email,
@@ -74,20 +74,41 @@ class _RegisterState extends State<Register> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Register", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.accentDark)),
+                  Text("Register",
+                      style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.accentDark)),
                   const SizedBox(height: 60),
+                  MaterialButton(
+                    onPressed: () {},
+                    child: const CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage("assets/images/profile.png"),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text("[ Upload your profile picture here ] ",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 0, 148, 167),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 20),
                   TextFormField(
                     style: TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.email, color: AppTheme.accent),
                       labelText: "Email",
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0)),
                       filled: true,
                       fillColor: AppTheme.background,
                       labelStyle: TextStyle(color: AppTheme.accentDark),
                     ),
                     keyboardType: TextInputType.emailAddress,
-                    validator: (value) => value!.isEmpty ? 'Please enter your email' : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter your email' : null,
                     onSaved: (value) => _email = value!,
                   ),
                   const SizedBox(height: 20),
@@ -96,47 +117,69 @@ class _RegisterState extends State<Register> {
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.lock, color: AppTheme.accent),
                       labelText: "Password",
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0)),
                       filled: true,
                       fillColor: AppTheme.background,
                       labelStyle: TextStyle(color: AppTheme.accent),
                     ),
                     obscureText: true,
-                    validator: (value) => value!.isEmpty ? 'Please enter your password' : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter your password' : null,
                     onSaved: (value) => _password = value!,
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.accentDark,
-                      padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14.0, horizontal: 24.0),
                     ),
                     onPressed: _isLoading ? null : () => _submitForm(context),
                     child: _isLoading
                         ? CircularProgressIndicator(color: AppTheme.background)
-                        : Text("Register", style: TextStyle(color: AppTheme.background, fontSize: 16.0)),
+                        : Text("Register",
+                            style: TextStyle(
+                                color: AppTheme.background, fontSize: 16.0)),
                   ),
                   const SizedBox(height: 24),
                   Row(children: [
-                    Expanded(child: Divider(color: AppTheme.accent.withOpacity(0.5))),
-                    const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Text("OR", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))),
-                    Expanded(child: Divider(color: AppTheme.accent.withOpacity(0.5))),
+                    Expanded(
+                        child:
+                            Divider(color: AppTheme.accent.withOpacity(0.5))),
+                    const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text("OR",
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold))),
+                    Expanded(
+                        child:
+                            Divider(color: AppTheme.accent.withOpacity(0.5))),
                   ]),
                   const SizedBox(height: 24),
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                       side: BorderSide(color: AppTheme.accentDark, width: 2),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0)),
                     ),
-                    icon: const Icon(Icons.g_mobiledata, size: 32, color: Colors.blue),
-                    label: Text("Register with Google", style: TextStyle(color: AppTheme.accentDark, fontSize: 16, fontWeight: FontWeight.bold)),
+                    icon: const Icon(Icons.g_mobiledata,
+                        size: 32, color: Colors.blue),
+                    label: Text("Register with Google",
+                        style: TextStyle(
+                            color: AppTheme.accentDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
                     onPressed: _isLoading ? null : _handleGoogleSignIn,
                   ),
                   const SizedBox(height: 20),
                   TextButton(
-                    onPressed: () => Navigator.of(context).pushReplacementNamed('/login'),
-                    child: Text("Already have an account? Login", style: TextStyle(color: AppTheme.accentDark)),
+                    onPressed: () =>
+                        Navigator.of(context).pushReplacementNamed('/login'),
+                    child: Text("Already have an account? Login",
+                        style: TextStyle(color: AppTheme.accentDark)),
                   ),
                 ],
               ),
