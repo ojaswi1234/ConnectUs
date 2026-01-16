@@ -15,6 +15,7 @@ abstract class GGetMessagesVars
   factory GGetMessagesVars([void Function(GGetMessagesVarsBuilder b) updates]) =
       _$GGetMessagesVars;
 
+  String get roomId;
   static Serializer<GGetMessagesVars> get serializer =>
       _$gGetMessagesVarsSerializer;
 
@@ -37,6 +38,7 @@ abstract class GPostMessageVars
   factory GPostMessageVars([void Function(GPostMessageVarsBuilder b) updates]) =
       _$GPostMessageVars;
 
+  String get roomId;
   String get user;
   String get content;
   static Serializer<GPostMessageVars> get serializer =>
@@ -62,6 +64,7 @@ abstract class GOnNewMessageVars
           [void Function(GOnNewMessageVarsBuilder b) updates]) =
       _$GOnNewMessageVars;
 
+  String get roomId;
   static Serializer<GOnNewMessageVars> get serializer =>
       _$gOnNewMessageVarsSerializer;
 
@@ -73,6 +76,29 @@ abstract class GOnNewMessageVars
   static GOnNewMessageVars? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
         GOnNewMessageVars.serializer,
+        json,
+      );
+}
+
+abstract class GChatMessageFieldsVars
+    implements Built<GChatMessageFieldsVars, GChatMessageFieldsVarsBuilder> {
+  GChatMessageFieldsVars._();
+
+  factory GChatMessageFieldsVars(
+          [void Function(GChatMessageFieldsVarsBuilder b) updates]) =
+      _$GChatMessageFieldsVars;
+
+  static Serializer<GChatMessageFieldsVars> get serializer =>
+      _$gChatMessageFieldsVarsSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GChatMessageFieldsVars.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GChatMessageFieldsVars? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GChatMessageFieldsVars.serializer,
         json,
       );
 }

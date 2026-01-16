@@ -12,6 +12,8 @@ Serializer<GPostMessageVars> _$gPostMessageVarsSerializer =
     new _$GPostMessageVarsSerializer();
 Serializer<GOnNewMessageVars> _$gOnNewMessageVarsSerializer =
     new _$GOnNewMessageVarsSerializer();
+Serializer<GChatMessageFieldsVars> _$gChatMessageFieldsVarsSerializer =
+    new _$GChatMessageFieldsVarsSerializer();
 
 class _$GGetMessagesVarsSerializer
     implements StructuredSerializer<GGetMessagesVars> {
@@ -23,14 +25,35 @@ class _$GGetMessagesVarsSerializer
   @override
   Iterable<Object?> serialize(Serializers serializers, GGetMessagesVars object,
       {FullType specifiedType = FullType.unspecified}) {
-    return <Object?>[];
+    final result = <Object?>[
+      'roomId',
+      serializers.serialize(object.roomId,
+          specifiedType: const FullType(String)),
+    ];
+
+    return result;
   }
 
   @override
   GGetMessagesVars deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    return new GGetMessagesVarsBuilder().build();
+    final result = new GGetMessagesVarsBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case 'roomId':
+          result.roomId = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+      }
+    }
+
+    return result.build();
   }
 }
 
@@ -45,6 +68,9 @@ class _$GPostMessageVarsSerializer
   Iterable<Object?> serialize(Serializers serializers, GPostMessageVars object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
+      'roomId',
+      serializers.serialize(object.roomId,
+          specifiedType: const FullType(String)),
       'user',
       serializers.serialize(object.user, specifiedType: const FullType(String)),
       'content',
@@ -67,6 +93,10 @@ class _$GPostMessageVarsSerializer
       iterator.moveNext();
       final Object? value = iterator.current;
       switch (key) {
+        case 'roomId':
+          result.roomId = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
         case 'user':
           result.user = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
@@ -92,23 +122,75 @@ class _$GOnNewMessageVarsSerializer
   @override
   Iterable<Object?> serialize(Serializers serializers, GOnNewMessageVars object,
       {FullType specifiedType = FullType.unspecified}) {
-    return <Object?>[];
+    final result = <Object?>[
+      'roomId',
+      serializers.serialize(object.roomId,
+          specifiedType: const FullType(String)),
+    ];
+
+    return result;
   }
 
   @override
   GOnNewMessageVars deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    return new GOnNewMessageVarsBuilder().build();
+    final result = new GOnNewMessageVarsBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case 'roomId':
+          result.roomId = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GChatMessageFieldsVarsSerializer
+    implements StructuredSerializer<GChatMessageFieldsVars> {
+  @override
+  final Iterable<Type> types = const [
+    GChatMessageFieldsVars,
+    _$GChatMessageFieldsVars
+  ];
+  @override
+  final String wireName = 'GChatMessageFieldsVars';
+
+  @override
+  Iterable<Object?> serialize(
+      Serializers serializers, GChatMessageFieldsVars object,
+      {FullType specifiedType = FullType.unspecified}) {
+    return <Object?>[];
+  }
+
+  @override
+  GChatMessageFieldsVars deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    return new GChatMessageFieldsVarsBuilder().build();
   }
 }
 
 class _$GGetMessagesVars extends GGetMessagesVars {
+  @override
+  final String roomId;
+
   factory _$GGetMessagesVars(
           [void Function(GGetMessagesVarsBuilder)? updates]) =>
       (new GGetMessagesVarsBuilder()..update(updates))._build();
 
-  _$GGetMessagesVars._() : super._();
+  _$GGetMessagesVars._({required this.roomId}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        roomId, r'GGetMessagesVars', 'roomId');
+  }
 
   @override
   GGetMessagesVars rebuild(void Function(GGetMessagesVarsBuilder) updates) =>
@@ -121,17 +203,22 @@ class _$GGetMessagesVars extends GGetMessagesVars {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GGetMessagesVars;
+    return other is GGetMessagesVars && roomId == other.roomId;
   }
 
   @override
   int get hashCode {
-    return 978850129;
+    var _$hash = 0;
+    _$hash = $jc(_$hash, roomId.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
   String toString() {
-    return newBuiltValueToStringHelper(r'GGetMessagesVars').toString();
+    return (newBuiltValueToStringHelper(r'GGetMessagesVars')
+          ..add('roomId', roomId))
+        .toString();
   }
 }
 
@@ -139,7 +226,20 @@ class GGetMessagesVarsBuilder
     implements Builder<GGetMessagesVars, GGetMessagesVarsBuilder> {
   _$GGetMessagesVars? _$v;
 
+  String? _roomId;
+  String? get roomId => _$this._roomId;
+  set roomId(String? roomId) => _$this._roomId = roomId;
+
   GGetMessagesVarsBuilder();
+
+  GGetMessagesVarsBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _roomId = $v.roomId;
+      _$v = null;
+    }
+    return this;
+  }
 
   @override
   void replace(GGetMessagesVars other) {
@@ -156,13 +256,18 @@ class GGetMessagesVarsBuilder
   GGetMessagesVars build() => _build();
 
   _$GGetMessagesVars _build() {
-    final _$result = _$v ?? new _$GGetMessagesVars._();
+    final _$result = _$v ??
+        new _$GGetMessagesVars._(
+            roomId: BuiltValueNullFieldError.checkNotNull(
+                roomId, r'GGetMessagesVars', 'roomId'));
     replace(_$result);
     return _$result;
   }
 }
 
 class _$GPostMessageVars extends GPostMessageVars {
+  @override
+  final String roomId;
   @override
   final String user;
   @override
@@ -172,8 +277,11 @@ class _$GPostMessageVars extends GPostMessageVars {
           [void Function(GPostMessageVarsBuilder)? updates]) =>
       (new GPostMessageVarsBuilder()..update(updates))._build();
 
-  _$GPostMessageVars._({required this.user, required this.content})
+  _$GPostMessageVars._(
+      {required this.roomId, required this.user, required this.content})
       : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        roomId, r'GPostMessageVars', 'roomId');
     BuiltValueNullFieldError.checkNotNull(user, r'GPostMessageVars', 'user');
     BuiltValueNullFieldError.checkNotNull(
         content, r'GPostMessageVars', 'content');
@@ -191,6 +299,7 @@ class _$GPostMessageVars extends GPostMessageVars {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is GPostMessageVars &&
+        roomId == other.roomId &&
         user == other.user &&
         content == other.content;
   }
@@ -198,6 +307,7 @@ class _$GPostMessageVars extends GPostMessageVars {
   @override
   int get hashCode {
     var _$hash = 0;
+    _$hash = $jc(_$hash, roomId.hashCode);
     _$hash = $jc(_$hash, user.hashCode);
     _$hash = $jc(_$hash, content.hashCode);
     _$hash = $jf(_$hash);
@@ -207,6 +317,7 @@ class _$GPostMessageVars extends GPostMessageVars {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'GPostMessageVars')
+          ..add('roomId', roomId)
           ..add('user', user)
           ..add('content', content))
         .toString();
@@ -216,6 +327,10 @@ class _$GPostMessageVars extends GPostMessageVars {
 class GPostMessageVarsBuilder
     implements Builder<GPostMessageVars, GPostMessageVarsBuilder> {
   _$GPostMessageVars? _$v;
+
+  String? _roomId;
+  String? get roomId => _$this._roomId;
+  set roomId(String? roomId) => _$this._roomId = roomId;
 
   String? _user;
   String? get user => _$this._user;
@@ -230,6 +345,7 @@ class GPostMessageVarsBuilder
   GPostMessageVarsBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
+      _roomId = $v.roomId;
       _user = $v.user;
       _content = $v.content;
       _$v = null;
@@ -254,6 +370,8 @@ class GPostMessageVarsBuilder
   _$GPostMessageVars _build() {
     final _$result = _$v ??
         new _$GPostMessageVars._(
+            roomId: BuiltValueNullFieldError.checkNotNull(
+                roomId, r'GPostMessageVars', 'roomId'),
             user: BuiltValueNullFieldError.checkNotNull(
                 user, r'GPostMessageVars', 'user'),
             content: BuiltValueNullFieldError.checkNotNull(
@@ -264,11 +382,17 @@ class GPostMessageVarsBuilder
 }
 
 class _$GOnNewMessageVars extends GOnNewMessageVars {
+  @override
+  final String roomId;
+
   factory _$GOnNewMessageVars(
           [void Function(GOnNewMessageVarsBuilder)? updates]) =>
       (new GOnNewMessageVarsBuilder()..update(updates))._build();
 
-  _$GOnNewMessageVars._() : super._();
+  _$GOnNewMessageVars._({required this.roomId}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        roomId, r'GOnNewMessageVars', 'roomId');
+  }
 
   @override
   GOnNewMessageVars rebuild(void Function(GOnNewMessageVarsBuilder) updates) =>
@@ -281,17 +405,22 @@ class _$GOnNewMessageVars extends GOnNewMessageVars {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GOnNewMessageVars;
+    return other is GOnNewMessageVars && roomId == other.roomId;
   }
 
   @override
   int get hashCode {
-    return 507391016;
+    var _$hash = 0;
+    _$hash = $jc(_$hash, roomId.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
   String toString() {
-    return newBuiltValueToStringHelper(r'GOnNewMessageVars').toString();
+    return (newBuiltValueToStringHelper(r'GOnNewMessageVars')
+          ..add('roomId', roomId))
+        .toString();
   }
 }
 
@@ -299,7 +428,20 @@ class GOnNewMessageVarsBuilder
     implements Builder<GOnNewMessageVars, GOnNewMessageVarsBuilder> {
   _$GOnNewMessageVars? _$v;
 
+  String? _roomId;
+  String? get roomId => _$this._roomId;
+  set roomId(String? roomId) => _$this._roomId = roomId;
+
   GOnNewMessageVarsBuilder();
+
+  GOnNewMessageVarsBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _roomId = $v.roomId;
+      _$v = null;
+    }
+    return this;
+  }
 
   @override
   void replace(GOnNewMessageVars other) {
@@ -316,7 +458,70 @@ class GOnNewMessageVarsBuilder
   GOnNewMessageVars build() => _build();
 
   _$GOnNewMessageVars _build() {
-    final _$result = _$v ?? new _$GOnNewMessageVars._();
+    final _$result = _$v ??
+        new _$GOnNewMessageVars._(
+            roomId: BuiltValueNullFieldError.checkNotNull(
+                roomId, r'GOnNewMessageVars', 'roomId'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GChatMessageFieldsVars extends GChatMessageFieldsVars {
+  factory _$GChatMessageFieldsVars(
+          [void Function(GChatMessageFieldsVarsBuilder)? updates]) =>
+      (new GChatMessageFieldsVarsBuilder()..update(updates))._build();
+
+  _$GChatMessageFieldsVars._() : super._();
+
+  @override
+  GChatMessageFieldsVars rebuild(
+          void Function(GChatMessageFieldsVarsBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GChatMessageFieldsVarsBuilder toBuilder() =>
+      new GChatMessageFieldsVarsBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GChatMessageFieldsVars;
+  }
+
+  @override
+  int get hashCode {
+    return 716418581;
+  }
+
+  @override
+  String toString() {
+    return newBuiltValueToStringHelper(r'GChatMessageFieldsVars').toString();
+  }
+}
+
+class GChatMessageFieldsVarsBuilder
+    implements Builder<GChatMessageFieldsVars, GChatMessageFieldsVarsBuilder> {
+  _$GChatMessageFieldsVars? _$v;
+
+  GChatMessageFieldsVarsBuilder();
+
+  @override
+  void replace(GChatMessageFieldsVars other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GChatMessageFieldsVars;
+  }
+
+  @override
+  void update(void Function(GChatMessageFieldsVarsBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GChatMessageFieldsVars build() => _build();
+
+  _$GChatMessageFieldsVars _build() {
+    final _$result = _$v ?? new _$GChatMessageFieldsVars._();
     replace(_$result);
     return _$result;
   }

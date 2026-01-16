@@ -6,6 +6,7 @@ import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart' show StandardJsonPlugin;
 import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart'
     show
+        GChatMessageFieldsData,
         GGetMessagesData,
         GGetMessagesData_messages,
         GOnNewMessageData,
@@ -13,9 +14,17 @@ import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart'
         GPostMessageData,
         GPostMessageData_postMessage;
 import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart'
-    show GGetMessagesReq, GOnNewMessageReq, GPostMessageReq;
+    show
+        GChatMessageFieldsReq,
+        GGetMessagesReq,
+        GOnNewMessageReq,
+        GPostMessageReq;
 import 'package:ConnectUs/graphql/__generated__/operations.var.gql.dart'
-    show GGetMessagesVars, GOnNewMessageVars, GPostMessageVars;
+    show
+        GChatMessageFieldsVars,
+        GGetMessagesVars,
+        GOnNewMessageVars,
+        GPostMessageVars;
 import 'package:ferry_exec/ferry_exec.dart';
 import 'package:gql_code_builder_serializers/gql_code_builder_serializers.dart'
     show OperationSerializer;
@@ -26,6 +35,9 @@ final SerializersBuilder _serializersBuilder = _$serializers.toBuilder()
   ..add(OperationSerializer())
   ..addPlugin(StandardJsonPlugin());
 @SerializersFor([
+  GChatMessageFieldsData,
+  GChatMessageFieldsReq,
+  GChatMessageFieldsVars,
   GGetMessagesData,
   GGetMessagesData_messages,
   GGetMessagesReq,

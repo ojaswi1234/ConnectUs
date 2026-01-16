@@ -1,21 +1,21 @@
 # lib/graphql/schema.graphql
 
 type Message {
-    id: ID!
-    user: String!
-    content: String!
-    createdAt: String!  # Add this field
+  id: ID!
+  roomId: String!
+  user: String!
+  content: String!
+  createdAt: String!
 }
 
 type Query {
-    messages: [Message!]
+  messages(roomId: String!): [Message!]!
 }
 
 type Mutation {
-    # It's better to return the full Message object after posting
-    postMessage(user: String!, content: String!): Message! 
+  postMessage(roomId: String!, user: String!, content: String!): Message!
 }
 
 type Subscription {
-    messageAdded: Message!
+  messageAdded(roomId: String!): Message!
 }

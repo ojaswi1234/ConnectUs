@@ -12,6 +12,8 @@ Serializer<GPostMessageReq> _$gPostMessageReqSerializer =
     new _$GPostMessageReqSerializer();
 Serializer<GOnNewMessageReq> _$gOnNewMessageReqSerializer =
     new _$GOnNewMessageReqSerializer();
+Serializer<GChatMessageFieldsReq> _$gChatMessageFieldsReqSerializer =
+    new _$GChatMessageFieldsReqSerializer();
 
 class _$GGetMessagesReqSerializer
     implements StructuredSerializer<GGetMessagesReq> {
@@ -359,6 +361,83 @@ class _$GOnNewMessageReqSerializer
         case 'executeOnListen':
           result.executeOnListen = serializers.deserialize(value,
               specifiedType: const FullType(bool))! as bool;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GChatMessageFieldsReqSerializer
+    implements StructuredSerializer<GChatMessageFieldsReq> {
+  @override
+  final Iterable<Type> types = const [
+    GChatMessageFieldsReq,
+    _$GChatMessageFieldsReq
+  ];
+  @override
+  final String wireName = 'GChatMessageFieldsReq';
+
+  @override
+  Iterable<Object?> serialize(
+      Serializers serializers, GChatMessageFieldsReq object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      'vars',
+      serializers.serialize(object.vars,
+          specifiedType: const FullType(_i3.GChatMessageFieldsVars)),
+      'document',
+      serializers.serialize(object.document,
+          specifiedType: const FullType(_i7.DocumentNode)),
+      'idFields',
+      serializers.serialize(object.idFields,
+          specifiedType: const FullType(
+              Map, const [const FullType(String), const FullType(dynamic)])),
+    ];
+    Object? value;
+    value = object.fragmentName;
+    if (value != null) {
+      result
+        ..add('fragmentName')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
+    return result;
+  }
+
+  @override
+  GChatMessageFieldsReq deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new GChatMessageFieldsReqBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case 'vars':
+          result.vars.replace(serializers.deserialize(value,
+                  specifiedType: const FullType(_i3.GChatMessageFieldsVars))!
+              as _i3.GChatMessageFieldsVars);
+          break;
+        case 'document':
+          result.document = serializers.deserialize(value,
+                  specifiedType: const FullType(_i7.DocumentNode))!
+              as _i7.DocumentNode;
+          break;
+        case 'fragmentName':
+          result.fragmentName = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String?;
+          break;
+        case 'idFields':
+          result.idFields = serializers.deserialize(value,
+              specifiedType: const FullType(Map, const [
+                const FullType(String),
+                const FullType(dynamic)
+              ]))! as Map<String, dynamic>;
           break;
       }
     }
@@ -1066,6 +1145,153 @@ class GOnNewMessageReqBuilder
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'GOnNewMessageReq', _$failedField, e.toString());
+      }
+      rethrow;
+    }
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GChatMessageFieldsReq extends GChatMessageFieldsReq {
+  @override
+  final _i3.GChatMessageFieldsVars vars;
+  @override
+  final _i7.DocumentNode document;
+  @override
+  final String? fragmentName;
+  @override
+  final Map<String, dynamic> idFields;
+
+  factory _$GChatMessageFieldsReq(
+          [void Function(GChatMessageFieldsReqBuilder)? updates]) =>
+      (new GChatMessageFieldsReqBuilder()..update(updates))._build();
+
+  _$GChatMessageFieldsReq._(
+      {required this.vars,
+      required this.document,
+      this.fragmentName,
+      required this.idFields})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        vars, r'GChatMessageFieldsReq', 'vars');
+    BuiltValueNullFieldError.checkNotNull(
+        document, r'GChatMessageFieldsReq', 'document');
+    BuiltValueNullFieldError.checkNotNull(
+        idFields, r'GChatMessageFieldsReq', 'idFields');
+  }
+
+  @override
+  GChatMessageFieldsReq rebuild(
+          void Function(GChatMessageFieldsReqBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GChatMessageFieldsReqBuilder toBuilder() =>
+      new GChatMessageFieldsReqBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GChatMessageFieldsReq &&
+        vars == other.vars &&
+        document == other.document &&
+        fragmentName == other.fragmentName &&
+        idFields == other.idFields;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, vars.hashCode);
+    _$hash = $jc(_$hash, document.hashCode);
+    _$hash = $jc(_$hash, fragmentName.hashCode);
+    _$hash = $jc(_$hash, idFields.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(r'GChatMessageFieldsReq')
+          ..add('vars', vars)
+          ..add('document', document)
+          ..add('fragmentName', fragmentName)
+          ..add('idFields', idFields))
+        .toString();
+  }
+}
+
+class GChatMessageFieldsReqBuilder
+    implements Builder<GChatMessageFieldsReq, GChatMessageFieldsReqBuilder> {
+  _$GChatMessageFieldsReq? _$v;
+
+  _i3.GChatMessageFieldsVarsBuilder? _vars;
+  _i3.GChatMessageFieldsVarsBuilder get vars =>
+      _$this._vars ??= new _i3.GChatMessageFieldsVarsBuilder();
+  set vars(_i3.GChatMessageFieldsVarsBuilder? vars) => _$this._vars = vars;
+
+  _i7.DocumentNode? _document;
+  _i7.DocumentNode? get document => _$this._document;
+  set document(_i7.DocumentNode? document) => _$this._document = document;
+
+  String? _fragmentName;
+  String? get fragmentName => _$this._fragmentName;
+  set fragmentName(String? fragmentName) => _$this._fragmentName = fragmentName;
+
+  Map<String, dynamic>? _idFields;
+  Map<String, dynamic>? get idFields => _$this._idFields;
+  set idFields(Map<String, dynamic>? idFields) => _$this._idFields = idFields;
+
+  GChatMessageFieldsReqBuilder() {
+    GChatMessageFieldsReq._initializeBuilder(this);
+  }
+
+  GChatMessageFieldsReqBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _vars = $v.vars.toBuilder();
+      _document = $v.document;
+      _fragmentName = $v.fragmentName;
+      _idFields = $v.idFields;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GChatMessageFieldsReq other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GChatMessageFieldsReq;
+  }
+
+  @override
+  void update(void Function(GChatMessageFieldsReqBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GChatMessageFieldsReq build() => _build();
+
+  _$GChatMessageFieldsReq _build() {
+    _$GChatMessageFieldsReq _$result;
+    try {
+      _$result = _$v ??
+          new _$GChatMessageFieldsReq._(
+              vars: vars.build(),
+              document: BuiltValueNullFieldError.checkNotNull(
+                  document, r'GChatMessageFieldsReq', 'document'),
+              fragmentName: fragmentName,
+              idFields: BuiltValueNullFieldError.checkNotNull(
+                  idFields, r'GChatMessageFieldsReq', 'idFields'));
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'vars';
+        vars.build();
+      } catch (e) {
+        throw new BuiltValueNestedFieldError(
+            r'GChatMessageFieldsReq', _$failedField, e.toString());
       }
       rethrow;
     }

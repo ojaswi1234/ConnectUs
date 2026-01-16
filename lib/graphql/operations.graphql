@@ -1,28 +1,27 @@
 # lib/graphql/operations.graphql
 
-query GetMessages {
-    messages {
-        id
-        user
-        content
-        createdAt # Added for consistency
-    }
+fragment ChatMessageFields on Message {
+  id
+  roomId
+  user
+  content
+  createdAt
 }
 
-mutation PostMessage($user: String!, $content: String!) {
-    postMessage(user: $user, content: $content) {
-        id
-        user
-        content
-        createdAt
-    }
+query GetMessages($roomId: String!) {
+  messages(roomId: $roomId) {
+    ...ChatMessageFields
+  }
 }
 
-subscription OnNewMessage {
-  messageAdded {
-    id
-    content
-    user
-    createdAt # Now matches the schema
+mutation PostMessage($roomId: String!, $user: String!, $content: String!) {
+  postMessage(roomId: $roomId, user: $user, content: $content) {
+    ...ChatMessageFields
+  }
+}
+
+subscription OnNewMessage($roomId: String!) {
+  messageAdded(roomId: $roomId) {
+    ...ChatMessageFields
   }
 }

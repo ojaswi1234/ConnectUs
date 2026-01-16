@@ -21,7 +21,7 @@ abstract class GGetMessagesData
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
-  BuiltList<GGetMessagesData_messages>? get messages;
+  BuiltList<GGetMessagesData_messages> get messages;
   static Serializer<GGetMessagesData> get serializer =>
       _$gGetMessagesDataSerializer;
 
@@ -39,7 +39,8 @@ abstract class GGetMessagesData
 
 abstract class GGetMessagesData_messages
     implements
-        Built<GGetMessagesData_messages, GGetMessagesData_messagesBuilder> {
+        Built<GGetMessagesData_messages, GGetMessagesData_messagesBuilder>,
+        GChatMessageFields {
   GGetMessagesData_messages._();
 
   factory GGetMessagesData_messages(
@@ -49,15 +50,23 @@ abstract class GGetMessagesData_messages
   static void _initializeBuilder(GGetMessagesData_messagesBuilder b) =>
       b..G__typename = 'Message';
 
+  @override
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
+  @override
   String get id;
+  @override
+  String get roomId;
+  @override
   String get user;
+  @override
   String get content;
+  @override
   String get createdAt;
   static Serializer<GGetMessagesData_messages> get serializer =>
       _$gGetMessagesDataMessagesSerializer;
 
+  @override
   Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
         GGetMessagesData_messages.serializer,
         this,
@@ -101,7 +110,8 @@ abstract class GPostMessageData
 abstract class GPostMessageData_postMessage
     implements
         Built<GPostMessageData_postMessage,
-            GPostMessageData_postMessageBuilder> {
+            GPostMessageData_postMessageBuilder>,
+        GChatMessageFields {
   GPostMessageData_postMessage._();
 
   factory GPostMessageData_postMessage(
@@ -111,15 +121,23 @@ abstract class GPostMessageData_postMessage
   static void _initializeBuilder(GPostMessageData_postMessageBuilder b) =>
       b..G__typename = 'Message';
 
+  @override
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
+  @override
   String get id;
+  @override
+  String get roomId;
+  @override
   String get user;
+  @override
   String get content;
+  @override
   String get createdAt;
   static Serializer<GPostMessageData_postMessage> get serializer =>
       _$gPostMessageDataPostMessageSerializer;
 
+  @override
   Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
         GPostMessageData_postMessage.serializer,
         this,
@@ -164,7 +182,8 @@ abstract class GOnNewMessageData
 abstract class GOnNewMessageData_messageAdded
     implements
         Built<GOnNewMessageData_messageAdded,
-            GOnNewMessageData_messageAddedBuilder> {
+            GOnNewMessageData_messageAddedBuilder>,
+        GChatMessageFields {
   GOnNewMessageData_messageAdded._();
 
   factory GOnNewMessageData_messageAdded(
@@ -174,15 +193,23 @@ abstract class GOnNewMessageData_messageAdded
   static void _initializeBuilder(GOnNewMessageData_messageAddedBuilder b) =>
       b..G__typename = 'Message';
 
+  @override
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
+  @override
   String get id;
-  String get content;
+  @override
+  String get roomId;
+  @override
   String get user;
+  @override
+  String get content;
+  @override
   String get createdAt;
   static Serializer<GOnNewMessageData_messageAdded> get serializer =>
       _$gOnNewMessageDataMessageAddedSerializer;
 
+  @override
   Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
         GOnNewMessageData_messageAdded.serializer,
         this,
@@ -191,6 +218,58 @@ abstract class GOnNewMessageData_messageAdded
   static GOnNewMessageData_messageAdded? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
         GOnNewMessageData_messageAdded.serializer,
+        json,
+      );
+}
+
+abstract class GChatMessageFields {
+  String get G__typename;
+  String get id;
+  String get roomId;
+  String get user;
+  String get content;
+  String get createdAt;
+  Map<String, dynamic> toJson();
+}
+
+abstract class GChatMessageFieldsData
+    implements
+        Built<GChatMessageFieldsData, GChatMessageFieldsDataBuilder>,
+        GChatMessageFields {
+  GChatMessageFieldsData._();
+
+  factory GChatMessageFieldsData(
+          [void Function(GChatMessageFieldsDataBuilder b) updates]) =
+      _$GChatMessageFieldsData;
+
+  static void _initializeBuilder(GChatMessageFieldsDataBuilder b) =>
+      b..G__typename = 'Message';
+
+  @override
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  @override
+  String get id;
+  @override
+  String get roomId;
+  @override
+  String get user;
+  @override
+  String get content;
+  @override
+  String get createdAt;
+  static Serializer<GChatMessageFieldsData> get serializer =>
+      _$gChatMessageFieldsDataSerializer;
+
+  @override
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GChatMessageFieldsData.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GChatMessageFieldsData? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GChatMessageFieldsData.serializer,
         json,
       );
 }

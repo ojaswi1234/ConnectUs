@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:logger/logger.dart';
@@ -20,6 +21,9 @@ class _ChatAreaState extends State<ChatArea> {
   final ScrollController _scrollController = ScrollController();
   String? _myUsername;
 
+  // New: Handle the background connection
+  StreamSubscription? _messageSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -39,18 +43,41 @@ class _ChatAreaState extends State<ChatArea> {
         setState(() {
           _myUsername = data?['usrname'] ?? 'Anonymous';
         });
+        // Start listening to the room as soon as we know who we are
+        _startSubscription();
       }
     }
   }
 
+  // LOGIC CHANGE: Generate a unique Room ID based on the two usernames.
+  // Sorting ensures "Alice_Bob" is the same room as "Bob_Alice".
+  String get _roomId {
+    if (_myUsername == null) return "loading";
+    final users = [_myUsername!, widget.userName];
+    users.sort();
+    return users.join("_");
+  }
+
+  // LOGIC CHANGE: Start a background listener for this specific room
+  void _startSubscription() {
+    final client = Provider.of<Client>(context, listen: false);
+
+    // Subscribe to messages for this roomID
+    final subReq = GOnNewMessageReq((b) => b
+      ..vars.roomId = _roomId
+      ..updateCacheHandlerKey = 'updateGetMessages');
+
+    // Keep the stream open
+    _messageSubscription = client.request(subReq).listen(null);
+  }
+
   @override
   void dispose() {
+    _messageSubscription?.cancel();
     _scrollController.dispose();
     _controller.dispose();
     super.dispose();
   }
-
-  // Inside _ChatAreaState in chatArea.dart
 
   void _sendChat() {
     if (_controller.text.trim().isEmpty || _myUsername == null) return;
@@ -58,10 +85,12 @@ class _ChatAreaState extends State<ChatArea> {
     final client = Provider.of<Client>(context, listen: false);
     final messageText = _controller.text.trim();
 
+    // LOGIC CHANGE: Send the roomId with the message
     final postMessageReq = GPostMessageReq((b) => b
+      ..vars.roomId = _roomId
       ..vars.content = messageText
-      ..vars.user = _myUsername
-      // ADD THIS: Update local cache immediately after mutation
+      ..vars.user = _myUsername!
+      // Update local cache immediately
       ..updateCacheHandlerKey = 'updateGetMessages');
 
     client.request(postMessageReq).listen((response) {
@@ -74,22 +103,21 @@ class _ChatAreaState extends State<ChatArea> {
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        0.0, // Because ListView is reversed, 0.0 is the bottom
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      // Small delay to ensure the list has updated
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            0.0, // Because your ListView is reversed, 0.0 is the bottom
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // 1. Get initial history
-    final getMessagesReq = GGetMessagesReq();
-    // 2. Listen for new messages (Subscription)
-    final onNewMessageReq =
-        GOnNewMessageReq((b) => b..updateCacheHandlerKey = 'updateGetMessages');
-
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
@@ -124,41 +152,36 @@ class _ChatAreaState extends State<ChatArea> {
       body: Column(
         children: [
           Expanded(
-            // ADDED LOGIC: Nest the Query Operation inside the Subscription Operation.
-            // This ensures the real-time connection stays open while you're on this screen.
+            // Logic Change: Pass the roomId to the Query
             child: Operation(
               client: Provider.of<Client>(context),
-              operationRequest: onNewMessageReq,
-              builder: (context, subResponse, subError) {
-                // The Subscription updates the cache; this Query Operation watches the cache.
-                return Operation(
-                  client: Provider.of<Client>(context),
-                  operationRequest: getMessagesReq,
-                  builder: (context, response, error) {
-                    if (response?.loading ?? true) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+              operationRequest:
+                  GGetMessagesReq((b) => b..vars.roomId = _roomId),
+              builder: (context, response, error) {
+                if (response?.loading == true &&
+                    (response?.data?.messages == null)) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                    final messages = response?.data?.messages?.toList() ?? [];
+                final messages = response?.data?.messages?.toList() ?? [];
 
-                    if (messages.isEmpty) {
-                      return const Center(
-                          child: Text("No messages yet.",
-                              style: TextStyle(color: AppTheme.muted)));
-                    }
+                if (messages.isEmpty) {
+                  return const Center(
+                      child: Text("No messages yet.",
+                          style: TextStyle(color: AppTheme.muted)));
+                }
 
-                    return ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.all(16.0),
-                      itemCount: messages.length,
-                      reverse: true, // Newest at the bottom
-                      itemBuilder: (context, index) {
-                        final message = messages[messages.length - 1 - index];
-                        final bool isMe = message.user == _myUsername;
+                return ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: messages.length,
+                  reverse: true, // Keep your original reverse logic
+                  itemBuilder: (context, index) {
+                    // Reverse list logic: Index 0 is the newest message (bottom)
+                    final message = messages[messages.length - 1 - index];
+                    final bool isMe = message.user == _myUsername;
 
-                        return _buildMessageBubble(message, isMe);
-                      },
-                    );
+                    return _buildMessageBubble(message, isMe);
                   },
                 );
               },
@@ -169,6 +192,8 @@ class _ChatAreaState extends State<ChatArea> {
       ),
     );
   }
+
+  // --- UI Elements below are 100% identical to your original code ---
 
   Widget _buildMessageBubble(dynamic message, bool isMe) {
     return Align(

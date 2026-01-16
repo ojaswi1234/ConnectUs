@@ -10,6 +10,7 @@ import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart'
 import 'package:ConnectUs/graphql/__generated__/operations.var.gql.dart' as _i3;
 import 'package:ConnectUs/graphql/__generated__/serializers.gql.dart' as _i6;
 import 'package:ferry_exec/ferry_exec.dart' as _i1;
+import 'package:gql/ast.dart' as _i7;
 import 'package:gql_exec/gql_exec.dart' as _i4;
 
 part 'operations.req.gql.g.dart';
@@ -244,6 +245,55 @@ abstract class GOnNewMessageReq
   static GOnNewMessageReq? fromJson(Map<String, dynamic> json) =>
       _i6.serializers.deserializeWith(
         GOnNewMessageReq.serializer,
+        json,
+      );
+}
+
+abstract class GChatMessageFieldsReq
+    implements
+        Built<GChatMessageFieldsReq, GChatMessageFieldsReqBuilder>,
+        _i1.FragmentRequest<_i2.GChatMessageFieldsData,
+            _i3.GChatMessageFieldsVars> {
+  GChatMessageFieldsReq._();
+
+  factory GChatMessageFieldsReq(
+          [void Function(GChatMessageFieldsReqBuilder b) updates]) =
+      _$GChatMessageFieldsReq;
+
+  static void _initializeBuilder(GChatMessageFieldsReqBuilder b) => b
+    ..document = _i5.document
+    ..fragmentName = 'ChatMessageFields';
+
+  @override
+  _i3.GChatMessageFieldsVars get vars;
+  @override
+  _i7.DocumentNode get document;
+  @override
+  String? get fragmentName;
+  @override
+  Map<String, dynamic> get idFields;
+  @override
+  _i2.GChatMessageFieldsData? parseData(Map<String, dynamic> json) =>
+      _i2.GChatMessageFieldsData.fromJson(json);
+
+  @override
+  Map<String, dynamic> varsToJson() => vars.toJson();
+
+  @override
+  Map<String, dynamic> dataToJson(_i2.GChatMessageFieldsData data) =>
+      data.toJson();
+
+  static Serializer<GChatMessageFieldsReq> get serializer =>
+      _$gChatMessageFieldsReqSerializer;
+
+  Map<String, dynamic> toJson() => (_i6.serializers.serializeWith(
+        GChatMessageFieldsReq.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GChatMessageFieldsReq? fromJson(Map<String, dynamic> json) =>
+      _i6.serializers.deserializeWith(
+        GChatMessageFieldsReq.serializer,
         json,
       );
 }

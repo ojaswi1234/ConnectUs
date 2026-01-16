@@ -8,6 +8,9 @@ part of 'serializers.gql.dart';
 
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(FetchPolicy.serializer)
+      ..add(GChatMessageFieldsData.serializer)
+      ..add(GChatMessageFieldsReq.serializer)
+      ..add(GChatMessageFieldsVars.serializer)
       ..add(GGetMessagesData.serializer)
       ..add(GGetMessagesData_messages.serializer)
       ..add(GGetMessagesReq.serializer)
