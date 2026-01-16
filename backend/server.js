@@ -1,55 +1,107 @@
 import { createServer } from "http";
 import { createSchema, createYoga, createPubSub } from "graphql-yoga";
-import { WebSocketServer } from 'ws'; //
-import { useServer } from 'graphql-ws/use/ws'; //
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/use/ws';
 
 const pubSub = createPubSub();
-const messages = [];
+// This is your "Database" (In-Memory). 
+// Messages stay here as long as the server runs.
+const messages = []; 
 
 const yoga = createYoga({
   schema: createSchema({
     typeDefs: /* GraphQL */ `
-      type Message { id: ID!, user: String!, content: String! }
-      type Query { messages: [Message!] }
-      type Mutation { postMessage(user: String!, content: String!): ID! }
-      type Subscription { messageAdded: Message! }
+      type Message {
+        id: ID!
+        roomId: String!  # Logic to separate chats
+        user: String!
+        content: String!
+        createdAt: String!
+      }
+
+      type Query {
+        # Fetch history for a specific room only
+        messages(roomId: String!): [Message!]!
+      }
+
+      type Mutation {
+        postMessage(roomId: String!, user: String!, content: String!): Message!
+      }
+
+      type Subscription {
+        # Listen for updates in a specific room
+        messageAdded(roomId: String!): Message!
+      }
     `,
     resolvers: {
-      Query: { messages: () => messages },
+      Query: {
+        // Filter the global list to return only this room's messages
+        messages: (_, { roomId }) => messages.filter(m => m.roomId === roomId),
+      },
       Mutation: {
-        postMessage: (parent, { user, content }) => {
-          const newMessage = { id: String(messages.length), user, content,createdAt: new Date().toISOString() };
+        postMessage: (_, { roomId, user, content }) => {
+          const newMessage = {
+            id: String(messages.length),
+            roomId,
+            user,
+            content,
+            createdAt: new Date().toISOString(),
+          };
           messages.push(newMessage);
-          pubSub.publish("MESSAGE_ADDED", { messageAdded: newMessage });
+          
+          // Publish ONLY to people listening to this roomId
+          pubSub.publish(`MESSAGE_ADDED_${roomId}`, { messageAdded: newMessage });
+          
           return newMessage;
-        }
+        },
       },
       Subscription: {
-        messageAdded: { subscribe: () => pubSub.subscribe("MESSAGE_ADDED") }
-      }
-    }
-  })
+        messageAdded: {
+          // Subscribe ONLY to the specific room channel
+          subscribe: (_, { roomId }) => pubSub.subscribe(`MESSAGE_ADDED_${roomId}`),
+        },
+      },
+    },
+  }),
+  graphiql: {
+    subscriptionsProtocol: 'WS',
+  },
 });
 
 const server = createServer(yoga);
 
-// Add WebSocket support on the same path as GraphQL
 const wsServer = new WebSocketServer({
   server,
-  path: yoga.graphqlEndpoint
+  path: yoga.graphqlEndpoint,
 });
 
-useServer({
-  execute: (args) => args.rootValue.execute(args),
-  subscribe: (args) => args.rootValue.subscribe(args),
-  onSubscribe: async (ctx, msg) => {
-    const { schema, execute, subscribe, contextFactory, parse, validate } = yoga.getEnveloped({
-      ctx, req: ctx.extra.request, socket: ctx.extra.socket, params: msg.payload
-    });
-    return { schema, execute, subscribe, contextValue: await contextFactory(), ...msg.payload };
-  }
-}, wsServer);
+useServer(
+  {
+    execute: (args) => args.rootValue.execute(args),
+    subscribe: (args) => args.rootValue.subscribe(args),
+    onSubscribe: async (ctx, msg) => {
+      const { schema, execute, subscribe, contextFactory, parse, validate } =
+        yoga.getEnveloped({
+          ctx,
+          req: ctx.extra.request,
+          socket: ctx.extra.socket,
+          params: msg.payload,
+        });
 
-server.listen(4000, () => {
+      return {
+        schema,
+        operationName: msg.payload.operationName,
+        document: parse(msg.payload.query),
+        variableValues: msg.payload.variables,
+        contextValue: await contextFactory(),
+        rootValue: { execute, subscribe },
+      };
+    },
+  },
+  wsServer
+);
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
   console.log('Server is running on http://localhost:4000/graphql');
 });
