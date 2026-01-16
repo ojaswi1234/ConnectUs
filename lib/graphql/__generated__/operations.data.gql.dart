@@ -60,6 +60,8 @@ abstract class GGetMessagesData_messages
   @override
   String get user;
   @override
+  String get to;
+  @override
   String get content;
   @override
   String get createdAt;
@@ -130,6 +132,8 @@ abstract class GPostMessageData_postMessage
   String get roomId;
   @override
   String get user;
+  @override
+  String get to;
   @override
   String get content;
   @override
@@ -203,6 +207,8 @@ abstract class GOnNewMessageData_messageAdded
   @override
   String get user;
   @override
+  String get to;
+  @override
   String get content;
   @override
   String get createdAt;
@@ -222,11 +228,91 @@ abstract class GOnNewMessageData_messageAdded
       );
 }
 
+abstract class GListenToIncomingMessagesData
+    implements
+        Built<GListenToIncomingMessagesData,
+            GListenToIncomingMessagesDataBuilder> {
+  GListenToIncomingMessagesData._();
+
+  factory GListenToIncomingMessagesData(
+          [void Function(GListenToIncomingMessagesDataBuilder b) updates]) =
+      _$GListenToIncomingMessagesData;
+
+  static void _initializeBuilder(GListenToIncomingMessagesDataBuilder b) =>
+      b..G__typename = 'Subscription';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  GListenToIncomingMessagesData_messageSentToUser get messageSentToUser;
+  static Serializer<GListenToIncomingMessagesData> get serializer =>
+      _$gListenToIncomingMessagesDataSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GListenToIncomingMessagesData.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GListenToIncomingMessagesData? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GListenToIncomingMessagesData.serializer,
+        json,
+      );
+}
+
+abstract class GListenToIncomingMessagesData_messageSentToUser
+    implements
+        Built<GListenToIncomingMessagesData_messageSentToUser,
+            GListenToIncomingMessagesData_messageSentToUserBuilder>,
+        GChatMessageFields {
+  GListenToIncomingMessagesData_messageSentToUser._();
+
+  factory GListenToIncomingMessagesData_messageSentToUser(
+      [void Function(GListenToIncomingMessagesData_messageSentToUserBuilder b)
+          updates]) = _$GListenToIncomingMessagesData_messageSentToUser;
+
+  static void _initializeBuilder(
+          GListenToIncomingMessagesData_messageSentToUserBuilder b) =>
+      b..G__typename = 'Message';
+
+  @override
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  @override
+  String get id;
+  @override
+  String get roomId;
+  @override
+  String get user;
+  @override
+  String get to;
+  @override
+  String get content;
+  @override
+  String get createdAt;
+  static Serializer<GListenToIncomingMessagesData_messageSentToUser>
+      get serializer =>
+          _$gListenToIncomingMessagesDataMessageSentToUserSerializer;
+
+  @override
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GListenToIncomingMessagesData_messageSentToUser.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GListenToIncomingMessagesData_messageSentToUser? fromJson(
+          Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GListenToIncomingMessagesData_messageSentToUser.serializer,
+        json,
+      );
+}
+
 abstract class GChatMessageFields {
   String get G__typename;
   String get id;
   String get roomId;
   String get user;
+  String get to;
   String get content;
   String get createdAt;
   Map<String, dynamic> toJson();
@@ -254,6 +340,8 @@ abstract class GChatMessageFieldsData
   String get roomId;
   @override
   String get user;
+  @override
+  String get to;
   @override
   String get content;
   @override

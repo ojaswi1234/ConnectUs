@@ -13,6 +13,12 @@ import 'package:ConnectUs/components/contactTile.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:ConnectUs/models/contact.dart' as HiveContact;
 
+// NEW IMPORTS FOR FERRY
+import 'package:provider/provider.dart';
+import 'package:ferry/ferry.dart';
+import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
+import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart';
+
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});
 
@@ -20,16 +26,21 @@ class Home_Page extends StatefulWidget {
   State<Home_Page> createState() => _Home_PageState();
 }
 
-class _Home_PageState extends State<Home_Page>
-    with AutomaticKeepAliveClientMixin {
+class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _searchController = TextEditingController();
+  
+  // Stores the currently logged-in user's username
+  String? _myUsername; 
+  // Listens for incoming messages globally
+  StreamSubscription? _incomingMessageSub; 
+
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-  bool get isDesktop =>
-      kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+  bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
   Box<HiveContact.Contact>? contactBox;
   List<Contact> _contacts = [];
+  // Using LinkedHashSet to keep unique chats
   final LinkedHashSet<Chats> _chats = LinkedHashSet<Chats>();
 
   bool _isLoading = false;
@@ -46,6 +57,53 @@ class _Home_PageState extends State<Home_Page>
     super.initState();
     _initializeHive();
     _loadContacts();
+    _loadMyProfileAndListen(); // Start the listener
+  }
+
+  // NEW: Fetch profile and start listening for messages
+  Future<void> _loadMyProfileAndListen() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      final data = await Supabase.instance.client
+          .from('users')
+          .select('usrname')
+          .eq('id', user.id)
+          .maybeSingle();
+      
+      if (mounted && data != null) {
+        setState(() {
+          _myUsername = data['usrname'];
+        });
+        _startGlobalListener();
+      }
+    }
+  }
+
+  // NEW: The "Auto-Refresh" Logic
+  void _startGlobalListener() {
+    if (_myUsername == null) return;
+    
+    // We access the Client provided in main.dart
+    // Note: ensure main.dart wraps the app in a Provider<Client>
+    final client = Provider.of<Client>(context, listen: false);
+
+    final listenReq = GListenToIncomingMessagesReq((b) => b
+      ..vars.user = _myUsername!
+    );
+
+    _incomingMessageSub = client.request(listenReq).listen((response) {
+      if (response.data?.messageSentToUser != null) {
+        final msg = response.data!.messageSentToUser!;
+        
+        // When a message arrives, we automatically add/update the chat tile
+        setState(() {
+          // Remove if exists to re-add at top (simple LRU behavior)
+          final tempChat = Chats(contactName: msg.user, lastMessage: msg.content);
+          _chats.remove(tempChat); 
+          _chats.add(tempChat);
+        });
+      }
+    });
   }
 
   void _initializeHive() {
@@ -56,13 +114,15 @@ class _Home_PageState extends State<Home_Page>
     }
   }
 
+  // ... (Keep _loadContacts, _fetchRegisteredPhoneNumbers, _categorizeContacts, 
+  //      _normalizePhoneNumber, _fetchContactsFromDevice as they were) ...
+  
   Future<void> _loadContacts() async {
     if (contactBox != null && contactBox!.isNotEmpty) {
       final hiveContacts = contactBox!.values.toList();
       _contacts = hiveContacts.map((hiveContact) {
         final contact = Contact();
-        final contactName =
-            hiveContact.name.isNotEmpty ? hiveContact.name : 'Unknown Contact';
+        final contactName = hiveContact.name.isNotEmpty ? hiveContact.name : 'Unknown Contact';
         contact.name.first = contactName;
         contact.displayName = contactName;
         contact.phones = [Phone(hiveContact.phoneNumber)];
@@ -77,19 +137,16 @@ class _Home_PageState extends State<Home_Page>
   }
 
   Future<Set<String>> _fetchRegisteredPhoneNumbers() async {
-    if (_cachedRegisteredNumbers != null) return _cachedRegisteredNumbers!;
-
+     // ... (Existing implementation) ...
+     if (_cachedRegisteredNumbers != null) return _cachedRegisteredNumbers!;
     try {
-      final response =
-          await Supabase.instance.client.from('users').select('phone_number');
-
+      final response = await Supabase.instance.client.from('users').select('phone_number');
       final phoneNumbers = (response as List)
           .map((row) => row['phone_number'] as String)
           .where((number) => number.isNotEmpty)
           .map((number) => _normalizePhoneNumber(number))
           .where((number) => number.isNotEmpty)
           .toSet();
-
       _cachedRegisteredNumbers = phoneNumbers;
       return phoneNumbers;
     } catch (e) {
@@ -97,65 +154,49 @@ class _Home_PageState extends State<Home_Page>
       return <String>{};
     }
   }
-
+  
   Future<void> _categorizeContacts() async {
     final registeredNumbers = await _fetchRegisteredPhoneNumbers();
     _registeredContacts = [];
     _nonRegisteredContacts = [];
-
     for (final contact in _contacts) {
       bool isRegistered = false;
       for (final phone in contact.phones) {
         final normalized = _normalizePhoneNumber(phone.number);
         if (registeredNumbers.contains(normalized) ||
             registeredNumbers.contains('91$normalized') ||
-            (normalized.length > 2 &&
-                registeredNumbers.contains(normalized.substring(2)))) {
+            (normalized.length > 2 && registeredNumbers.contains(normalized.substring(2)))) {
           isRegistered = true;
           break;
         }
       }
-      if (isRegistered) {
-        _registeredContacts.add(contact);
-      } else {
-        _nonRegisteredContacts.add(contact);
-      }
+      if (isRegistered) _registeredContacts.add(contact);
+      else _nonRegisteredContacts.add(contact);
     }
   }
 
   String _normalizePhoneNumber(String phoneNumber) {
     String normalized = phoneNumber.replaceAll(RegExp(r'\D'), '');
     if (normalized.startsWith('0')) normalized = normalized.substring(1);
-    if (normalized.startsWith('91') && normalized.length == 12)
-      return normalized.substring(2);
+    if (normalized.startsWith('91') && normalized.length == 12) return normalized.substring(2);
     return normalized;
   }
 
   Future<void> _fetchContactsFromDevice() async {
     if (isMobile) {
       if (!await FlutterContacts.requestPermission()) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Permission denied to access contacts.')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Permission denied to access contacts.')));
         return;
       }
-      setState(() {
-        _isLoading = true;
-        _registeredContacts = [];
-      });
+      setState(() { _isLoading = true; _registeredContacts = []; });
       try {
-        final contacts = await FlutterContacts.getContacts(
-            withProperties: true, withPhoto: false);
+        final contacts = await FlutterContacts.getContacts(withProperties: true, withPhoto: false);
         if (contactBox != null) {
           await contactBox!.clear();
           for (final contact in contacts) {
             final hiveContact = HiveContact.Contact(
-              name: contact.displayName.isNotEmpty
-                  ? contact.displayName
-                  : 'Unknown Contact',
-              phoneNumber:
-                  contact.phones.isNotEmpty ? contact.phones.first.number : '',
+              name: contact.displayName.isNotEmpty ? contact.displayName : 'Unknown Contact',
+              phoneNumber: contact.phones.isNotEmpty ? contact.phones.first.number : '',
             );
             await contactBox!.add(hiveContact);
           }
@@ -167,20 +208,19 @@ class _Home_PageState extends State<Home_Page>
       }
     }
   }
-
-  Future<void> _fetchContacts() async => await _fetchContactsFromDevice();
+  
+  // ... (End of existing helpers) ...
 
   void _createChatWithContact(Contact contact) {
     setState(() {
-      // Adding to _chats set "stores" it in the UI list for the session
-      _chats.add(Chats(
-          contactName: contact.displayName,
-          lastMessage: 'Click here to start chatting'));
+      // Logic to add manually started chats
+      // We remove first to ensure we don't have duplicates and it moves to top if using list logic
+      final chat = Chats(contactName: contact.displayName, lastMessage: 'Click here to start chatting');
+      _chats.add(chat);
     });
     Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) => ChatArea(userName: contact.displayName)),
+      MaterialPageRoute(builder: (context) => ChatArea(userName: contact.displayName)),
     );
   }
 
@@ -205,7 +245,9 @@ class _Home_PageState extends State<Home_Page>
     );
   }
 
-  Future<void> _refreshChatList() async {}
+  Future<void> _refreshChatList() async {
+    // Logic to reload chats from backend could go here if you had a Persistent Store API
+  }
 
   void _onSearchChanged() {
     _debounceTimer?.cancel();
@@ -216,6 +258,7 @@ class _Home_PageState extends State<Home_Page>
 
   @override
   void dispose() {
+    _incomingMessageSub?.cancel(); // Cancel listener
     _debounceTimer?.cancel();
     _searchController.dispose();
     super.dispose();
@@ -224,6 +267,9 @@ class _Home_PageState extends State<Home_Page>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    // Reversed to show newest at top if we appended to end of list
+    final displayChats = _chats.toList().reversed.toList();
+
     return Container(
       color: const Color(0xFF1E1E1E),
       child: Stack(
@@ -231,8 +277,7 @@ class _Home_PageState extends State<Home_Page>
           Column(
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Form(
                   key: _formKey,
                   child: TextFormField(
@@ -242,16 +287,11 @@ class _Home_PageState extends State<Home_Page>
                     decoration: InputDecoration(
                       hintText: 'Search Name/Number.....',
                       hintStyle: const TextStyle(color: AppTheme.accent),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
-                      ),
-                      prefixIcon:
-                          const Icon(Icons.search, color: AppTheme.accentDark),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
+                      prefixIcon: const Icon(Icons.search, color: AppTheme.accentDark),
                       filled: true,
                       fillColor: const Color.fromARGB(255, 41, 41, 41),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 15),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                     ),
                     controller: _searchController,
                   ),
@@ -263,29 +303,33 @@ class _Home_PageState extends State<Home_Page>
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: RefreshIndicator(
                     onRefresh: _refreshChatList,
-                    child: _chats.isNotEmpty
+                    child: displayChats.isNotEmpty
                         ? ListView.builder(
-                            itemCount: _chats.length,
+                            itemCount: displayChats.length,
                             itemBuilder: (context, index) {
-                              final chat = _chats.elementAt(index);
-                              return ContactTile(
-                                contactName: chat.contactName,
-                                lastMessage: chat.lastMessage,
-                                unreadCount: 0,
+                              final chat = displayChats[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context, 
+                                    MaterialPageRoute(builder: (context) => ChatArea(userName: chat.contactName))
+                                  );
+                                },
+                                child: ContactTile(
+                                  contactName: chat.contactName,
+                                  lastMessage: chat.lastMessage,
+                                  unreadCount: 0,
+                                ),
                               );
                             },
                           )
                         : ListView(
                             children: [
-                              SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.3),
+                              SizedBox(height: MediaQuery.of(context).size.height * 0.3),
                               Center(
                                 child: Text(
                                   'No chats available. Start a new chat!',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade400,
-                                      fontSize: 16),
+                                  style: TextStyle(color: Colors.grey.shade400, fontSize: 16),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -304,19 +348,15 @@ class _Home_PageState extends State<Home_Page>
                 MaterialButton(
                   onPressed: () => Navigator.pushNamed(context, '/ai'),
                   padding: const EdgeInsets.all(18),
-                  shape: const CircleBorder(
-                      side: BorderSide(color: AppTheme.accentDark)),
-                  child: const Icon(Icons.assistant,
-                      size: 20, color: AppTheme.accent),
+                  shape: const CircleBorder(side: BorderSide(color: AppTheme.accentDark)),
+                  child: const Icon(Icons.assistant, size: 20, color: AppTheme.accent),
                 ),
                 const SizedBox(height: 14),
                 FloatingActionButton(
-                  shape: const CircleBorder(
-                      side: BorderSide(color: AppTheme.accentDark)),
+                  shape: const CircleBorder(side: BorderSide(color: AppTheme.accentDark)),
                   onPressed: _showContactFlowDialog,
                   backgroundColor: AppTheme.accent,
-                  child: const Icon(Icons.chat_bubble_outline_rounded,
-                      color: Color(0xFF1E1E1E), size: 24),
+                  child: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF1E1E1E), size: 24),
                 ),
               ],
             ),

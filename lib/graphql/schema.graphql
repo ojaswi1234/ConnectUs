@@ -1,9 +1,8 @@
-# lib/graphql/schema.graphql
-
 type Message {
   id: ID!
   roomId: String!
   user: String!
+  to: String!      # Added
   content: String!
   createdAt: String!
 }
@@ -13,9 +12,10 @@ type Query {
 }
 
 type Mutation {
-  postMessage(roomId: String!, user: String!, content: String!): Message!
+  postMessage(roomId: String!, user: String!, to: String!, content: String!): Message!
 }
 
 type Subscription {
   messageAdded(roomId: String!): Message!
+  messageSentToUser(user: String!): Message! # Added
 }

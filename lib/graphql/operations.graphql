@@ -1,9 +1,8 @@
-# lib/graphql/operations.graphql
-
 fragment ChatMessageFields on Message {
   id
   roomId
   user
+  to
   content
   createdAt
 }
@@ -14,14 +13,21 @@ query GetMessages($roomId: String!) {
   }
 }
 
-mutation PostMessage($roomId: String!, $user: String!, $content: String!) {
-  postMessage(roomId: $roomId, user: $user, content: $content) {
+mutation PostMessage($roomId: String!, $user: String!, $to: String!, $content: String!) {
+  postMessage(roomId: $roomId, user: $user, to: $to, content: $content) {
     ...ChatMessageFields
   }
 }
 
 subscription OnNewMessage($roomId: String!) {
   messageAdded(roomId: $roomId) {
+    ...ChatMessageFields
+  }
+}
+
+# NEW: Operation to listen on Home Page
+subscription ListenToIncomingMessages($user: String!) {
+  messageSentToUser(user: $user) {
     ...ChatMessageFields
   }
 }

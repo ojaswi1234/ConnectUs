@@ -20,6 +20,12 @@ Serializer<GOnNewMessageData> _$gOnNewMessageDataSerializer =
 Serializer<GOnNewMessageData_messageAdded>
     _$gOnNewMessageDataMessageAddedSerializer =
     new _$GOnNewMessageData_messageAddedSerializer();
+Serializer<GListenToIncomingMessagesData>
+    _$gListenToIncomingMessagesDataSerializer =
+    new _$GListenToIncomingMessagesDataSerializer();
+Serializer<GListenToIncomingMessagesData_messageSentToUser>
+    _$gListenToIncomingMessagesDataMessageSentToUserSerializer =
+    new _$GListenToIncomingMessagesData_messageSentToUserSerializer();
 Serializer<GChatMessageFieldsData> _$gChatMessageFieldsDataSerializer =
     new _$GChatMessageFieldsDataSerializer();
 
@@ -100,6 +106,8 @@ class _$GGetMessagesData_messagesSerializer
           specifiedType: const FullType(String)),
       'user',
       serializers.serialize(object.user, specifiedType: const FullType(String)),
+      'to',
+      serializers.serialize(object.to, specifiedType: const FullType(String)),
       'content',
       serializers.serialize(object.content,
           specifiedType: const FullType(String)),
@@ -137,6 +145,10 @@ class _$GGetMessagesData_messagesSerializer
           break;
         case 'user':
           result.user = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'to':
+          result.to = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
         case 'content':
@@ -229,6 +241,8 @@ class _$GPostMessageData_postMessageSerializer
           specifiedType: const FullType(String)),
       'user',
       serializers.serialize(object.user, specifiedType: const FullType(String)),
+      'to',
+      serializers.serialize(object.to, specifiedType: const FullType(String)),
       'content',
       serializers.serialize(object.content,
           specifiedType: const FullType(String)),
@@ -266,6 +280,10 @@ class _$GPostMessageData_postMessageSerializer
           break;
         case 'user':
           result.user = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'to':
+          result.to = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
         case 'content':
@@ -359,6 +377,8 @@ class _$GOnNewMessageData_messageAddedSerializer
           specifiedType: const FullType(String)),
       'user',
       serializers.serialize(object.user, specifiedType: const FullType(String)),
+      'to',
+      serializers.serialize(object.to, specifiedType: const FullType(String)),
       'content',
       serializers.serialize(object.content,
           specifiedType: const FullType(String)),
@@ -396,6 +416,152 @@ class _$GOnNewMessageData_messageAddedSerializer
           break;
         case 'user':
           result.user = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'to':
+          result.to = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'content':
+          result.content = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'createdAt':
+          result.createdAt = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GListenToIncomingMessagesDataSerializer
+    implements StructuredSerializer<GListenToIncomingMessagesData> {
+  @override
+  final Iterable<Type> types = const [
+    GListenToIncomingMessagesData,
+    _$GListenToIncomingMessagesData
+  ];
+  @override
+  final String wireName = 'GListenToIncomingMessagesData';
+
+  @override
+  Iterable<Object?> serialize(
+      Serializers serializers, GListenToIncomingMessagesData object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      '__typename',
+      serializers.serialize(object.G__typename,
+          specifiedType: const FullType(String)),
+      'messageSentToUser',
+      serializers.serialize(object.messageSentToUser,
+          specifiedType:
+              const FullType(GListenToIncomingMessagesData_messageSentToUser)),
+    ];
+
+    return result;
+  }
+
+  @override
+  GListenToIncomingMessagesData deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new GListenToIncomingMessagesDataBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case '__typename':
+          result.G__typename = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'messageSentToUser':
+          result.messageSentToUser.replace(serializers.deserialize(value,
+                  specifiedType: const FullType(
+                      GListenToIncomingMessagesData_messageSentToUser))!
+              as GListenToIncomingMessagesData_messageSentToUser);
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GListenToIncomingMessagesData_messageSentToUserSerializer
+    implements
+        StructuredSerializer<GListenToIncomingMessagesData_messageSentToUser> {
+  @override
+  final Iterable<Type> types = const [
+    GListenToIncomingMessagesData_messageSentToUser,
+    _$GListenToIncomingMessagesData_messageSentToUser
+  ];
+  @override
+  final String wireName = 'GListenToIncomingMessagesData_messageSentToUser';
+
+  @override
+  Iterable<Object?> serialize(Serializers serializers,
+      GListenToIncomingMessagesData_messageSentToUser object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      '__typename',
+      serializers.serialize(object.G__typename,
+          specifiedType: const FullType(String)),
+      'id',
+      serializers.serialize(object.id, specifiedType: const FullType(String)),
+      'roomId',
+      serializers.serialize(object.roomId,
+          specifiedType: const FullType(String)),
+      'user',
+      serializers.serialize(object.user, specifiedType: const FullType(String)),
+      'to',
+      serializers.serialize(object.to, specifiedType: const FullType(String)),
+      'content',
+      serializers.serialize(object.content,
+          specifiedType: const FullType(String)),
+      'createdAt',
+      serializers.serialize(object.createdAt,
+          specifiedType: const FullType(String)),
+    ];
+
+    return result;
+  }
+
+  @override
+  GListenToIncomingMessagesData_messageSentToUser deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new GListenToIncomingMessagesData_messageSentToUserBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case '__typename':
+          result.G__typename = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'id':
+          result.id = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'roomId':
+          result.roomId = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'user':
+          result.user = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'to':
+          result.to = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
         case 'content':
@@ -438,6 +604,8 @@ class _$GChatMessageFieldsDataSerializer
           specifiedType: const FullType(String)),
       'user',
       serializers.serialize(object.user, specifiedType: const FullType(String)),
+      'to',
+      serializers.serialize(object.to, specifiedType: const FullType(String)),
       'content',
       serializers.serialize(object.content,
           specifiedType: const FullType(String)),
@@ -475,6 +643,10 @@ class _$GChatMessageFieldsDataSerializer
           break;
         case 'user':
           result.user = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'to':
+          result.to = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
         case 'content':
@@ -620,6 +792,8 @@ class _$GGetMessagesData_messages extends GGetMessagesData_messages {
   @override
   final String user;
   @override
+  final String to;
+  @override
   final String content;
   @override
   final String createdAt;
@@ -633,6 +807,7 @@ class _$GGetMessagesData_messages extends GGetMessagesData_messages {
       required this.id,
       required this.roomId,
       required this.user,
+      required this.to,
       required this.content,
       required this.createdAt})
       : super._() {
@@ -644,6 +819,8 @@ class _$GGetMessagesData_messages extends GGetMessagesData_messages {
         roomId, r'GGetMessagesData_messages', 'roomId');
     BuiltValueNullFieldError.checkNotNull(
         user, r'GGetMessagesData_messages', 'user');
+    BuiltValueNullFieldError.checkNotNull(
+        to, r'GGetMessagesData_messages', 'to');
     BuiltValueNullFieldError.checkNotNull(
         content, r'GGetMessagesData_messages', 'content');
     BuiltValueNullFieldError.checkNotNull(
@@ -667,6 +844,7 @@ class _$GGetMessagesData_messages extends GGetMessagesData_messages {
         id == other.id &&
         roomId == other.roomId &&
         user == other.user &&
+        to == other.to &&
         content == other.content &&
         createdAt == other.createdAt;
   }
@@ -678,6 +856,7 @@ class _$GGetMessagesData_messages extends GGetMessagesData_messages {
     _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, roomId.hashCode);
     _$hash = $jc(_$hash, user.hashCode);
+    _$hash = $jc(_$hash, to.hashCode);
     _$hash = $jc(_$hash, content.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jf(_$hash);
@@ -691,6 +870,7 @@ class _$GGetMessagesData_messages extends GGetMessagesData_messages {
           ..add('id', id)
           ..add('roomId', roomId)
           ..add('user', user)
+          ..add('to', to)
           ..add('content', content)
           ..add('createdAt', createdAt))
         .toString();
@@ -718,6 +898,10 @@ class GGetMessagesData_messagesBuilder
   String? get user => _$this._user;
   set user(String? user) => _$this._user = user;
 
+  String? _to;
+  String? get to => _$this._to;
+  set to(String? to) => _$this._to = to;
+
   String? _content;
   String? get content => _$this._content;
   set content(String? content) => _$this._content = content;
@@ -737,6 +921,7 @@ class GGetMessagesData_messagesBuilder
       _id = $v.id;
       _roomId = $v.roomId;
       _user = $v.user;
+      _to = $v.to;
       _content = $v.content;
       _createdAt = $v.createdAt;
       _$v = null;
@@ -769,6 +954,8 @@ class GGetMessagesData_messagesBuilder
                 roomId, r'GGetMessagesData_messages', 'roomId'),
             user: BuiltValueNullFieldError.checkNotNull(
                 user, r'GGetMessagesData_messages', 'user'),
+            to: BuiltValueNullFieldError.checkNotNull(
+                to, r'GGetMessagesData_messages', 'to'),
             content: BuiltValueNullFieldError.checkNotNull(
                 content, r'GGetMessagesData_messages', 'content'),
             createdAt: BuiltValueNullFieldError.checkNotNull(
@@ -906,6 +1093,8 @@ class _$GPostMessageData_postMessage extends GPostMessageData_postMessage {
   @override
   final String user;
   @override
+  final String to;
+  @override
   final String content;
   @override
   final String createdAt;
@@ -919,6 +1108,7 @@ class _$GPostMessageData_postMessage extends GPostMessageData_postMessage {
       required this.id,
       required this.roomId,
       required this.user,
+      required this.to,
       required this.content,
       required this.createdAt})
       : super._() {
@@ -930,6 +1120,8 @@ class _$GPostMessageData_postMessage extends GPostMessageData_postMessage {
         roomId, r'GPostMessageData_postMessage', 'roomId');
     BuiltValueNullFieldError.checkNotNull(
         user, r'GPostMessageData_postMessage', 'user');
+    BuiltValueNullFieldError.checkNotNull(
+        to, r'GPostMessageData_postMessage', 'to');
     BuiltValueNullFieldError.checkNotNull(
         content, r'GPostMessageData_postMessage', 'content');
     BuiltValueNullFieldError.checkNotNull(
@@ -953,6 +1145,7 @@ class _$GPostMessageData_postMessage extends GPostMessageData_postMessage {
         id == other.id &&
         roomId == other.roomId &&
         user == other.user &&
+        to == other.to &&
         content == other.content &&
         createdAt == other.createdAt;
   }
@@ -964,6 +1157,7 @@ class _$GPostMessageData_postMessage extends GPostMessageData_postMessage {
     _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, roomId.hashCode);
     _$hash = $jc(_$hash, user.hashCode);
+    _$hash = $jc(_$hash, to.hashCode);
     _$hash = $jc(_$hash, content.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jf(_$hash);
@@ -977,6 +1171,7 @@ class _$GPostMessageData_postMessage extends GPostMessageData_postMessage {
           ..add('id', id)
           ..add('roomId', roomId)
           ..add('user', user)
+          ..add('to', to)
           ..add('content', content)
           ..add('createdAt', createdAt))
         .toString();
@@ -1005,6 +1200,10 @@ class GPostMessageData_postMessageBuilder
   String? get user => _$this._user;
   set user(String? user) => _$this._user = user;
 
+  String? _to;
+  String? get to => _$this._to;
+  set to(String? to) => _$this._to = to;
+
   String? _content;
   String? get content => _$this._content;
   set content(String? content) => _$this._content = content;
@@ -1024,6 +1223,7 @@ class GPostMessageData_postMessageBuilder
       _id = $v.id;
       _roomId = $v.roomId;
       _user = $v.user;
+      _to = $v.to;
       _content = $v.content;
       _createdAt = $v.createdAt;
       _$v = null;
@@ -1056,6 +1256,8 @@ class GPostMessageData_postMessageBuilder
                 roomId, r'GPostMessageData_postMessage', 'roomId'),
             user: BuiltValueNullFieldError.checkNotNull(
                 user, r'GPostMessageData_postMessage', 'user'),
+            to: BuiltValueNullFieldError.checkNotNull(
+                to, r'GPostMessageData_postMessage', 'to'),
             content: BuiltValueNullFieldError.checkNotNull(
                 content, r'GPostMessageData_postMessage', 'content'),
             createdAt: BuiltValueNullFieldError.checkNotNull(
@@ -1193,6 +1395,8 @@ class _$GOnNewMessageData_messageAdded extends GOnNewMessageData_messageAdded {
   @override
   final String user;
   @override
+  final String to;
+  @override
   final String content;
   @override
   final String createdAt;
@@ -1206,6 +1410,7 @@ class _$GOnNewMessageData_messageAdded extends GOnNewMessageData_messageAdded {
       required this.id,
       required this.roomId,
       required this.user,
+      required this.to,
       required this.content,
       required this.createdAt})
       : super._() {
@@ -1217,6 +1422,8 @@ class _$GOnNewMessageData_messageAdded extends GOnNewMessageData_messageAdded {
         roomId, r'GOnNewMessageData_messageAdded', 'roomId');
     BuiltValueNullFieldError.checkNotNull(
         user, r'GOnNewMessageData_messageAdded', 'user');
+    BuiltValueNullFieldError.checkNotNull(
+        to, r'GOnNewMessageData_messageAdded', 'to');
     BuiltValueNullFieldError.checkNotNull(
         content, r'GOnNewMessageData_messageAdded', 'content');
     BuiltValueNullFieldError.checkNotNull(
@@ -1240,6 +1447,7 @@ class _$GOnNewMessageData_messageAdded extends GOnNewMessageData_messageAdded {
         id == other.id &&
         roomId == other.roomId &&
         user == other.user &&
+        to == other.to &&
         content == other.content &&
         createdAt == other.createdAt;
   }
@@ -1251,6 +1459,7 @@ class _$GOnNewMessageData_messageAdded extends GOnNewMessageData_messageAdded {
     _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, roomId.hashCode);
     _$hash = $jc(_$hash, user.hashCode);
+    _$hash = $jc(_$hash, to.hashCode);
     _$hash = $jc(_$hash, content.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jf(_$hash);
@@ -1264,6 +1473,7 @@ class _$GOnNewMessageData_messageAdded extends GOnNewMessageData_messageAdded {
           ..add('id', id)
           ..add('roomId', roomId)
           ..add('user', user)
+          ..add('to', to)
           ..add('content', content)
           ..add('createdAt', createdAt))
         .toString();
@@ -1292,6 +1502,10 @@ class GOnNewMessageData_messageAddedBuilder
   String? get user => _$this._user;
   set user(String? user) => _$this._user = user;
 
+  String? _to;
+  String? get to => _$this._to;
+  set to(String? to) => _$this._to = to;
+
   String? _content;
   String? get content => _$this._content;
   set content(String? content) => _$this._content = content;
@@ -1311,6 +1525,7 @@ class GOnNewMessageData_messageAddedBuilder
       _id = $v.id;
       _roomId = $v.roomId;
       _user = $v.user;
+      _to = $v.to;
       _content = $v.content;
       _createdAt = $v.createdAt;
       _$v = null;
@@ -1343,10 +1558,331 @@ class GOnNewMessageData_messageAddedBuilder
                 roomId, r'GOnNewMessageData_messageAdded', 'roomId'),
             user: BuiltValueNullFieldError.checkNotNull(
                 user, r'GOnNewMessageData_messageAdded', 'user'),
+            to: BuiltValueNullFieldError.checkNotNull(
+                to, r'GOnNewMessageData_messageAdded', 'to'),
             content: BuiltValueNullFieldError.checkNotNull(
                 content, r'GOnNewMessageData_messageAdded', 'content'),
             createdAt: BuiltValueNullFieldError.checkNotNull(
                 createdAt, r'GOnNewMessageData_messageAdded', 'createdAt'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GListenToIncomingMessagesData extends GListenToIncomingMessagesData {
+  @override
+  final String G__typename;
+  @override
+  final GListenToIncomingMessagesData_messageSentToUser messageSentToUser;
+
+  factory _$GListenToIncomingMessagesData(
+          [void Function(GListenToIncomingMessagesDataBuilder)? updates]) =>
+      (new GListenToIncomingMessagesDataBuilder()..update(updates))._build();
+
+  _$GListenToIncomingMessagesData._(
+      {required this.G__typename, required this.messageSentToUser})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        G__typename, r'GListenToIncomingMessagesData', 'G__typename');
+    BuiltValueNullFieldError.checkNotNull(messageSentToUser,
+        r'GListenToIncomingMessagesData', 'messageSentToUser');
+  }
+
+  @override
+  GListenToIncomingMessagesData rebuild(
+          void Function(GListenToIncomingMessagesDataBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GListenToIncomingMessagesDataBuilder toBuilder() =>
+      new GListenToIncomingMessagesDataBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GListenToIncomingMessagesData &&
+        G__typename == other.G__typename &&
+        messageSentToUser == other.messageSentToUser;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, messageSentToUser.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(r'GListenToIncomingMessagesData')
+          ..add('G__typename', G__typename)
+          ..add('messageSentToUser', messageSentToUser))
+        .toString();
+  }
+}
+
+class GListenToIncomingMessagesDataBuilder
+    implements
+        Builder<GListenToIncomingMessagesData,
+            GListenToIncomingMessagesDataBuilder> {
+  _$GListenToIncomingMessagesData? _$v;
+
+  String? _G__typename;
+  String? get G__typename => _$this._G__typename;
+  set G__typename(String? G__typename) => _$this._G__typename = G__typename;
+
+  GListenToIncomingMessagesData_messageSentToUserBuilder? _messageSentToUser;
+  GListenToIncomingMessagesData_messageSentToUserBuilder
+      get messageSentToUser => _$this._messageSentToUser ??=
+          new GListenToIncomingMessagesData_messageSentToUserBuilder();
+  set messageSentToUser(
+          GListenToIncomingMessagesData_messageSentToUserBuilder?
+              messageSentToUser) =>
+      _$this._messageSentToUser = messageSentToUser;
+
+  GListenToIncomingMessagesDataBuilder() {
+    GListenToIncomingMessagesData._initializeBuilder(this);
+  }
+
+  GListenToIncomingMessagesDataBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _G__typename = $v.G__typename;
+      _messageSentToUser = $v.messageSentToUser.toBuilder();
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GListenToIncomingMessagesData other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GListenToIncomingMessagesData;
+  }
+
+  @override
+  void update(void Function(GListenToIncomingMessagesDataBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GListenToIncomingMessagesData build() => _build();
+
+  _$GListenToIncomingMessagesData _build() {
+    _$GListenToIncomingMessagesData _$result;
+    try {
+      _$result = _$v ??
+          new _$GListenToIncomingMessagesData._(
+              G__typename: BuiltValueNullFieldError.checkNotNull(
+                  G__typename, r'GListenToIncomingMessagesData', 'G__typename'),
+              messageSentToUser: messageSentToUser.build());
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'messageSentToUser';
+        messageSentToUser.build();
+      } catch (e) {
+        throw new BuiltValueNestedFieldError(
+            r'GListenToIncomingMessagesData', _$failedField, e.toString());
+      }
+      rethrow;
+    }
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GListenToIncomingMessagesData_messageSentToUser
+    extends GListenToIncomingMessagesData_messageSentToUser {
+  @override
+  final String G__typename;
+  @override
+  final String id;
+  @override
+  final String roomId;
+  @override
+  final String user;
+  @override
+  final String to;
+  @override
+  final String content;
+  @override
+  final String createdAt;
+
+  factory _$GListenToIncomingMessagesData_messageSentToUser(
+          [void Function(
+                  GListenToIncomingMessagesData_messageSentToUserBuilder)?
+              updates]) =>
+      (new GListenToIncomingMessagesData_messageSentToUserBuilder()
+            ..update(updates))
+          ._build();
+
+  _$GListenToIncomingMessagesData_messageSentToUser._(
+      {required this.G__typename,
+      required this.id,
+      required this.roomId,
+      required this.user,
+      required this.to,
+      required this.content,
+      required this.createdAt})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(G__typename,
+        r'GListenToIncomingMessagesData_messageSentToUser', 'G__typename');
+    BuiltValueNullFieldError.checkNotNull(
+        id, r'GListenToIncomingMessagesData_messageSentToUser', 'id');
+    BuiltValueNullFieldError.checkNotNull(
+        roomId, r'GListenToIncomingMessagesData_messageSentToUser', 'roomId');
+    BuiltValueNullFieldError.checkNotNull(
+        user, r'GListenToIncomingMessagesData_messageSentToUser', 'user');
+    BuiltValueNullFieldError.checkNotNull(
+        to, r'GListenToIncomingMessagesData_messageSentToUser', 'to');
+    BuiltValueNullFieldError.checkNotNull(
+        content, r'GListenToIncomingMessagesData_messageSentToUser', 'content');
+    BuiltValueNullFieldError.checkNotNull(createdAt,
+        r'GListenToIncomingMessagesData_messageSentToUser', 'createdAt');
+  }
+
+  @override
+  GListenToIncomingMessagesData_messageSentToUser rebuild(
+          void Function(GListenToIncomingMessagesData_messageSentToUserBuilder)
+              updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GListenToIncomingMessagesData_messageSentToUserBuilder toBuilder() =>
+      new GListenToIncomingMessagesData_messageSentToUserBuilder()
+        ..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GListenToIncomingMessagesData_messageSentToUser &&
+        G__typename == other.G__typename &&
+        id == other.id &&
+        roomId == other.roomId &&
+        user == other.user &&
+        to == other.to &&
+        content == other.content &&
+        createdAt == other.createdAt;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, id.hashCode);
+    _$hash = $jc(_$hash, roomId.hashCode);
+    _$hash = $jc(_$hash, user.hashCode);
+    _$hash = $jc(_$hash, to.hashCode);
+    _$hash = $jc(_$hash, content.hashCode);
+    _$hash = $jc(_$hash, createdAt.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(
+            r'GListenToIncomingMessagesData_messageSentToUser')
+          ..add('G__typename', G__typename)
+          ..add('id', id)
+          ..add('roomId', roomId)
+          ..add('user', user)
+          ..add('to', to)
+          ..add('content', content)
+          ..add('createdAt', createdAt))
+        .toString();
+  }
+}
+
+class GListenToIncomingMessagesData_messageSentToUserBuilder
+    implements
+        Builder<GListenToIncomingMessagesData_messageSentToUser,
+            GListenToIncomingMessagesData_messageSentToUserBuilder> {
+  _$GListenToIncomingMessagesData_messageSentToUser? _$v;
+
+  String? _G__typename;
+  String? get G__typename => _$this._G__typename;
+  set G__typename(String? G__typename) => _$this._G__typename = G__typename;
+
+  String? _id;
+  String? get id => _$this._id;
+  set id(String? id) => _$this._id = id;
+
+  String? _roomId;
+  String? get roomId => _$this._roomId;
+  set roomId(String? roomId) => _$this._roomId = roomId;
+
+  String? _user;
+  String? get user => _$this._user;
+  set user(String? user) => _$this._user = user;
+
+  String? _to;
+  String? get to => _$this._to;
+  set to(String? to) => _$this._to = to;
+
+  String? _content;
+  String? get content => _$this._content;
+  set content(String? content) => _$this._content = content;
+
+  String? _createdAt;
+  String? get createdAt => _$this._createdAt;
+  set createdAt(String? createdAt) => _$this._createdAt = createdAt;
+
+  GListenToIncomingMessagesData_messageSentToUserBuilder() {
+    GListenToIncomingMessagesData_messageSentToUser._initializeBuilder(this);
+  }
+
+  GListenToIncomingMessagesData_messageSentToUserBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _G__typename = $v.G__typename;
+      _id = $v.id;
+      _roomId = $v.roomId;
+      _user = $v.user;
+      _to = $v.to;
+      _content = $v.content;
+      _createdAt = $v.createdAt;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GListenToIncomingMessagesData_messageSentToUser other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GListenToIncomingMessagesData_messageSentToUser;
+  }
+
+  @override
+  void update(
+      void Function(GListenToIncomingMessagesData_messageSentToUserBuilder)?
+          updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GListenToIncomingMessagesData_messageSentToUser build() => _build();
+
+  _$GListenToIncomingMessagesData_messageSentToUser _build() {
+    final _$result = _$v ??
+        new _$GListenToIncomingMessagesData_messageSentToUser._(
+            G__typename: BuiltValueNullFieldError.checkNotNull(
+                G__typename, r'GListenToIncomingMessagesData_messageSentToUser', 'G__typename'),
+            id: BuiltValueNullFieldError.checkNotNull(
+                id, r'GListenToIncomingMessagesData_messageSentToUser', 'id'),
+            roomId: BuiltValueNullFieldError.checkNotNull(
+                roomId, r'GListenToIncomingMessagesData_messageSentToUser', 'roomId'),
+            user: BuiltValueNullFieldError.checkNotNull(
+                user, r'GListenToIncomingMessagesData_messageSentToUser', 'user'),
+            to: BuiltValueNullFieldError.checkNotNull(
+                to, r'GListenToIncomingMessagesData_messageSentToUser', 'to'),
+            content: BuiltValueNullFieldError.checkNotNull(
+                content, r'GListenToIncomingMessagesData_messageSentToUser', 'content'),
+            createdAt: BuiltValueNullFieldError.checkNotNull(
+                createdAt, r'GListenToIncomingMessagesData_messageSentToUser', 'createdAt'));
     replace(_$result);
     return _$result;
   }
@@ -1362,6 +1898,8 @@ class _$GChatMessageFieldsData extends GChatMessageFieldsData {
   @override
   final String user;
   @override
+  final String to;
+  @override
   final String content;
   @override
   final String createdAt;
@@ -1375,6 +1913,7 @@ class _$GChatMessageFieldsData extends GChatMessageFieldsData {
       required this.id,
       required this.roomId,
       required this.user,
+      required this.to,
       required this.content,
       required this.createdAt})
       : super._() {
@@ -1385,6 +1924,7 @@ class _$GChatMessageFieldsData extends GChatMessageFieldsData {
         roomId, r'GChatMessageFieldsData', 'roomId');
     BuiltValueNullFieldError.checkNotNull(
         user, r'GChatMessageFieldsData', 'user');
+    BuiltValueNullFieldError.checkNotNull(to, r'GChatMessageFieldsData', 'to');
     BuiltValueNullFieldError.checkNotNull(
         content, r'GChatMessageFieldsData', 'content');
     BuiltValueNullFieldError.checkNotNull(
@@ -1408,6 +1948,7 @@ class _$GChatMessageFieldsData extends GChatMessageFieldsData {
         id == other.id &&
         roomId == other.roomId &&
         user == other.user &&
+        to == other.to &&
         content == other.content &&
         createdAt == other.createdAt;
   }
@@ -1419,6 +1960,7 @@ class _$GChatMessageFieldsData extends GChatMessageFieldsData {
     _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, roomId.hashCode);
     _$hash = $jc(_$hash, user.hashCode);
+    _$hash = $jc(_$hash, to.hashCode);
     _$hash = $jc(_$hash, content.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jf(_$hash);
@@ -1432,6 +1974,7 @@ class _$GChatMessageFieldsData extends GChatMessageFieldsData {
           ..add('id', id)
           ..add('roomId', roomId)
           ..add('user', user)
+          ..add('to', to)
           ..add('content', content)
           ..add('createdAt', createdAt))
         .toString();
@@ -1458,6 +2001,10 @@ class GChatMessageFieldsDataBuilder
   String? get user => _$this._user;
   set user(String? user) => _$this._user = user;
 
+  String? _to;
+  String? get to => _$this._to;
+  set to(String? to) => _$this._to = to;
+
   String? _content;
   String? get content => _$this._content;
   set content(String? content) => _$this._content = content;
@@ -1477,6 +2024,7 @@ class GChatMessageFieldsDataBuilder
       _id = $v.id;
       _roomId = $v.roomId;
       _user = $v.user;
+      _to = $v.to;
       _content = $v.content;
       _createdAt = $v.createdAt;
       _$v = null;
@@ -1509,6 +2057,8 @@ class GChatMessageFieldsDataBuilder
                 roomId, r'GChatMessageFieldsData', 'roomId'),
             user: BuiltValueNullFieldError.checkNotNull(
                 user, r'GChatMessageFieldsData', 'user'),
+            to: BuiltValueNullFieldError.checkNotNull(
+                to, r'GChatMessageFieldsData', 'to'),
             content: BuiltValueNullFieldError.checkNotNull(
                 content, r'GChatMessageFieldsData', 'content'),
             createdAt: BuiltValueNullFieldError.checkNotNull(

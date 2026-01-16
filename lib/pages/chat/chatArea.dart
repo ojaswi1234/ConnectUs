@@ -85,12 +85,11 @@ class _ChatAreaState extends State<ChatArea> {
     final client = Provider.of<Client>(context, listen: false);
     final messageText = _controller.text.trim();
 
-    // LOGIC CHANGE: Send the roomId with the message
     final postMessageReq = GPostMessageReq((b) => b
       ..vars.roomId = _roomId
       ..vars.content = messageText
       ..vars.user = _myUsername!
-      // Update local cache immediately
+      ..vars.to = widget.userName  // NEW: Tell server who this is for
       ..updateCacheHandlerKey = 'updateGetMessages');
 
     client.request(postMessageReq).listen((response) {

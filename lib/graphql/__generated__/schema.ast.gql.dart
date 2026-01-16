@@ -37,6 +37,15 @@ const Message = _i1.ObjectTypeDefinitionNode(
       ),
     ),
     _i1.FieldDefinitionNode(
+      name: _i1.NameNode(value: 'to'),
+      directives: [],
+      args: [],
+      type: _i1.NamedTypeNode(
+        name: _i1.NameNode(value: 'String'),
+        isNonNull: true,
+      ),
+    ),
+    _i1.FieldDefinitionNode(
       name: _i1.NameNode(value: 'content'),
       directives: [],
       args: [],
@@ -113,6 +122,15 @@ const Mutation = _i1.ObjectTypeDefinitionNode(
           defaultValue: null,
         ),
         _i1.InputValueDefinitionNode(
+          name: _i1.NameNode(value: 'to'),
+          directives: [],
+          type: _i1.NamedTypeNode(
+            name: _i1.NameNode(value: 'String'),
+            isNonNull: true,
+          ),
+          defaultValue: null,
+        ),
+        _i1.InputValueDefinitionNode(
           name: _i1.NameNode(value: 'content'),
           directives: [],
           type: _i1.NamedTypeNode(
@@ -152,7 +170,26 @@ const Subscription = _i1.ObjectTypeDefinitionNode(
         name: _i1.NameNode(value: 'Message'),
         isNonNull: true,
       ),
-    )
+    ),
+    _i1.FieldDefinitionNode(
+      name: _i1.NameNode(value: 'messageSentToUser'),
+      directives: [],
+      args: [
+        _i1.InputValueDefinitionNode(
+          name: _i1.NameNode(value: 'user'),
+          directives: [],
+          type: _i1.NamedTypeNode(
+            name: _i1.NameNode(value: 'String'),
+            isNonNull: true,
+          ),
+          defaultValue: null,
+        )
+      ],
+      type: _i1.NamedTypeNode(
+        name: _i1.NameNode(value: 'Message'),
+        isNonNull: true,
+      ),
+    ),
   ],
 );
 const document = _i1.DocumentNode(definitions: [

@@ -12,6 +12,9 @@ Serializer<GPostMessageVars> _$gPostMessageVarsSerializer =
     new _$GPostMessageVarsSerializer();
 Serializer<GOnNewMessageVars> _$gOnNewMessageVarsSerializer =
     new _$GOnNewMessageVarsSerializer();
+Serializer<GListenToIncomingMessagesVars>
+    _$gListenToIncomingMessagesVarsSerializer =
+    new _$GListenToIncomingMessagesVarsSerializer();
 Serializer<GChatMessageFieldsVars> _$gChatMessageFieldsVarsSerializer =
     new _$GChatMessageFieldsVarsSerializer();
 
@@ -73,6 +76,8 @@ class _$GPostMessageVarsSerializer
           specifiedType: const FullType(String)),
       'user',
       serializers.serialize(object.user, specifiedType: const FullType(String)),
+      'to',
+      serializers.serialize(object.to, specifiedType: const FullType(String)),
       'content',
       serializers.serialize(object.content,
           specifiedType: const FullType(String)),
@@ -99,6 +104,10 @@ class _$GPostMessageVarsSerializer
           break;
         case 'user':
           result.user = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'to':
+          result.to = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
         case 'content':
@@ -145,6 +154,51 @@ class _$GOnNewMessageVarsSerializer
       switch (key) {
         case 'roomId':
           result.roomId = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GListenToIncomingMessagesVarsSerializer
+    implements StructuredSerializer<GListenToIncomingMessagesVars> {
+  @override
+  final Iterable<Type> types = const [
+    GListenToIncomingMessagesVars,
+    _$GListenToIncomingMessagesVars
+  ];
+  @override
+  final String wireName = 'GListenToIncomingMessagesVars';
+
+  @override
+  Iterable<Object?> serialize(
+      Serializers serializers, GListenToIncomingMessagesVars object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      'user',
+      serializers.serialize(object.user, specifiedType: const FullType(String)),
+    ];
+
+    return result;
+  }
+
+  @override
+  GListenToIncomingMessagesVars deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new GListenToIncomingMessagesVarsBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case 'user':
+          result.user = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
       }
@@ -271,6 +325,8 @@ class _$GPostMessageVars extends GPostMessageVars {
   @override
   final String user;
   @override
+  final String to;
+  @override
   final String content;
 
   factory _$GPostMessageVars(
@@ -278,11 +334,15 @@ class _$GPostMessageVars extends GPostMessageVars {
       (new GPostMessageVarsBuilder()..update(updates))._build();
 
   _$GPostMessageVars._(
-      {required this.roomId, required this.user, required this.content})
+      {required this.roomId,
+      required this.user,
+      required this.to,
+      required this.content})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         roomId, r'GPostMessageVars', 'roomId');
     BuiltValueNullFieldError.checkNotNull(user, r'GPostMessageVars', 'user');
+    BuiltValueNullFieldError.checkNotNull(to, r'GPostMessageVars', 'to');
     BuiltValueNullFieldError.checkNotNull(
         content, r'GPostMessageVars', 'content');
   }
@@ -301,6 +361,7 @@ class _$GPostMessageVars extends GPostMessageVars {
     return other is GPostMessageVars &&
         roomId == other.roomId &&
         user == other.user &&
+        to == other.to &&
         content == other.content;
   }
 
@@ -309,6 +370,7 @@ class _$GPostMessageVars extends GPostMessageVars {
     var _$hash = 0;
     _$hash = $jc(_$hash, roomId.hashCode);
     _$hash = $jc(_$hash, user.hashCode);
+    _$hash = $jc(_$hash, to.hashCode);
     _$hash = $jc(_$hash, content.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -319,6 +381,7 @@ class _$GPostMessageVars extends GPostMessageVars {
     return (newBuiltValueToStringHelper(r'GPostMessageVars')
           ..add('roomId', roomId)
           ..add('user', user)
+          ..add('to', to)
           ..add('content', content))
         .toString();
   }
@@ -336,6 +399,10 @@ class GPostMessageVarsBuilder
   String? get user => _$this._user;
   set user(String? user) => _$this._user = user;
 
+  String? _to;
+  String? get to => _$this._to;
+  set to(String? to) => _$this._to = to;
+
   String? _content;
   String? get content => _$this._content;
   set content(String? content) => _$this._content = content;
@@ -347,6 +414,7 @@ class GPostMessageVarsBuilder
     if ($v != null) {
       _roomId = $v.roomId;
       _user = $v.user;
+      _to = $v.to;
       _content = $v.content;
       _$v = null;
     }
@@ -374,6 +442,8 @@ class GPostMessageVarsBuilder
                 roomId, r'GPostMessageVars', 'roomId'),
             user: BuiltValueNullFieldError.checkNotNull(
                 user, r'GPostMessageVars', 'user'),
+            to: BuiltValueNullFieldError.checkNotNull(
+                to, r'GPostMessageVars', 'to'),
             content: BuiltValueNullFieldError.checkNotNull(
                 content, r'GPostMessageVars', 'content'));
     replace(_$result);
@@ -462,6 +532,95 @@ class GOnNewMessageVarsBuilder
         new _$GOnNewMessageVars._(
             roomId: BuiltValueNullFieldError.checkNotNull(
                 roomId, r'GOnNewMessageVars', 'roomId'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GListenToIncomingMessagesVars extends GListenToIncomingMessagesVars {
+  @override
+  final String user;
+
+  factory _$GListenToIncomingMessagesVars(
+          [void Function(GListenToIncomingMessagesVarsBuilder)? updates]) =>
+      (new GListenToIncomingMessagesVarsBuilder()..update(updates))._build();
+
+  _$GListenToIncomingMessagesVars._({required this.user}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        user, r'GListenToIncomingMessagesVars', 'user');
+  }
+
+  @override
+  GListenToIncomingMessagesVars rebuild(
+          void Function(GListenToIncomingMessagesVarsBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GListenToIncomingMessagesVarsBuilder toBuilder() =>
+      new GListenToIncomingMessagesVarsBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GListenToIncomingMessagesVars && user == other.user;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, user.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(r'GListenToIncomingMessagesVars')
+          ..add('user', user))
+        .toString();
+  }
+}
+
+class GListenToIncomingMessagesVarsBuilder
+    implements
+        Builder<GListenToIncomingMessagesVars,
+            GListenToIncomingMessagesVarsBuilder> {
+  _$GListenToIncomingMessagesVars? _$v;
+
+  String? _user;
+  String? get user => _$this._user;
+  set user(String? user) => _$this._user = user;
+
+  GListenToIncomingMessagesVarsBuilder();
+
+  GListenToIncomingMessagesVarsBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _user = $v.user;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GListenToIncomingMessagesVars other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GListenToIncomingMessagesVars;
+  }
+
+  @override
+  void update(void Function(GListenToIncomingMessagesVarsBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GListenToIncomingMessagesVars build() => _build();
+
+  _$GListenToIncomingMessagesVars _build() {
+    final _$result = _$v ??
+        new _$GListenToIncomingMessagesVars._(
+            user: BuiltValueNullFieldError.checkNotNull(
+                user, r'GListenToIncomingMessagesVars', 'user'));
     replace(_$result);
     return _$result;
   }

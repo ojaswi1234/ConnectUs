@@ -40,6 +40,7 @@ abstract class GPostMessageVars
 
   String get roomId;
   String get user;
+  String get to;
   String get content;
   static Serializer<GPostMessageVars> get serializer =>
       _$gPostMessageVarsSerializer;
@@ -76,6 +77,32 @@ abstract class GOnNewMessageVars
   static GOnNewMessageVars? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
         GOnNewMessageVars.serializer,
+        json,
+      );
+}
+
+abstract class GListenToIncomingMessagesVars
+    implements
+        Built<GListenToIncomingMessagesVars,
+            GListenToIncomingMessagesVarsBuilder> {
+  GListenToIncomingMessagesVars._();
+
+  factory GListenToIncomingMessagesVars(
+          [void Function(GListenToIncomingMessagesVarsBuilder b) updates]) =
+      _$GListenToIncomingMessagesVars;
+
+  String get user;
+  static Serializer<GListenToIncomingMessagesVars> get serializer =>
+      _$gListenToIncomingMessagesVarsSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GListenToIncomingMessagesVars.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GListenToIncomingMessagesVars? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GListenToIncomingMessagesVars.serializer,
         json,
       );
 }
