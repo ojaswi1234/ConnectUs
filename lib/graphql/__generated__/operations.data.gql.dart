@@ -307,6 +307,68 @@ abstract class GListenToIncomingMessagesData_messageSentToUser
       );
 }
 
+abstract class GGetMyChatsData
+    implements Built<GGetMyChatsData, GGetMyChatsDataBuilder> {
+  GGetMyChatsData._();
+
+  factory GGetMyChatsData([void Function(GGetMyChatsDataBuilder b) updates]) =
+      _$GGetMyChatsData;
+
+  static void _initializeBuilder(GGetMyChatsDataBuilder b) =>
+      b..G__typename = 'Query';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  BuiltList<GGetMyChatsData_user_chats_view> get user_chats_view;
+  static Serializer<GGetMyChatsData> get serializer =>
+      _$gGetMyChatsDataSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GGetMyChatsData.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GGetMyChatsData? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GGetMyChatsData.serializer,
+        json,
+      );
+}
+
+abstract class GGetMyChatsData_user_chats_view
+    implements
+        Built<GGetMyChatsData_user_chats_view,
+            GGetMyChatsData_user_chats_viewBuilder> {
+  GGetMyChatsData_user_chats_view._();
+
+  factory GGetMyChatsData_user_chats_view(
+          [void Function(GGetMyChatsData_user_chats_viewBuilder b) updates]) =
+      _$GGetMyChatsData_user_chats_view;
+
+  static void _initializeBuilder(GGetMyChatsData_user_chats_viewBuilder b) =>
+      b..G__typename = 'UserChat';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  String get room_id;
+  String get contact_name;
+  String get last_message;
+  String get created_at;
+  static Serializer<GGetMyChatsData_user_chats_view> get serializer =>
+      _$gGetMyChatsDataUserChatsViewSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GGetMyChatsData_user_chats_view.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GGetMyChatsData_user_chats_view? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GGetMyChatsData_user_chats_view.serializer,
+        json,
+      );
+}
+
 abstract class GChatMessageFields {
   String get G__typename;
   String get id;

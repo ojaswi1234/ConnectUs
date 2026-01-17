@@ -9,6 +9,8 @@ import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart'
         GChatMessageFieldsData,
         GGetMessagesData,
         GGetMessagesData_messages,
+        GGetMyChatsData,
+        GGetMyChatsData_user_chats_view,
         GListenToIncomingMessagesData,
         GListenToIncomingMessagesData_messageSentToUser,
         GOnNewMessageData,
@@ -19,6 +21,7 @@ import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart'
     show
         GChatMessageFieldsReq,
         GGetMessagesReq,
+        GGetMyChatsReq,
         GListenToIncomingMessagesReq,
         GOnNewMessageReq,
         GPostMessageReq;
@@ -26,6 +29,7 @@ import 'package:ConnectUs/graphql/__generated__/operations.var.gql.dart'
     show
         GChatMessageFieldsVars,
         GGetMessagesVars,
+        GGetMyChatsVars,
         GListenToIncomingMessagesVars,
         GOnNewMessageVars,
         GPostMessageVars;
@@ -46,6 +50,10 @@ final SerializersBuilder _serializersBuilder = _$serializers.toBuilder()
   GGetMessagesData_messages,
   GGetMessagesReq,
   GGetMessagesVars,
+  GGetMyChatsData,
+  GGetMyChatsData_user_chats_view,
+  GGetMyChatsReq,
+  GGetMyChatsVars,
   GListenToIncomingMessagesData,
   GListenToIncomingMessagesData_messageSentToUser,
   GListenToIncomingMessagesReq,

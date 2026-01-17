@@ -107,6 +107,28 @@ abstract class GListenToIncomingMessagesVars
       );
 }
 
+abstract class GGetMyChatsVars
+    implements Built<GGetMyChatsVars, GGetMyChatsVarsBuilder> {
+  GGetMyChatsVars._();
+
+  factory GGetMyChatsVars([void Function(GGetMyChatsVarsBuilder b) updates]) =
+      _$GGetMyChatsVars;
+
+  static Serializer<GGetMyChatsVars> get serializer =>
+      _$gGetMyChatsVarsSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GGetMyChatsVars.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GGetMyChatsVars? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GGetMyChatsVars.serializer,
+        json,
+      );
+}
+
 abstract class GChatMessageFieldsVars
     implements Built<GChatMessageFieldsVars, GChatMessageFieldsVarsBuilder> {
   GChatMessageFieldsVars._();

@@ -15,6 +15,8 @@ Serializer<GOnNewMessageVars> _$gOnNewMessageVarsSerializer =
 Serializer<GListenToIncomingMessagesVars>
     _$gListenToIncomingMessagesVarsSerializer =
     new _$GListenToIncomingMessagesVarsSerializer();
+Serializer<GGetMyChatsVars> _$gGetMyChatsVarsSerializer =
+    new _$GGetMyChatsVarsSerializer();
 Serializer<GChatMessageFieldsVars> _$gChatMessageFieldsVarsSerializer =
     new _$GChatMessageFieldsVarsSerializer();
 
@@ -205,6 +207,27 @@ class _$GListenToIncomingMessagesVarsSerializer
     }
 
     return result.build();
+  }
+}
+
+class _$GGetMyChatsVarsSerializer
+    implements StructuredSerializer<GGetMyChatsVars> {
+  @override
+  final Iterable<Type> types = const [GGetMyChatsVars, _$GGetMyChatsVars];
+  @override
+  final String wireName = 'GGetMyChatsVars';
+
+  @override
+  Iterable<Object?> serialize(Serializers serializers, GGetMyChatsVars object,
+      {FullType specifiedType = FullType.unspecified}) {
+    return <Object?>[];
+  }
+
+  @override
+  GGetMyChatsVars deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    return new GGetMyChatsVarsBuilder().build();
   }
 }
 
@@ -621,6 +644,64 @@ class GListenToIncomingMessagesVarsBuilder
         new _$GListenToIncomingMessagesVars._(
             user: BuiltValueNullFieldError.checkNotNull(
                 user, r'GListenToIncomingMessagesVars', 'user'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GGetMyChatsVars extends GGetMyChatsVars {
+  factory _$GGetMyChatsVars([void Function(GGetMyChatsVarsBuilder)? updates]) =>
+      (new GGetMyChatsVarsBuilder()..update(updates))._build();
+
+  _$GGetMyChatsVars._() : super._();
+
+  @override
+  GGetMyChatsVars rebuild(void Function(GGetMyChatsVarsBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GGetMyChatsVarsBuilder toBuilder() =>
+      new GGetMyChatsVarsBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GGetMyChatsVars;
+  }
+
+  @override
+  int get hashCode {
+    return 620018600;
+  }
+
+  @override
+  String toString() {
+    return newBuiltValueToStringHelper(r'GGetMyChatsVars').toString();
+  }
+}
+
+class GGetMyChatsVarsBuilder
+    implements Builder<GGetMyChatsVars, GGetMyChatsVarsBuilder> {
+  _$GGetMyChatsVars? _$v;
+
+  GGetMyChatsVarsBuilder();
+
+  @override
+  void replace(GGetMyChatsVars other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GGetMyChatsVars;
+  }
+
+  @override
+  void update(void Function(GGetMyChatsVarsBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GGetMyChatsVars build() => _build();
+
+  _$GGetMyChatsVars _build() {
+    final _$result = _$v ?? new _$GGetMyChatsVars._();
     replace(_$result);
     return _$result;
   }

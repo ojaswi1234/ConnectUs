@@ -3,7 +3,6 @@ import 'package:ConnectUs/pages/AI_page.dart';
 import 'package:ConnectUs/pages/config/account.dart';
 import 'package:ConnectUs/pages/home/about.dart';
 import 'package:ConnectUs/models/contact.dart';
-import 'package:ConnectUs/services/ferry_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
@@ -19,33 +18,21 @@ import 'package:ConnectUs/pages/auth/registerPhone.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:ferry/ferry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-//import 'package:ConnectUs/services/socketService.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // Add timeout to prevent infinite waiting and wrap in try-catch
     await _initializeApp().timeout(const Duration(seconds: 15));
   } catch (e) {
     print('Initialization error: $e');
-    // Continue launching the app even if some services fail
-    // The app will handle missing services gracefully
   }
-  final client = initFerryClient();
-  runApp(
-    Provider<Client>(
-      create: (_) => client,
-      child: const MainApp(),
-    ),
-  );
+
+  runApp(const MainApp());
 }
 
 Future<void> _initializeApp() async {
-  // Performance optimization: Enable GPU rendering
-
   debugProfileBuildsEnabled = false;
   debugProfilePaintsEnabled = false;
 
@@ -54,25 +41,19 @@ Future<void> _initializeApp() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Initialize Hive
   await Hive.initFlutter();
   Hive.registerAdapter(ContactAdapter());
   await Hive.openBox<Contact>('contacts');
   try {
-    // 1. Point to the correct asset path
     await dotenv.load(fileName: "assets/.env");
   } catch (e) {
     print("Error loading .env file: $e");
   }
-  // Initialize Supabase
   await Supabase.initialize(
     url: dotenv.get('SUPABASE_URL'),
     anonKey: dotenv.get('SUPABASE_ANON_KEY'),
     debug: false,
   );
-
-  // Initialize socket service (don't await - let it connect in background)
-  //SocketService().initializeSocket();
 }
 
 class MainApp extends StatelessWidget {
@@ -82,7 +63,6 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
-      // Performance optimizations
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context)
@@ -91,14 +71,13 @@ class MainApp extends StatelessWidget {
         );
       },
       theme: ThemeData(
-        // Pre-cache theme data for better performance
         useMaterial3: true,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         visualDensity: VisualDensity.compact,
       ),
       routes: {
         '/': (context) =>
-            const AuthChecker(), // Use AuthChecker for session persistence
+            const AuthChecker(),
         '/landing': (context) => const Landing(),
         '/getStarted': (context) => Register(),
         '/login': (context) => Login(),

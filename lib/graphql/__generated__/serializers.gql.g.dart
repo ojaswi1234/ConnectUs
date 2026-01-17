@@ -15,6 +15,10 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(GGetMessagesData_messages.serializer)
       ..add(GGetMessagesReq.serializer)
       ..add(GGetMessagesVars.serializer)
+      ..add(GGetMyChatsData.serializer)
+      ..add(GGetMyChatsData_user_chats_view.serializer)
+      ..add(GGetMyChatsReq.serializer)
+      ..add(GGetMyChatsVars.serializer)
       ..add(GListenToIncomingMessagesData.serializer)
       ..add(GListenToIncomingMessagesData_messageSentToUser.serializer)
       ..add(GListenToIncomingMessagesReq.serializer)
@@ -30,7 +34,11 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..addBuilderFactory(
           const FullType(
               BuiltList, const [const FullType(GGetMessagesData_messages)]),
-          () => new ListBuilder<GGetMessagesData_messages>()))
+          () => new ListBuilder<GGetMessagesData_messages>())
+      ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(GGetMyChatsData_user_chats_view)]),
+          () => new ListBuilder<GGetMyChatsData_user_chats_view>()))
     .build();
 
 // ignore_for_file: deprecated_member_use_from_same_package,type=lint

@@ -26,6 +26,11 @@ Serializer<GListenToIncomingMessagesData>
 Serializer<GListenToIncomingMessagesData_messageSentToUser>
     _$gListenToIncomingMessagesDataMessageSentToUserSerializer =
     new _$GListenToIncomingMessagesData_messageSentToUserSerializer();
+Serializer<GGetMyChatsData> _$gGetMyChatsDataSerializer =
+    new _$GGetMyChatsDataSerializer();
+Serializer<GGetMyChatsData_user_chats_view>
+    _$gGetMyChatsDataUserChatsViewSerializer =
+    new _$GGetMyChatsData_user_chats_viewSerializer();
 Serializer<GChatMessageFieldsData> _$gChatMessageFieldsDataSerializer =
     new _$GChatMessageFieldsDataSerializer();
 
@@ -570,6 +575,132 @@ class _$GListenToIncomingMessagesData_messageSentToUserSerializer
           break;
         case 'createdAt':
           result.createdAt = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GGetMyChatsDataSerializer
+    implements StructuredSerializer<GGetMyChatsData> {
+  @override
+  final Iterable<Type> types = const [GGetMyChatsData, _$GGetMyChatsData];
+  @override
+  final String wireName = 'GGetMyChatsData';
+
+  @override
+  Iterable<Object?> serialize(Serializers serializers, GGetMyChatsData object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      '__typename',
+      serializers.serialize(object.G__typename,
+          specifiedType: const FullType(String)),
+      'user_chats_view',
+      serializers.serialize(object.user_chats_view,
+          specifiedType: const FullType(BuiltList,
+              const [const FullType(GGetMyChatsData_user_chats_view)])),
+    ];
+
+    return result;
+  }
+
+  @override
+  GGetMyChatsData deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new GGetMyChatsDataBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case '__typename':
+          result.G__typename = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'user_chats_view':
+          result.user_chats_view.replace(serializers.deserialize(value,
+              specifiedType: const FullType(BuiltList, const [
+                const FullType(GGetMyChatsData_user_chats_view)
+              ]))! as BuiltList<Object?>);
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GGetMyChatsData_user_chats_viewSerializer
+    implements StructuredSerializer<GGetMyChatsData_user_chats_view> {
+  @override
+  final Iterable<Type> types = const [
+    GGetMyChatsData_user_chats_view,
+    _$GGetMyChatsData_user_chats_view
+  ];
+  @override
+  final String wireName = 'GGetMyChatsData_user_chats_view';
+
+  @override
+  Iterable<Object?> serialize(
+      Serializers serializers, GGetMyChatsData_user_chats_view object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      '__typename',
+      serializers.serialize(object.G__typename,
+          specifiedType: const FullType(String)),
+      'room_id',
+      serializers.serialize(object.room_id,
+          specifiedType: const FullType(String)),
+      'contact_name',
+      serializers.serialize(object.contact_name,
+          specifiedType: const FullType(String)),
+      'last_message',
+      serializers.serialize(object.last_message,
+          specifiedType: const FullType(String)),
+      'created_at',
+      serializers.serialize(object.created_at,
+          specifiedType: const FullType(String)),
+    ];
+
+    return result;
+  }
+
+  @override
+  GGetMyChatsData_user_chats_view deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new GGetMyChatsData_user_chats_viewBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case '__typename':
+          result.G__typename = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'room_id':
+          result.room_id = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'contact_name':
+          result.contact_name = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'last_message':
+          result.last_message = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'created_at':
+          result.created_at = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
       }
@@ -1883,6 +2014,281 @@ class GListenToIncomingMessagesData_messageSentToUserBuilder
                 content, r'GListenToIncomingMessagesData_messageSentToUser', 'content'),
             createdAt: BuiltValueNullFieldError.checkNotNull(
                 createdAt, r'GListenToIncomingMessagesData_messageSentToUser', 'createdAt'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GGetMyChatsData extends GGetMyChatsData {
+  @override
+  final String G__typename;
+  @override
+  final BuiltList<GGetMyChatsData_user_chats_view> user_chats_view;
+
+  factory _$GGetMyChatsData([void Function(GGetMyChatsDataBuilder)? updates]) =>
+      (new GGetMyChatsDataBuilder()..update(updates))._build();
+
+  _$GGetMyChatsData._(
+      {required this.G__typename, required this.user_chats_view})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        G__typename, r'GGetMyChatsData', 'G__typename');
+    BuiltValueNullFieldError.checkNotNull(
+        user_chats_view, r'GGetMyChatsData', 'user_chats_view');
+  }
+
+  @override
+  GGetMyChatsData rebuild(void Function(GGetMyChatsDataBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GGetMyChatsDataBuilder toBuilder() =>
+      new GGetMyChatsDataBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GGetMyChatsData &&
+        G__typename == other.G__typename &&
+        user_chats_view == other.user_chats_view;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, user_chats_view.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(r'GGetMyChatsData')
+          ..add('G__typename', G__typename)
+          ..add('user_chats_view', user_chats_view))
+        .toString();
+  }
+}
+
+class GGetMyChatsDataBuilder
+    implements Builder<GGetMyChatsData, GGetMyChatsDataBuilder> {
+  _$GGetMyChatsData? _$v;
+
+  String? _G__typename;
+  String? get G__typename => _$this._G__typename;
+  set G__typename(String? G__typename) => _$this._G__typename = G__typename;
+
+  ListBuilder<GGetMyChatsData_user_chats_view>? _user_chats_view;
+  ListBuilder<GGetMyChatsData_user_chats_view> get user_chats_view =>
+      _$this._user_chats_view ??=
+          new ListBuilder<GGetMyChatsData_user_chats_view>();
+  set user_chats_view(
+          ListBuilder<GGetMyChatsData_user_chats_view>? user_chats_view) =>
+      _$this._user_chats_view = user_chats_view;
+
+  GGetMyChatsDataBuilder() {
+    GGetMyChatsData._initializeBuilder(this);
+  }
+
+  GGetMyChatsDataBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _G__typename = $v.G__typename;
+      _user_chats_view = $v.user_chats_view.toBuilder();
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GGetMyChatsData other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GGetMyChatsData;
+  }
+
+  @override
+  void update(void Function(GGetMyChatsDataBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GGetMyChatsData build() => _build();
+
+  _$GGetMyChatsData _build() {
+    _$GGetMyChatsData _$result;
+    try {
+      _$result = _$v ??
+          new _$GGetMyChatsData._(
+              G__typename: BuiltValueNullFieldError.checkNotNull(
+                  G__typename, r'GGetMyChatsData', 'G__typename'),
+              user_chats_view: user_chats_view.build());
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'user_chats_view';
+        user_chats_view.build();
+      } catch (e) {
+        throw new BuiltValueNestedFieldError(
+            r'GGetMyChatsData', _$failedField, e.toString());
+      }
+      rethrow;
+    }
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GGetMyChatsData_user_chats_view
+    extends GGetMyChatsData_user_chats_view {
+  @override
+  final String G__typename;
+  @override
+  final String room_id;
+  @override
+  final String contact_name;
+  @override
+  final String last_message;
+  @override
+  final String created_at;
+
+  factory _$GGetMyChatsData_user_chats_view(
+          [void Function(GGetMyChatsData_user_chats_viewBuilder)? updates]) =>
+      (new GGetMyChatsData_user_chats_viewBuilder()..update(updates))._build();
+
+  _$GGetMyChatsData_user_chats_view._(
+      {required this.G__typename,
+      required this.room_id,
+      required this.contact_name,
+      required this.last_message,
+      required this.created_at})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        G__typename, r'GGetMyChatsData_user_chats_view', 'G__typename');
+    BuiltValueNullFieldError.checkNotNull(
+        room_id, r'GGetMyChatsData_user_chats_view', 'room_id');
+    BuiltValueNullFieldError.checkNotNull(
+        contact_name, r'GGetMyChatsData_user_chats_view', 'contact_name');
+    BuiltValueNullFieldError.checkNotNull(
+        last_message, r'GGetMyChatsData_user_chats_view', 'last_message');
+    BuiltValueNullFieldError.checkNotNull(
+        created_at, r'GGetMyChatsData_user_chats_view', 'created_at');
+  }
+
+  @override
+  GGetMyChatsData_user_chats_view rebuild(
+          void Function(GGetMyChatsData_user_chats_viewBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GGetMyChatsData_user_chats_viewBuilder toBuilder() =>
+      new GGetMyChatsData_user_chats_viewBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GGetMyChatsData_user_chats_view &&
+        G__typename == other.G__typename &&
+        room_id == other.room_id &&
+        contact_name == other.contact_name &&
+        last_message == other.last_message &&
+        created_at == other.created_at;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, room_id.hashCode);
+    _$hash = $jc(_$hash, contact_name.hashCode);
+    _$hash = $jc(_$hash, last_message.hashCode);
+    _$hash = $jc(_$hash, created_at.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(r'GGetMyChatsData_user_chats_view')
+          ..add('G__typename', G__typename)
+          ..add('room_id', room_id)
+          ..add('contact_name', contact_name)
+          ..add('last_message', last_message)
+          ..add('created_at', created_at))
+        .toString();
+  }
+}
+
+class GGetMyChatsData_user_chats_viewBuilder
+    implements
+        Builder<GGetMyChatsData_user_chats_view,
+            GGetMyChatsData_user_chats_viewBuilder> {
+  _$GGetMyChatsData_user_chats_view? _$v;
+
+  String? _G__typename;
+  String? get G__typename => _$this._G__typename;
+  set G__typename(String? G__typename) => _$this._G__typename = G__typename;
+
+  String? _room_id;
+  String? get room_id => _$this._room_id;
+  set room_id(String? room_id) => _$this._room_id = room_id;
+
+  String? _contact_name;
+  String? get contact_name => _$this._contact_name;
+  set contact_name(String? contact_name) => _$this._contact_name = contact_name;
+
+  String? _last_message;
+  String? get last_message => _$this._last_message;
+  set last_message(String? last_message) => _$this._last_message = last_message;
+
+  String? _created_at;
+  String? get created_at => _$this._created_at;
+  set created_at(String? created_at) => _$this._created_at = created_at;
+
+  GGetMyChatsData_user_chats_viewBuilder() {
+    GGetMyChatsData_user_chats_view._initializeBuilder(this);
+  }
+
+  GGetMyChatsData_user_chats_viewBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _G__typename = $v.G__typename;
+      _room_id = $v.room_id;
+      _contact_name = $v.contact_name;
+      _last_message = $v.last_message;
+      _created_at = $v.created_at;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GGetMyChatsData_user_chats_view other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GGetMyChatsData_user_chats_view;
+  }
+
+  @override
+  void update(void Function(GGetMyChatsData_user_chats_viewBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GGetMyChatsData_user_chats_view build() => _build();
+
+  _$GGetMyChatsData_user_chats_view _build() {
+    final _$result = _$v ??
+        new _$GGetMyChatsData_user_chats_view._(
+            G__typename: BuiltValueNullFieldError.checkNotNull(
+                G__typename, r'GGetMyChatsData_user_chats_view', 'G__typename'),
+            room_id: BuiltValueNullFieldError.checkNotNull(
+                room_id, r'GGetMyChatsData_user_chats_view', 'room_id'),
+            contact_name: BuiltValueNullFieldError.checkNotNull(contact_name,
+                r'GGetMyChatsData_user_chats_view', 'contact_name'),
+            last_message: BuiltValueNullFieldError.checkNotNull(last_message,
+                r'GGetMyChatsData_user_chats_view', 'last_message'),
+            created_at: BuiltValueNullFieldError.checkNotNull(
+                created_at, r'GGetMyChatsData_user_chats_view', 'created_at'));
     replace(_$result);
     return _$result;
   }

@@ -31,3 +31,11 @@ subscription ListenToIncomingMessages($user: String!) {
     ...ChatMessageFields
   }
 }
+query GetMyChats {
+  user_chats_view {
+    room_id
+    contact_name
+    last_message
+    created_at
+  }
+}

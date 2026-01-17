@@ -1,16 +1,9 @@
+
 import { createServer } from "http";
-import { createSchema, createYoga, createPubSub } from "graphql-yoga";
-import { WebSocketServer } from 'ws';
-import { useServer } from 'graphql-ws/use/ws';
-// 1. Import Crypto for encryption
+import { WebSocketServer, WebSocket } from 'ws';
 import { randomBytes, createCipheriv, createDecipheriv } from 'crypto';
 
-const pubSub = createPubSub();
-const messages = []; 
-
 // --- ENCRYPTION SETUP ---
-// We generate a fresh key every time the server starts. 
-// Since your DB is in-memory, this is perfect (key dies with the data).
 const algorithm = 'aes-256-cbc';
 const secretKey = randomBytes(32); 
 const ivLength = 16;
@@ -20,7 +13,6 @@ function encrypt(text) {
   const cipher = createCipheriv(algorithm, secretKey, iv);
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
-  // Store as "IV:EncryptedData" so we can decrypt later
   return iv.toString('hex') + ':' + encrypted.toString('hex');
 }
 
@@ -31,7 +23,7 @@ function decrypt(text) {
     const encryptedText = Buffer.from(textParts.join(':'), 'hex');
     const decipher = createDecipheriv(algorithm, secretKey, iv);
     let decrypted = decipher.update(encryptedText);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
+decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
   } catch (error) {
     return "[Error: Could not decrypt message]";
@@ -39,117 +31,74 @@ function decrypt(text) {
 }
 // ------------------------
 
-const yoga = createYoga({
-  schema: createSchema({
-    typeDefs: /* GraphQL */ `
-      type Message {
-        id: ID!
-        roomId: String!
-        user: String!
-        to: String!
-        content: String!
-        createdAt: String!
+const server = createServer();
+const wss = new WebSocketServer({ server });
+
+const clients = new Map(); // Map to store userId -> WebSocket connection
+const messages = []; // To store chat history (optional)
+
+wss.on('connection', (ws) => {
+  ws.on('message', (rawMessage) => {
+    try {
+      const message = JSON.parse(rawMessage);
+
+      // 1. Register a user and associate them with their WebSocket connection
+      if (message.type === 'register' && message.userId) {
+        clients.set(message.userId, ws);
+        ws.userId = message.userId; // Attach userId to the ws object for easier cleanup
+        ws.send(JSON.stringify({ type: 'status', message: `User ${message.userId} registered.` }));
+        console.log(`User ${message.userId} connected.`);
+        return;
       }
 
-      type Query {
-        messages(roomId: String!): [Message!]!
+      // 2. Handle private messages
+      if (message.type === 'privateMessage' && message.to && message.from && message.content) {
+        const { to, from, content } = message;
+        const recipientSocket = clients.get(to);
+
+        const encryptedContent = encrypt(content);
+
+        // Store the encrypted message
+        const storedMessage = {
+          id: String(messages.length),
+          from,
+          to,
+          content: encryptedContent,
+          createdAt: new Date().toISOString(),
+        };
+        messages.push(storedMessage);
+        
+        // 3. Send the encrypted message to the recipient if they are online
+        if (recipientSocket && recipientSocket.readyState === WebSocket.OPEN) {
+          recipientSocket.send(JSON.stringify({
+            type: 'privateMessage',
+            from,
+            content: encryptedContent,
+            createdAt: storedMessage.createdAt
+          }));
+        } else {
+          // Optional: Handle offline users (e.g., store for later retrieval)
+          console.log(`User ${to} is not online. Message stored.`);
+        }
       }
+    } catch (error) {
+      console.error("Failed to process message:", error);
+    }
+  });
 
-      type Mutation {
-        postMessage(roomId: String!, user: String!, to: String!, content: String!): Message!
-      }
+  ws.on('close', () => {
+    if (ws.userId) {
+      clients.delete(ws.userId);
+      console.log(`User ${ws.userId} disconnected.`);
+    }
+  });
 
-      type Subscription {
-        messageAdded(roomId: String!): Message!
-        messageSentToUser(user: String!): Message!
-      }
-    `,
-    resolvers: {
-      Query: {
-        messages: (_, { roomId }) => {
-          // 2. Decrypt messages on-the-fly when requested
-          return messages
-            .filter(m => m.roomId === roomId)
-            .map(m => ({
-              ...m,
-              content: decrypt(m.content) 
-            }));
-        },
-      },
-      Mutation: {
-        postMessage: (_, { roomId, user, to, content }) => {
-          // 3. Encrypt content BEFORE storing
-          const encryptedContent = encrypt(content);
-
-          const storedMessage = {
-            id: String(messages.length),
-            roomId,
-            user,
-            to,
-            content: encryptedContent, // Storing gibberish
-            createdAt: new Date().toISOString(),
-          };
-          
-          messages.push(storedMessage);
-          
-          // 4. Send PLAINTEXT to live subscribers (so they can read it)
-          const publicMessage = { ...storedMessage, content }; 
-
-          pubSub.publish(`MESSAGE_ADDED_${roomId}`, { messageAdded: publicMessage });
-          pubSub.publish(`MESSAGE_TO_${to}`, { messageSentToUser: publicMessage });
-          
-          return publicMessage;
-        },
-      },
-      Subscription: {
-        messageAdded: {
-          subscribe: (_, { roomId }) => pubSub.subscribe(`MESSAGE_ADDED_${roomId}`),
-        },
-        messageSentToUser: {
-          subscribe: (_, { user }) => pubSub.subscribe(`MESSAGE_TO_${user}`),
-        },
-      },
-    },
-  }),
-  graphiql: {
-    subscriptionsProtocol: 'WS',
-  },
+  ws.on('error', (error) => {
+    console.error("WebSocket error:", error);
+  });
 });
-
-const server = createServer(yoga);
-
-const wsServer = new WebSocketServer({
-  server,
-  path: yoga.graphqlEndpoint,
-});
-
-useServer(
-  {
-    execute: (args) => args.rootValue.execute(args),
-    subscribe: (args) => args.rootValue.subscribe(args),
-    onSubscribe: async (ctx, msg) => {
-      const { schema, execute, subscribe, contextFactory, parse } =
-        yoga.getEnveloped({
-          ctx,
-          req: ctx.extra.request,
-          socket: ctx.extra.socket,
-          params: msg.payload,
-        });
-
-      return {
-        schema,
-        operationName: msg.payload.operationName,
-        document: parse(msg.payload.query),
-        variableValues: msg.payload.variables,
-        contextValue: await contextFactory(),
-        rootValue: { execute, subscribe },
-      };
-    },
-  },
-  wsServer
-);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log('Server is running on http://localhost:4000/graphql');
+  console.log(`WebSocket server is running on ws://localhost:${PORT}`);
 });

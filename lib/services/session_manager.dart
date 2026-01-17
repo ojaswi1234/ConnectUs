@@ -49,31 +49,39 @@ class SessionManager {
   }
 
   /// Check if current session is valid
+/// Check if current session is valid AND recover it if expired
+ /// Check if current session is valid AND recover it if expired
   Future<bool> isSessionValid() async {
     try {
       final session = _supabase.auth.currentSession;
-      if (session == null) {
-        _logger.w('No current session found');
-        return false;
-      }
+      if (session == null) return false;
 
-      // Check if token is expired
       final expiresAt = session.expiresAt;
       final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-      if (expiresAt != null && now >= expiresAt) {
-        _logger.w('Session token expired');
-        return false;
+      // FIX: If token is expired (or close to it), try to refresh immediately
+      // instead of declaring the session invalid.
+      if (expiresAt != null && now >= (expiresAt - 60)) { 
+        _logger.i('Token expired. Attempting to refresh session...');
+        
+        try {
+          // This uses the long-lived "Refresh Token" to get a new session
+          final response = await _supabase.auth.refreshSession();
+          
+          if (response.session != null) {
+             _logger.i('Session successfully recovered via refresh');
+             return true; 
+          } else {
+             _logger.w('Refresh failed: No session returned.');
+             return false; // Real logout: Refresh token is invalid/revoked
+          }
+        } catch (e) {
+          _logger.w('Failed to refresh expired session: $e');
+          return false; // Real logout: Network or auth error
+        }
       }
 
-      // Try to get user to verify session is still valid
-      final user = await _supabase.auth.getUser();
-      if (user.user != null) {
-        _logger.i('Session is valid for user: ${user.user!.email}');
-        return true;
-      }
-
-      return false;
+      return true;
     } catch (e) {
       _logger.e('Session validation error: $e');
       return false;
@@ -184,14 +192,18 @@ class SessionManager {
   }
 
   /// Auto-login if remember me is enabled and session is valid
+  /// Auto-login: Always try to restore session if one exists
   Future<bool> tryAutoLogin() async {
     try {
-      final rememberMe = await getRememberMe();
-      if (!rememberMe) {
-        _logger.i('Remember me is disabled');
-        return false;
+      // REMOVED: The check for 'rememberMe'. 
+      // We now assume we always want to restore if a session exists.
+      
+      final session = _supabase.auth.currentSession;
+      if (session == null) {
+        return false; // No session stored, user must log in
       }
 
+      // Check validity and refresh if needed
       final isValid = await isSessionValid();
       if (isValid) {
         await refreshSessionIfNeeded();
@@ -199,14 +211,13 @@ class SessionManager {
         return true;
       }
 
-      _logger.w('Auto-login failed - invalid session');
+      _logger.w('Auto-login failed - session invalid and could not be refreshed');
       return false;
     } catch (e) {
       _logger.e('Auto-login error: $e');
       return false;
     }
   }
-
   /// Clear all session data (for debugging)
   Future<void> clearAllSessionData() async {
     await _ensureInitialized();

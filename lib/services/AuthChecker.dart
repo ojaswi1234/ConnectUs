@@ -25,17 +25,30 @@ class _AuthCheckerState extends State<AuthChecker> {
   void _initializeSession() async {
     await _sessionManager.initialize();
 
-    // 1. Try auto-login (session persistence)
+    // 1. Try auto-login (which now handles refreshing)
     final autoLoginSuccess = await _sessionManager.tryAutoLogin();
+    
     if (autoLoginSuccess && mounted) {
       await _checkProfileAndNavigate();
       return;
     }
 
-    // 2. Check current session
-    _checkSession();
+    // 2. If auto-login failed (e.g. remember me was false), 
+    // check if we still have a valid Supabase session we can rescue.
+    final session = _supabase.auth.currentSession;
+    if (session != null) {
+       // Force a validity check/refresh before proceeding
+       final recovered = await _sessionManager.isSessionValid();
+       if (recovered && mounted) {
+         await _checkProfileAndNavigate();
+         return;
+       }
+    }
 
-    // 3. Listen for real-time auth changes (like Google Login completion)
+    // 3. If all else fails, stop loading and show Landing
+    if (mounted) setState(() => _isLoading = false);
+    
+    // 4. Listen for future auth changes
     _listenToAuthChanges();
   }
 

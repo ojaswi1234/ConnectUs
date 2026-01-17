@@ -7,8 +7,18 @@ type Message {
   createdAt: String!
 }
 
+type UserChat {
+  room_id: String!
+  contact_name: String!
+  last_message: String!
+  created_at: String!
+}
+# ------------------------
+
 type Query {
   messages(roomId: String!): [Message!]!
+  # --- ADD THIS LINE ---
+  user_chats_view(user: String!): [UserChat!]!
 }
 
 type Mutation {
