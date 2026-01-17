@@ -1,104 +1,68 @@
+const express = require('express');
+const http = require('http');
+const { Server } = require("socket.io");
+const cors = require('cors');
 
-import { createServer } from "http";
-import { WebSocketServer, WebSocket } from 'ws';
-import { randomBytes, createCipheriv, createDecipheriv } from 'crypto';
+const app = express();
+app.use(cors()); // Enable CORS for all routes
 
-// --- ENCRYPTION SETUP ---
-const algorithm = 'aes-256-cbc';
-const secretKey = randomBytes(32); 
-const ivLength = 16;
-
-function encrypt(text) {
-  const iv = randomBytes(ivLength);
-  const cipher = createCipheriv(algorithm, secretKey, iv);
-  let encrypted = cipher.update(text);
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return iv.toString('hex') + ':' + encrypted.toString('hex');
-}
-
-function decrypt(text) {
-  try {
-    const textParts = text.split(':');
-    const iv = Buffer.from(textParts.shift(), 'hex');
-    const encryptedText = Buffer.from(textParts.join(':'), 'hex');
-    const decipher = createDecipheriv(algorithm, secretKey, iv);
-    let decrypted = decipher.update(encryptedText);
-decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return decrypted.toString();
-  } catch (error) {
-    return "[Error: Could not decrypt message]";
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Allow all origins
+    methods: ["GET", "POST"]
   }
-}
-// ------------------------
+});
 
-const server = createServer();
-const wss = new WebSocketServer({ server });
+const clients = new Map(); // Map to store userId -> socketId
 
-const clients = new Map(); // Map to store userId -> WebSocket connection
-const messages = []; // To store chat history (optional)
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
 
-wss.on('connection', (ws) => {
-  ws.on('message', (rawMessage) => {
-    try {
-      const message = JSON.parse(rawMessage);
-
-      // 1. Register a user and associate them with their WebSocket connection
-      if (message.type === 'register' && message.userId) {
-        clients.set(message.userId, ws);
-        ws.userId = message.userId; // Attach userId to the ws object for easier cleanup
-        ws.send(JSON.stringify({ type: 'status', message: `User ${message.userId} registered.` }));
-        console.log(`User ${message.userId} connected.`);
-        return;
-      }
-
-      // 2. Handle private messages
-      if (message.type === 'privateMessage' && message.to && message.from && message.content) {
-        const { to, from, content } = message;
-        const recipientSocket = clients.get(to);
-
-        const encryptedContent = encrypt(content);
-
-        // Store the encrypted message
-        const storedMessage = {
-          id: String(messages.length),
-          from,
-          to,
-          content: encryptedContent,
-          createdAt: new Date().toISOString(),
-        };
-        messages.push(storedMessage);
-        
-        // 3. Send the encrypted message to the recipient if they are online
-        if (recipientSocket && recipientSocket.readyState === WebSocket.OPEN) {
-          recipientSocket.send(JSON.stringify({
-            type: 'privateMessage',
-            from,
-            content: encryptedContent,
-            createdAt: storedMessage.createdAt
-          }));
-        } else {
-          // Optional: Handle offline users (e.g., store for later retrieval)
-          console.log(`User ${to} is not online. Message stored.`);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to process message:", error);
+  // 1. Register a user and associate them with their socket ID
+  socket.on('register', (userId) => {
+    if (userId) {
+      clients.set(userId, socket.id);
+      console.log(`User ${userId} registered with socket ID ${socket.id}`);
+      socket.emit('status', `User ${userId} registered.`);
     }
   });
 
-  ws.on('close', () => {
-    if (ws.userId) {
-      clients.delete(ws.userId);
-      console.log(`User ${ws.userId} disconnected.`);
+  // 2. Handle private messages
+  socket.on('privateMessage', ({ to, from, content }) => {
+    const recipientSocketId = clients.get(to);
+    if (recipientSocketId) {
+      // Send to the recipient
+      io.to(recipientSocketId).emit('message', {
+        from,
+        content,
+        timestamp: new Date().toISOString()
+      });
+      console.log(`Message from ${from} to ${to}`);
+    } else {
+      console.log(`User ${to} not found or offline.`);
+      // Optional: send a status back to the sender
+      socket.emit('status', `User ${to} is not online.`);
     }
   });
 
-  ws.on('error', (error) => {
-    console.error("WebSocket error:", error);
+  // 3. Handle disconnection
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+    // Remove the user from the clients map
+    for (let [userId, id] of clients.entries()) {
+      if (id === socket.id) {
+        clients.delete(userId);
+        console.log(`User ${userId} unregistered.`);
+        break;
+      }
+    }
   });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`WebSocket server is running on ws://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
+
+module.exports = { app, server, io }; // Export for testing or other modules

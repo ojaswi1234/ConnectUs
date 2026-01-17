@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:ConnectUs/services/socket_service.dart';
@@ -25,7 +24,7 @@ class _ChatAreaState extends State<ChatArea> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String? _myUsername;
-  late SocketService _socketService;
+  final SocketService _socketService = SocketService();
   final List<Message> _messages = [];
 
   @override
@@ -52,24 +51,25 @@ class _ChatAreaState extends State<ChatArea> {
   }
 
   void _initializeSocket() {
-    _socketService = SocketService(
-      onMessageReceived: (message) {
-        setState(() {
-          _messages.insert(0, Message(
-            content: message['content'],
-            user: message['from'],
-            isMe: message['from'] == _myUsername,
-          ));
-        });
-        _scrollToBottom();
-      },
-    );
+    _socketService.connect();
     _socketService.register(_myUsername!);
+    _socketService.addMessageListener(widget.userName, (message) {
+      setState(() {
+        _messages.insert(
+            0,
+            Message(
+              content: message['content'],
+              user: message['from'],
+              isMe: message['from'] == _myUsername,
+            ));
+      });
+      _scrollToBottom();
+    });
   }
 
   @override
   void dispose() {
-    _socketService.dispose();
+    _socketService.removeMessageListener(widget.userName);
     _scrollController.dispose();
     _controller.dispose();
     super.dispose();
@@ -98,7 +98,7 @@ class _ChatAreaState extends State<ChatArea> {
       Future.delayed(const Duration(milliseconds: 100), () {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
-            0.0, 
+            0.0,
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
           );

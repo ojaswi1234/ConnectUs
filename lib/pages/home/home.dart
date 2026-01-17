@@ -6,7 +6,7 @@ import 'status.dart';
 import 'package:flutter/material.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:ConnectUs/pages/home/home_page.dart';
-import 'package:ConnectUs/pages/home/community.dart';
+//import 'package:ConnectUs/pages/home/community.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
@@ -29,7 +29,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late final List<Widget> _pages = [
     const Home_Page(),
     const Status(),
-    const Community(),
+    // const Community(),
   ];
 
   @override

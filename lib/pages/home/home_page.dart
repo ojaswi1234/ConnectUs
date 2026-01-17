@@ -11,11 +11,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ConnectUs/components/contactTile.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:ConnectUs/models/contact.dart' as HiveContact;
-// --- FERRY IMPORTS ---
-import 'package:provider/provider.dart';
-import 'package:ferry/ferry.dart';
-import 'package:ferry_flutter/ferry_flutter.dart';
-import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
 
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});
@@ -36,10 +31,9 @@ class _Home_PageState extends State<Home_Page>
       kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
   Box<HiveContact.Contact>? contactBox;
-  
-  // Note: We no longer need _chats list because Ferry handles the state
+
   bool _isLoading = false;
-  List<Contact> _contacts = []; // Kept for contact book logic
+  List<Contact> _contacts = [];
   List<Contact> _registeredContacts = [];
   List<Contact> _nonRegisteredContacts = [];
   Set<String>? _cachedRegisteredNumbers;
@@ -141,6 +135,7 @@ class _Home_PageState extends State<Home_Page>
       else
         _nonRegisteredContacts.add(contact);
     }
+    setState(() {});
   }
 
   String _normalizePhoneNumber(String phoneNumber) {
@@ -187,7 +182,6 @@ class _Home_PageState extends State<Home_Page>
   }
 
   void _createChatWithContact(Contact contact) {
-    // Navigate directly. Use the chatArea to create the room implicitly.
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -217,7 +211,7 @@ class _Home_PageState extends State<Home_Page>
   }
 
   Future<void> _refreshChatList() async {
-    // Ferry handles refresh via cache/network policy automatically
+    await _loadContacts();
   }
 
   void _onSearchChanged() {
@@ -238,10 +232,14 @@ class _Home_PageState extends State<Home_Page>
   Widget build(BuildContext context) {
     super.build(context);
 
-    // If we haven't loaded the username yet, show nothing or a loader
     if (_myUsername == null) {
       return Container(color: const Color(0xFF1E1E1E));
     }
+
+    final searchText = _searchController.text.trim().toLowerCase();
+    final filteredContacts = _registeredContacts
+        .where((c) => c.displayName.toLowerCase().contains(searchText))
+        .toList();
 
     return Container(
       color: const Color(0xFF1E1E1E),
@@ -281,79 +279,44 @@ class _Home_PageState extends State<Home_Page>
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: RefreshIndicator(
                     onRefresh: _refreshChatList,
-                    // --- CHANGED: Using Operation to fetch from Hive/Server ---
-                    child: Operation(
-                      client: Provider.of<Client>(context),
-                      // Query the View we created to get recent chats
-                      operationRequest: GGetMyChatsReq((b) => b
-                        ..fetchPolicy = FetchPolicy.CacheAndNetwork),
-                      builder: (context, response, error) {
-                        // 1. Loading State (only if no data)
-                        if (response?.loading == true &&
-                            response?.data == null) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-
-                        // 2. Data State
-                        var chats =
-                            response?.data?.user_chats_view.toList() ?? [];
-
-                        // 3. Search Filter Logic
-                        final searchText =
-                            _searchController.text.trim().toLowerCase();
-                        if (searchText.isNotEmpty) {
-                          chats = chats
-                              .where((c) => c.contact_name
-                                  .toLowerCase()
-                                  .contains(searchText))
-                              .toList();
-                        }
-
-                        // 4. Empty State
-                        if (chats.isEmpty) {
-                          return ListView(
-                            children: [
-                              SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.3),
-                              Center(
-                                child: Text(
-                                  'No chats available. Start a new chat!',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade400,
-                                      fontSize: 16),
-                                  textAlign: TextAlign.center,
-                                ),
+                    child: _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : filteredContacts.isEmpty
+                            ? ListView(
+                                children: [
+                                  SizedBox(
+                                      height: MediaQuery.of(context).size.height * 0.3),
+                                  Center(
+                                    child: Text(
+                                      'No contacts found. Add some friends!',
+                                      style: TextStyle(
+                                          color: Colors.grey.shade400,
+                                          fontSize: 16),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : ListView.builder(
+                                itemCount: filteredContacts.length,
+                                itemBuilder: (context, index) {
+                                  final contact = filteredContacts[index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ChatArea(
+                                                  userName: contact.displayName)));
+                                    },
+                                    child: ContactTile(
+                                      contactName: contact.displayName,
+                                      lastMessage: "",
+                                      unreadCount: 0,
+                                    ),
+                                  );
+                                },
                               ),
-                            ],
-                          );
-                        }
-
-                        // 5. Render List
-                        return ListView.builder(
-                          itemCount: chats.length,
-                          itemBuilder: (context, index) {
-                            final chat = chats[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ChatArea(
-                                            userName: chat.contact_name)));
-                              },
-                              child: ContactTile(
-                                contactName: chat.contact_name,
-                                lastMessage: chat.last_message,
-                                unreadCount: 0, // Implement read receipts later
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    // ---------------------------------------------------------
                   ),
                 ),
               ),

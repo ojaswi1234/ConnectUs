@@ -6,7 +6,6 @@ import 'package:ConnectUs/models/contact.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
-import 'package:provider/provider.dart';
 import 'package:ConnectUs/services/AuthChecker.dart';
 import 'package:ConnectUs/pages/auth/profile.dart';
 import 'package:ConnectUs/pages/config/settings.dart';
