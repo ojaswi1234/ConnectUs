@@ -1,6 +1,5 @@
 // lib/services/ferry_client.dart
 import 'package:ferry/ferry.dart';
-import 'package:gql_http_link/gql_http_link.dart';
 import 'package:gql_websocket_link/gql_websocket_link.dart';
 import 'package:graphql/client.dart' hide WebSocketLink, FetchPolicy;
 // Note: OperationType is exported by ferry, so no extra import needed

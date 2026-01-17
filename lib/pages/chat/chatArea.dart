@@ -162,7 +162,7 @@ class _ChatAreaState extends State<ChatArea> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final messages = response?.data?.messages?.toList() ?? [];
+                final messages = response?.data?.messages.toList() ?? [];
 
                 if (messages.isEmpty) {
                   return const Center(

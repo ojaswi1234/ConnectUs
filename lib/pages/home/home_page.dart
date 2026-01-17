@@ -93,7 +93,7 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
 
     _incomingMessageSub = client.request(listenReq).listen((response) {
       if (response.data?.messageSentToUser != null) {
-        final msg = response.data!.messageSentToUser!;
+        final msg = response.data!.messageSentToUser;
         
         // When a message arrives, we automatically add/update the chat tile
         setState(() {
