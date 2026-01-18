@@ -17,7 +17,6 @@ import 'package:ConnectUs/models/contact.dart' as HiveContact;
 import 'package:provider/provider.dart';
 import 'package:ferry/ferry.dart';
 import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
-import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart';
 
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});

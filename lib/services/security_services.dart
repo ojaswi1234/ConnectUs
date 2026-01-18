@@ -19,8 +19,6 @@ class SecurityService {
       List<int> stringBytes = utf8.encode(plainText);
       List<int>? compressed = GZipEncoder().encode(stringBytes);
 
-      if (compressed == null) return plainText;
-
       // 2. Encrypt
       final encrypted = _encrypter.encryptBytes(compressed, iv: _iv);
 
