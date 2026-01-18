@@ -1,10 +1,10 @@
-// main.dart
+// lib/main.dart
 import 'package:ConnectUs/pages/AI_page.dart';
 import 'package:ConnectUs/pages/config/account.dart';
 import 'package:ConnectUs/pages/home/about.dart';
 import 'package:ConnectUs/models/contact.dart';
 import 'package:ConnectUs/services/ferry_client.dart';
-import 'package:flutter/foundation.dart'; // Added for kIsWeb
+import 'package:flutter/foundation.dart'; // Required for kIsWeb check
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
@@ -30,7 +30,7 @@ Future<void> main() async {
 
   String? customPath;
 
-  // LOGIC: Create 'ConnectUs' folder only on Mobile to avoid Web crash
+  // LOGIC: Create 'ConnectUs' folder ONLY if NOT on Web to prevent crash
   if (!kIsWeb) {
     try {
       final appDocDir = await getApplicationDocumentsDirectory();
@@ -40,16 +40,17 @@ Future<void> main() async {
       }
       customPath = connectUsDir.path;
     } catch (e) {
-      print('Folder creation error: $e');
+      debugPrint('Folder creation error: $e');
     }
   }
 
   try {
+    // Pass the custom directory path to initialization
     await _initializeApp(customPath).timeout(const Duration(seconds: 15));
   } catch (e) {
-    print('Initialization error: $e');
+    debugPrint('Initialization error: $e');
   }
-  
+
   final client = initFerryClient();
   runApp(
     Provider<Client>(
@@ -60,7 +61,7 @@ Future<void> main() async {
 }
 
 Future<void> _initializeApp(String? customPath) async {
-  // Performance optimization: Enable GPU rendering
+  // Performance optimizations
   debugProfileBuildsEnabled = false;
   debugProfilePaintsEnabled = false;
 
@@ -69,19 +70,19 @@ Future<void> _initializeApp(String? customPath) async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Initialize Hive in the specific folder (Mobile) or IndexedDB (Web)
+  // Initialize Hive (Uses customPath on mobile, automatic storage on web)
   await Hive.initFlutter(customPath);
-  
+
   Hive.registerAdapter(ContactAdapter());
   await Hive.openBox<Contact>('contacts');
   
-  // NEW: Open box for encrypted chat history
+  // REQUIRED: Open box for local chat history (Used in chatArea.dart)
   await Hive.openBox('local_chats');
 
   try {
     await dotenv.load(fileName: "assets/.env");
   } catch (e) {
-    print("Error loading .env file: $e");
+    debugPrint("Error loading .env file: $e");
   }
 
   // Initialize Supabase
@@ -92,8 +93,52 @@ Future<void> _initializeApp(String? customPath) async {
   );
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
+  
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _updateOnlineStatus(true); // Set Online when app starts
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Handle Online/Offline Status automatically
+    if (state == AppLifecycleState.resumed) {
+      _updateOnlineStatus(true);
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      _updateOnlineStatus(false);
+    }
+  }
+
+  Future<void> _updateOnlineStatus(bool isOnline) async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        await Supabase.instance.client
+            .from('users')
+            .update({'is_online': isOnline})
+            .eq('id', user.id);
+      }
+    } catch (e) {
+      // Fail silently for status updates
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -124,3 +169,15 @@ class MainApp extends StatelessWidget {
               nonRegisteredContacts: [],
               onContactTap: (contact) {},
               onInviteContact: (contact) {},
+              isLoading: false,
+            ),
+        '/registerPhone': (context) => RegisterPhone(),
+        '/profile': (context) => Profile(),
+        '/settings': (context) => Settings(),
+        '/ai': (context) => AIPage(),
+        '/about': (context) => About(),
+        '/account': (context) => Account(),
+      },
+    );
+  }
+}
