@@ -4,7 +4,7 @@ import 'package:ConnectUs/pages/config/account.dart';
 import 'package:ConnectUs/pages/home/about.dart';
 import 'package:ConnectUs/models/contact.dart';
 import 'package:ConnectUs/services/ferry_client.dart';
-import 'package:flutter/foundation.dart'; // Required for kIsWeb check
+import 'package:flutter/foundation.dart'; // REQUIRED for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
@@ -22,7 +22,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:ferry/ferry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:io'; // Safe to keep for Mobile logic
+import 'dart:io'; // Safe to keep, but must use conditionally
 import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
@@ -30,8 +30,8 @@ Future<void> main() async {
 
   String? customPath;
 
-  // LOGIC: Create 'ConnectUs' folder ONLY if NOT on Web to prevent crash
-  if (!kIsWeb) {
+  // FIX 2: Only create folder if NOT on web
+  if (!kIsWeb) { 
     try {
       final appDocDir = await getApplicationDocumentsDirectory();
       final connectUsDir = Directory('${appDocDir.path}/ConnectUs');
@@ -40,15 +40,14 @@ Future<void> main() async {
       }
       customPath = connectUsDir.path;
     } catch (e) {
-      debugPrint('Folder creation error: $e');
+      print('Folder creation failed (Normal on Web): $e');
     }
   }
 
   try {
-    // Pass the custom directory path to initialization
     await _initializeApp(customPath).timeout(const Duration(seconds: 15));
   } catch (e) {
-    debugPrint('Initialization error: $e');
+    print('Initialization error: $e');
   }
 
   final client = initFerryClient();
@@ -61,7 +60,6 @@ Future<void> main() async {
 }
 
 Future<void> _initializeApp(String? customPath) async {
-  // Performance optimizations
   debugProfileBuildsEnabled = false;
   debugProfilePaintsEnabled = false;
 
@@ -70,22 +68,26 @@ Future<void> _initializeApp(String? customPath) async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Initialize Hive (Uses customPath on mobile, automatic storage on web)
-  await Hive.initFlutter(customPath);
+  // FIX 3: Initialize Hive safely (Web uses IndexedDB automatically)
+  if (kIsWeb) {
+    await Hive.initFlutter();
+  } else {
+    await Hive.initFlutter(customPath);
+  }
 
   Hive.registerAdapter(ContactAdapter());
   await Hive.openBox<Contact>('contacts');
   
-  // REQUIRED: Open box for local chat history (Used in chatArea.dart)
+  // Ensure local_chats box is open (needed for chatArea)
   await Hive.openBox('local_chats');
 
   try {
+    // Note: On web, assets/.env might return 404. Consider using --dart-define for prod.
     await dotenv.load(fileName: "assets/.env");
   } catch (e) {
-    debugPrint("Error loading .env file: $e");
+    print("Error loading .env file: $e");
   }
 
-  // Initialize Supabase
   await Supabase.initialize(
     url: dotenv.get('SUPABASE_URL'),
     anonKey: dotenv.get('SUPABASE_ANON_KEY'),
@@ -106,7 +108,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _updateOnlineStatus(true); // Set Online when app starts
+    _updateOnlineStatus(true);
   }
 
   @override
@@ -117,7 +119,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Handle Online/Offline Status automatically
     if (state == AppLifecycleState.resumed) {
       _updateOnlineStatus(true);
     } else if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
@@ -135,7 +136,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
             .eq('id', user.id);
       }
     } catch (e) {
-      // Fail silently for status updates
+      // Fail silently
     }
   }
 
@@ -144,11 +145,9 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
-      // Performance optimizations
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context)
-              .copyWith(textScaler: TextScaler.linear(1.0)),
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
           child: child!,
         );
       },

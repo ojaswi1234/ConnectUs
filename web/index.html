@@ -36,13 +36,22 @@
   <script src="flutter_bootstrap.js" async></script>
   <script src="socket.io.js"></script>
   <script src="./server.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  
   <script>
-    const socket = io('https://wassup-backend-5isl.onrender.com');
-    socket.on('connect', () => {
-      console.log('Connected to server');
-    });
-    socket.on('message', (msg) => {
-      console.log('New message:', msg);
+    // Wait for the script to load before using it
+    window.addEventListener('load', function() {
+      if (typeof io !== 'undefined') {
+        const socket = io('https://wassup-backend-5isl.onrender.com');
+        socket.on('connect', () => {
+          console.log('Connected to server');
+        });
+        socket.on('message', (msg) => {
+          console.log('New message recieved !!!');
+        });
+      } else {
+        console.error('Socket.io failed to load');
+      }
     });
   </script>
 </body>
