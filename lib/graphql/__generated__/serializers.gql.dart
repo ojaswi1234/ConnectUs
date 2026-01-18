@@ -11,6 +11,8 @@ import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart'
         GGetMessagesData_messages,
         GListenToIncomingMessagesData,
         GListenToIncomingMessagesData_messageSentToUser,
+        GOnMessageSentToUserData,
+        GOnMessageSentToUserData_messageSentToUser,
         GOnNewMessageData,
         GOnNewMessageData_messageAdded,
         GPostMessageData,
@@ -20,6 +22,7 @@ import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart'
         GChatMessageFieldsReq,
         GGetMessagesReq,
         GListenToIncomingMessagesReq,
+        GOnMessageSentToUserReq,
         GOnNewMessageReq,
         GPostMessageReq;
 import 'package:ConnectUs/graphql/__generated__/operations.var.gql.dart'
@@ -27,6 +30,7 @@ import 'package:ConnectUs/graphql/__generated__/operations.var.gql.dart'
         GChatMessageFieldsVars,
         GGetMessagesVars,
         GListenToIncomingMessagesVars,
+        GOnMessageSentToUserVars,
         GOnNewMessageVars,
         GPostMessageVars;
 import 'package:ferry_exec/ferry_exec.dart';
@@ -50,6 +54,10 @@ final SerializersBuilder _serializersBuilder = _$serializers.toBuilder()
   GListenToIncomingMessagesData_messageSentToUser,
   GListenToIncomingMessagesReq,
   GListenToIncomingMessagesVars,
+  GOnMessageSentToUserData,
+  GOnMessageSentToUserData_messageSentToUser,
+  GOnMessageSentToUserReq,
+  GOnMessageSentToUserVars,
   GOnNewMessageData,
   GOnNewMessageData_messageAdded,
   GOnNewMessageReq,

@@ -31,3 +31,11 @@ subscription ListenToIncomingMessages($user: String!) {
     ...ChatMessageFields
   }
 }
+subscription OnMessageSentToUser($user: String!) {
+  messageSentToUser(user: $user) {
+    id
+    content
+    user # The sender
+    createdAt
+  }
+}

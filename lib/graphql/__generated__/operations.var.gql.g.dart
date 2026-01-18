@@ -15,6 +15,8 @@ Serializer<GOnNewMessageVars> _$gOnNewMessageVarsSerializer =
 Serializer<GListenToIncomingMessagesVars>
     _$gListenToIncomingMessagesVarsSerializer =
     new _$GListenToIncomingMessagesVarsSerializer();
+Serializer<GOnMessageSentToUserVars> _$gOnMessageSentToUserVarsSerializer =
+    new _$GOnMessageSentToUserVarsSerializer();
 Serializer<GChatMessageFieldsVars> _$gChatMessageFieldsVarsSerializer =
     new _$GChatMessageFieldsVarsSerializer();
 
@@ -190,6 +192,51 @@ class _$GListenToIncomingMessagesVarsSerializer
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new GListenToIncomingMessagesVarsBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case 'user':
+          result.user = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GOnMessageSentToUserVarsSerializer
+    implements StructuredSerializer<GOnMessageSentToUserVars> {
+  @override
+  final Iterable<Type> types = const [
+    GOnMessageSentToUserVars,
+    _$GOnMessageSentToUserVars
+  ];
+  @override
+  final String wireName = 'GOnMessageSentToUserVars';
+
+  @override
+  Iterable<Object?> serialize(
+      Serializers serializers, GOnMessageSentToUserVars object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      'user',
+      serializers.serialize(object.user, specifiedType: const FullType(String)),
+    ];
+
+    return result;
+  }
+
+  @override
+  GOnMessageSentToUserVars deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new GOnMessageSentToUserVarsBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -621,6 +668,94 @@ class GListenToIncomingMessagesVarsBuilder
         new _$GListenToIncomingMessagesVars._(
             user: BuiltValueNullFieldError.checkNotNull(
                 user, r'GListenToIncomingMessagesVars', 'user'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GOnMessageSentToUserVars extends GOnMessageSentToUserVars {
+  @override
+  final String user;
+
+  factory _$GOnMessageSentToUserVars(
+          [void Function(GOnMessageSentToUserVarsBuilder)? updates]) =>
+      (new GOnMessageSentToUserVarsBuilder()..update(updates))._build();
+
+  _$GOnMessageSentToUserVars._({required this.user}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        user, r'GOnMessageSentToUserVars', 'user');
+  }
+
+  @override
+  GOnMessageSentToUserVars rebuild(
+          void Function(GOnMessageSentToUserVarsBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GOnMessageSentToUserVarsBuilder toBuilder() =>
+      new GOnMessageSentToUserVarsBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GOnMessageSentToUserVars && user == other.user;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, user.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(r'GOnMessageSentToUserVars')
+          ..add('user', user))
+        .toString();
+  }
+}
+
+class GOnMessageSentToUserVarsBuilder
+    implements
+        Builder<GOnMessageSentToUserVars, GOnMessageSentToUserVarsBuilder> {
+  _$GOnMessageSentToUserVars? _$v;
+
+  String? _user;
+  String? get user => _$this._user;
+  set user(String? user) => _$this._user = user;
+
+  GOnMessageSentToUserVarsBuilder();
+
+  GOnMessageSentToUserVarsBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _user = $v.user;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GOnMessageSentToUserVars other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GOnMessageSentToUserVars;
+  }
+
+  @override
+  void update(void Function(GOnMessageSentToUserVarsBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GOnMessageSentToUserVars build() => _build();
+
+  _$GOnMessageSentToUserVars _build() {
+    final _$result = _$v ??
+        new _$GOnMessageSentToUserVars._(
+            user: BuiltValueNullFieldError.checkNotNull(
+                user, r'GOnMessageSentToUserVars', 'user'));
     replace(_$result);
     return _$result;
   }

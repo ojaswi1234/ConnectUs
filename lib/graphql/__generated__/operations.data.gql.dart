@@ -307,6 +307,72 @@ abstract class GListenToIncomingMessagesData_messageSentToUser
       );
 }
 
+abstract class GOnMessageSentToUserData
+    implements
+        Built<GOnMessageSentToUserData, GOnMessageSentToUserDataBuilder> {
+  GOnMessageSentToUserData._();
+
+  factory GOnMessageSentToUserData(
+          [void Function(GOnMessageSentToUserDataBuilder b) updates]) =
+      _$GOnMessageSentToUserData;
+
+  static void _initializeBuilder(GOnMessageSentToUserDataBuilder b) =>
+      b..G__typename = 'Subscription';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  GOnMessageSentToUserData_messageSentToUser get messageSentToUser;
+  static Serializer<GOnMessageSentToUserData> get serializer =>
+      _$gOnMessageSentToUserDataSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GOnMessageSentToUserData.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GOnMessageSentToUserData? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GOnMessageSentToUserData.serializer,
+        json,
+      );
+}
+
+abstract class GOnMessageSentToUserData_messageSentToUser
+    implements
+        Built<GOnMessageSentToUserData_messageSentToUser,
+            GOnMessageSentToUserData_messageSentToUserBuilder> {
+  GOnMessageSentToUserData_messageSentToUser._();
+
+  factory GOnMessageSentToUserData_messageSentToUser(
+      [void Function(GOnMessageSentToUserData_messageSentToUserBuilder b)
+          updates]) = _$GOnMessageSentToUserData_messageSentToUser;
+
+  static void _initializeBuilder(
+          GOnMessageSentToUserData_messageSentToUserBuilder b) =>
+      b..G__typename = 'Message';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  String get id;
+  String get content;
+  String get user;
+  String get createdAt;
+  static Serializer<GOnMessageSentToUserData_messageSentToUser>
+      get serializer => _$gOnMessageSentToUserDataMessageSentToUserSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GOnMessageSentToUserData_messageSentToUser.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GOnMessageSentToUserData_messageSentToUser? fromJson(
+          Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GOnMessageSentToUserData_messageSentToUser.serializer,
+        json,
+      );
+}
+
 abstract class GChatMessageFields {
   String get G__typename;
   String get id;

@@ -26,6 +26,11 @@ Serializer<GListenToIncomingMessagesData>
 Serializer<GListenToIncomingMessagesData_messageSentToUser>
     _$gListenToIncomingMessagesDataMessageSentToUserSerializer =
     new _$GListenToIncomingMessagesData_messageSentToUserSerializer();
+Serializer<GOnMessageSentToUserData> _$gOnMessageSentToUserDataSerializer =
+    new _$GOnMessageSentToUserDataSerializer();
+Serializer<GOnMessageSentToUserData_messageSentToUser>
+    _$gOnMessageSentToUserDataMessageSentToUserSerializer =
+    new _$GOnMessageSentToUserData_messageSentToUserSerializer();
 Serializer<GChatMessageFieldsData> _$gChatMessageFieldsDataSerializer =
     new _$GChatMessageFieldsDataSerializer();
 
@@ -566,6 +571,135 @@ class _$GListenToIncomingMessagesData_messageSentToUserSerializer
           break;
         case 'content':
           result.content = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'createdAt':
+          result.createdAt = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GOnMessageSentToUserDataSerializer
+    implements StructuredSerializer<GOnMessageSentToUserData> {
+  @override
+  final Iterable<Type> types = const [
+    GOnMessageSentToUserData,
+    _$GOnMessageSentToUserData
+  ];
+  @override
+  final String wireName = 'GOnMessageSentToUserData';
+
+  @override
+  Iterable<Object?> serialize(
+      Serializers serializers, GOnMessageSentToUserData object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      '__typename',
+      serializers.serialize(object.G__typename,
+          specifiedType: const FullType(String)),
+      'messageSentToUser',
+      serializers.serialize(object.messageSentToUser,
+          specifiedType:
+              const FullType(GOnMessageSentToUserData_messageSentToUser)),
+    ];
+
+    return result;
+  }
+
+  @override
+  GOnMessageSentToUserData deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new GOnMessageSentToUserDataBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case '__typename':
+          result.G__typename = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'messageSentToUser':
+          result.messageSentToUser.replace(serializers.deserialize(value,
+                  specifiedType: const FullType(
+                      GOnMessageSentToUserData_messageSentToUser))!
+              as GOnMessageSentToUserData_messageSentToUser);
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GOnMessageSentToUserData_messageSentToUserSerializer
+    implements
+        StructuredSerializer<GOnMessageSentToUserData_messageSentToUser> {
+  @override
+  final Iterable<Type> types = const [
+    GOnMessageSentToUserData_messageSentToUser,
+    _$GOnMessageSentToUserData_messageSentToUser
+  ];
+  @override
+  final String wireName = 'GOnMessageSentToUserData_messageSentToUser';
+
+  @override
+  Iterable<Object?> serialize(Serializers serializers,
+      GOnMessageSentToUserData_messageSentToUser object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      '__typename',
+      serializers.serialize(object.G__typename,
+          specifiedType: const FullType(String)),
+      'id',
+      serializers.serialize(object.id, specifiedType: const FullType(String)),
+      'content',
+      serializers.serialize(object.content,
+          specifiedType: const FullType(String)),
+      'user',
+      serializers.serialize(object.user, specifiedType: const FullType(String)),
+      'createdAt',
+      serializers.serialize(object.createdAt,
+          specifiedType: const FullType(String)),
+    ];
+
+    return result;
+  }
+
+  @override
+  GOnMessageSentToUserData_messageSentToUser deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = new GOnMessageSentToUserData_messageSentToUserBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case '__typename':
+          result.G__typename = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'id':
+          result.id = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'content':
+          result.content = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'user':
+          result.user = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
         case 'createdAt':
@@ -1883,6 +2017,291 @@ class GListenToIncomingMessagesData_messageSentToUserBuilder
                 content, r'GListenToIncomingMessagesData_messageSentToUser', 'content'),
             createdAt: BuiltValueNullFieldError.checkNotNull(
                 createdAt, r'GListenToIncomingMessagesData_messageSentToUser', 'createdAt'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GOnMessageSentToUserData extends GOnMessageSentToUserData {
+  @override
+  final String G__typename;
+  @override
+  final GOnMessageSentToUserData_messageSentToUser messageSentToUser;
+
+  factory _$GOnMessageSentToUserData(
+          [void Function(GOnMessageSentToUserDataBuilder)? updates]) =>
+      (new GOnMessageSentToUserDataBuilder()..update(updates))._build();
+
+  _$GOnMessageSentToUserData._(
+      {required this.G__typename, required this.messageSentToUser})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        G__typename, r'GOnMessageSentToUserData', 'G__typename');
+    BuiltValueNullFieldError.checkNotNull(
+        messageSentToUser, r'GOnMessageSentToUserData', 'messageSentToUser');
+  }
+
+  @override
+  GOnMessageSentToUserData rebuild(
+          void Function(GOnMessageSentToUserDataBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GOnMessageSentToUserDataBuilder toBuilder() =>
+      new GOnMessageSentToUserDataBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GOnMessageSentToUserData &&
+        G__typename == other.G__typename &&
+        messageSentToUser == other.messageSentToUser;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, messageSentToUser.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(r'GOnMessageSentToUserData')
+          ..add('G__typename', G__typename)
+          ..add('messageSentToUser', messageSentToUser))
+        .toString();
+  }
+}
+
+class GOnMessageSentToUserDataBuilder
+    implements
+        Builder<GOnMessageSentToUserData, GOnMessageSentToUserDataBuilder> {
+  _$GOnMessageSentToUserData? _$v;
+
+  String? _G__typename;
+  String? get G__typename => _$this._G__typename;
+  set G__typename(String? G__typename) => _$this._G__typename = G__typename;
+
+  GOnMessageSentToUserData_messageSentToUserBuilder? _messageSentToUser;
+  GOnMessageSentToUserData_messageSentToUserBuilder get messageSentToUser =>
+      _$this._messageSentToUser ??=
+          new GOnMessageSentToUserData_messageSentToUserBuilder();
+  set messageSentToUser(
+          GOnMessageSentToUserData_messageSentToUserBuilder?
+              messageSentToUser) =>
+      _$this._messageSentToUser = messageSentToUser;
+
+  GOnMessageSentToUserDataBuilder() {
+    GOnMessageSentToUserData._initializeBuilder(this);
+  }
+
+  GOnMessageSentToUserDataBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _G__typename = $v.G__typename;
+      _messageSentToUser = $v.messageSentToUser.toBuilder();
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GOnMessageSentToUserData other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GOnMessageSentToUserData;
+  }
+
+  @override
+  void update(void Function(GOnMessageSentToUserDataBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GOnMessageSentToUserData build() => _build();
+
+  _$GOnMessageSentToUserData _build() {
+    _$GOnMessageSentToUserData _$result;
+    try {
+      _$result = _$v ??
+          new _$GOnMessageSentToUserData._(
+              G__typename: BuiltValueNullFieldError.checkNotNull(
+                  G__typename, r'GOnMessageSentToUserData', 'G__typename'),
+              messageSentToUser: messageSentToUser.build());
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'messageSentToUser';
+        messageSentToUser.build();
+      } catch (e) {
+        throw new BuiltValueNestedFieldError(
+            r'GOnMessageSentToUserData', _$failedField, e.toString());
+      }
+      rethrow;
+    }
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GOnMessageSentToUserData_messageSentToUser
+    extends GOnMessageSentToUserData_messageSentToUser {
+  @override
+  final String G__typename;
+  @override
+  final String id;
+  @override
+  final String content;
+  @override
+  final String user;
+  @override
+  final String createdAt;
+
+  factory _$GOnMessageSentToUserData_messageSentToUser(
+          [void Function(GOnMessageSentToUserData_messageSentToUserBuilder)?
+              updates]) =>
+      (new GOnMessageSentToUserData_messageSentToUserBuilder()..update(updates))
+          ._build();
+
+  _$GOnMessageSentToUserData_messageSentToUser._(
+      {required this.G__typename,
+      required this.id,
+      required this.content,
+      required this.user,
+      required this.createdAt})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(G__typename,
+        r'GOnMessageSentToUserData_messageSentToUser', 'G__typename');
+    BuiltValueNullFieldError.checkNotNull(
+        id, r'GOnMessageSentToUserData_messageSentToUser', 'id');
+    BuiltValueNullFieldError.checkNotNull(
+        content, r'GOnMessageSentToUserData_messageSentToUser', 'content');
+    BuiltValueNullFieldError.checkNotNull(
+        user, r'GOnMessageSentToUserData_messageSentToUser', 'user');
+    BuiltValueNullFieldError.checkNotNull(
+        createdAt, r'GOnMessageSentToUserData_messageSentToUser', 'createdAt');
+  }
+
+  @override
+  GOnMessageSentToUserData_messageSentToUser rebuild(
+          void Function(GOnMessageSentToUserData_messageSentToUserBuilder)
+              updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GOnMessageSentToUserData_messageSentToUserBuilder toBuilder() =>
+      new GOnMessageSentToUserData_messageSentToUserBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GOnMessageSentToUserData_messageSentToUser &&
+        G__typename == other.G__typename &&
+        id == other.id &&
+        content == other.content &&
+        user == other.user &&
+        createdAt == other.createdAt;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, id.hashCode);
+    _$hash = $jc(_$hash, content.hashCode);
+    _$hash = $jc(_$hash, user.hashCode);
+    _$hash = $jc(_$hash, createdAt.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(
+            r'GOnMessageSentToUserData_messageSentToUser')
+          ..add('G__typename', G__typename)
+          ..add('id', id)
+          ..add('content', content)
+          ..add('user', user)
+          ..add('createdAt', createdAt))
+        .toString();
+  }
+}
+
+class GOnMessageSentToUserData_messageSentToUserBuilder
+    implements
+        Builder<GOnMessageSentToUserData_messageSentToUser,
+            GOnMessageSentToUserData_messageSentToUserBuilder> {
+  _$GOnMessageSentToUserData_messageSentToUser? _$v;
+
+  String? _G__typename;
+  String? get G__typename => _$this._G__typename;
+  set G__typename(String? G__typename) => _$this._G__typename = G__typename;
+
+  String? _id;
+  String? get id => _$this._id;
+  set id(String? id) => _$this._id = id;
+
+  String? _content;
+  String? get content => _$this._content;
+  set content(String? content) => _$this._content = content;
+
+  String? _user;
+  String? get user => _$this._user;
+  set user(String? user) => _$this._user = user;
+
+  String? _createdAt;
+  String? get createdAt => _$this._createdAt;
+  set createdAt(String? createdAt) => _$this._createdAt = createdAt;
+
+  GOnMessageSentToUserData_messageSentToUserBuilder() {
+    GOnMessageSentToUserData_messageSentToUser._initializeBuilder(this);
+  }
+
+  GOnMessageSentToUserData_messageSentToUserBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _G__typename = $v.G__typename;
+      _id = $v.id;
+      _content = $v.content;
+      _user = $v.user;
+      _createdAt = $v.createdAt;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GOnMessageSentToUserData_messageSentToUser other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$GOnMessageSentToUserData_messageSentToUser;
+  }
+
+  @override
+  void update(
+      void Function(GOnMessageSentToUserData_messageSentToUserBuilder)?
+          updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GOnMessageSentToUserData_messageSentToUser build() => _build();
+
+  _$GOnMessageSentToUserData_messageSentToUser _build() {
+    final _$result = _$v ??
+        new _$GOnMessageSentToUserData_messageSentToUser._(
+            G__typename: BuiltValueNullFieldError.checkNotNull(G__typename,
+                r'GOnMessageSentToUserData_messageSentToUser', 'G__typename'),
+            id: BuiltValueNullFieldError.checkNotNull(
+                id, r'GOnMessageSentToUserData_messageSentToUser', 'id'),
+            content: BuiltValueNullFieldError.checkNotNull(content,
+                r'GOnMessageSentToUserData_messageSentToUser', 'content'),
+            user: BuiltValueNullFieldError.checkNotNull(
+                user, r'GOnMessageSentToUserData_messageSentToUser', 'user'),
+            createdAt: BuiltValueNullFieldError.checkNotNull(createdAt,
+                r'GOnMessageSentToUserData_messageSentToUser', 'createdAt'));
     replace(_$result);
     return _$result;
   }

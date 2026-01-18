@@ -107,6 +107,31 @@ abstract class GListenToIncomingMessagesVars
       );
 }
 
+abstract class GOnMessageSentToUserVars
+    implements
+        Built<GOnMessageSentToUserVars, GOnMessageSentToUserVarsBuilder> {
+  GOnMessageSentToUserVars._();
+
+  factory GOnMessageSentToUserVars(
+          [void Function(GOnMessageSentToUserVarsBuilder b) updates]) =
+      _$GOnMessageSentToUserVars;
+
+  String get user;
+  static Serializer<GOnMessageSentToUserVars> get serializer =>
+      _$gOnMessageSentToUserVarsSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GOnMessageSentToUserVars.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GOnMessageSentToUserVars? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GOnMessageSentToUserVars.serializer,
+        json,
+      );
+}
+
 abstract class GChatMessageFieldsVars
     implements Built<GChatMessageFieldsVars, GChatMessageFieldsVarsBuilder> {
   GChatMessageFieldsVars._();
