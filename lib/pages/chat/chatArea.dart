@@ -348,7 +348,7 @@ class _ChatAreaState extends State<ChatArea> {
                 List<dynamic> messages = [];
 
                 if (response?.data?.messages != null) {
-                  messages = response!.data!.messages!.toList();
+                  messages = response!.data!.messages.toList();
                   _saveToLocal(messages); // Sync to Hive
                 } else {
                   messages = _localHistory; // Fallback to Hive
