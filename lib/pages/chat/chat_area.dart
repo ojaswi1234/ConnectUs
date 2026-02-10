@@ -92,6 +92,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
         // 3. Start Subscriptions if we found the target user
         if (_targetUserId != null) {
           await _checkBlockStatus();
+          await _fetchHistoryFromSupabase(); // Load old messages
           _startStatusSubscription();
           _startMessageSubscription();
         }
@@ -99,12 +100,53 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     }
   }
 
-  // --- MISSING METHOD 1: STATUS SUBSCRIPTION ---
+  // --- NEW: FETCH AND UPDATE SUPABASE HISTORY ---
+
+  // Fetch the full message history from Supabase when the chat opens
+  Future<void> _fetchHistoryFromSupabase() async {
+    if (_roomId == "loading") return;
+    try {
+      final client = supabase.Supabase.instance.client;
+      final response = await client
+          .from('messages')
+          .select('messages')
+          .eq('room_id', _roomId)
+          .maybeSingle();
+
+      if (response != null && response['messages'] != null) {
+        final history = List<dynamic>.from(response['messages']);
+        _saveToLocal(history); // Update local cache with fetched history
+        if (mounted) {
+          setState(() {}); // Refresh UI
+          _scrollToBottom();
+        }
+      }
+    } catch (e) {
+      debugPrint("Error fetching history from Supabase: $e");
+    }
+  }
+
+  // Update (or insert) the message history in Supabase
+  Future<void> _updateHistoryInSupabase(List<dynamic> messages) async {
+    if (_roomId == "loading" || _myUserId == null) return;
+    try {
+      final client = supabase.Supabase.instance.client;
+      // Use upsert to create or replace the chat history for the room
+      await client.from('messages').upsert({
+        'room_id': _roomId,
+        'user_id': _myUserId, // To know who last updated it
+        'messages': messages,
+      });
+    } catch (e) {
+      debugPrint("Error updating history in Supabase: $e");
+    }
+  }
+
+  // --- STATUS AND MESSAGE SUBSCRIPTIONS ---
   void _startStatusSubscription() {
     if (_targetUserId == null) return;
     final client = supabase.Supabase.instance.client;
 
-    // Listen for Realtime Online/Offline changes
     _statusChannel = client.channel('public:users');
     _statusChannel!
         .onPostgresChanges(
@@ -141,6 +183,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           response.data!.messages != null &&
           response.data!.messages!.isNotEmpty) {
         final newMsg = response.data!.messages!.last;
+        // Only process messages from the other user
         if (newMsg.user != _myUsername) {
           final currentMessages = List<dynamic>.from(_localHistory);
           final messageMap = {
@@ -149,7 +192,9 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
             'createdAt': DateTime.now().toIso8601String()
           };
           currentMessages.add(messageMap);
+          // Only save to local cache. The sender is responsible for Supabase.
           _saveToLocal(currentMessages);
+
           if (mounted) {
             setState(() {});
             _scrollToBottom();
@@ -192,7 +237,6 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
     try {
       if (_isBlockedByMe) {
-        // Unblock
         await client
             .from('blocks')
             .delete()
@@ -200,7 +244,6 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
             .eq('blocked_id', _targetUserId!);
         setState(() => _isBlockedByMe = false);
       } else {
-        // Block
         await client.from('blocks').insert({
           'blocker_id': _myUserId,
           'blocked_id': _targetUserId,
@@ -226,7 +269,6 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   }
 
   void _sendChat() {
-    // 1. Block Check
     if (_isBlocked) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -244,9 +286,15 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     };
     final currentMessages = List<dynamic>.from(_localHistory);
     currentMessages.add(newMessage);
+
+    // Save to local cache for instant UI update
     _saveToLocal(currentMessages);
+    // Save the new complete history to Supabase
+    _updateHistoryInSupabase(currentMessages);
+
     setState(() {});
 
+    // Send via GraphQL for real-time delivery
     final client = ref.read(clientProvider);
     final sendMessageReq = GsendMessageReq((b) => b
       ..vars.user = _myUsername!
@@ -267,7 +315,8 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     if (_scrollController.hasClients) {
       Future.delayed(const Duration(milliseconds: 100), () {
         if (_scrollController.hasClients) {
-          _scrollController.animateTo(0.0,
+          _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOut);
         }
@@ -300,7 +349,6 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
         ),
         title: Row(
           children: [
-            // PROFILE RING
             Container(
               padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
@@ -314,7 +362,6 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
               ),
             ),
             const SizedBox(width: 10),
-            // NAME & STATUS
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -337,7 +384,6 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           ],
         ),
         actions: [
-          // BLOCK MENU
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.black),
             onSelected: (value) {
@@ -361,9 +407,9 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
               controller: _scrollController,
               padding: const EdgeInsets.all(16.0),
               itemCount: _localHistory.length,
-              reverse: true,
+              // reverse: true, // Set to false to show oldest messages first
               itemBuilder: (context, index) {
-                final rawMsg = _localHistory[_localHistory.length - 1 - index];
+                final rawMsg = _localHistory[index];
                 final content = rawMsg is Map ? rawMsg['content'] : '';
                 final user = rawMsg is Map ? rawMsg['user'] : '';
 
