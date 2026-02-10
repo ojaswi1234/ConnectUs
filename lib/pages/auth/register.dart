@@ -35,6 +35,7 @@ class _RegisterState extends State<Register> {
         );
         // AuthChecker will detect the session and redirect to /registerPhone
       } catch (error) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Registration failed: $error")));
       } finally {
@@ -74,15 +75,15 @@ class _RegisterState extends State<Register> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Register",
+                  const Text("Register",
                       style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.accentDark)),
                   const SizedBox(height: 60),
-                  MaterialButton(
-                    onPressed: () {},
-                    child: const CircleAvatar(
+                  const MaterialButton(
+                    onPressed: null, // Disabled for now
+                    child: CircleAvatar(
                       radius: 50,
                       backgroundImage: AssetImage("assets/images/profile.png"),
                     ),
@@ -96,15 +97,15 @@ class _RegisterState extends State<Register> {
                           fontWeight: FontWeight.w500)),
                   const SizedBox(height: 20),
                   TextFormField(
-                    style: TextStyle(color: AppTheme.accentDark),
+                    style: const TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.email, color: AppTheme.accent),
+                      prefixIcon: const Icon(Icons.email, color: AppTheme.accent),
                       labelText: "Email",
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.0)),
                       filled: true,
                       fillColor: AppTheme.background,
-                      labelStyle: TextStyle(color: AppTheme.accentDark),
+                      labelStyle: const TextStyle(color: AppTheme.accentDark),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) =>
@@ -113,15 +114,15 @@ class _RegisterState extends State<Register> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    style: TextStyle(color: AppTheme.accentDark),
+                    style: const TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock, color: AppTheme.accent),
+                      prefixIcon: const Icon(Icons.lock, color: AppTheme.accent),
                       labelText: "Password",
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.0)),
                       filled: true,
                       fillColor: AppTheme.background,
-                      labelStyle: TextStyle(color: AppTheme.accent),
+                      labelStyle: const TextStyle(color: AppTheme.accent),
                     ),
                     obscureText: true,
                     validator: (value) =>
@@ -137,8 +138,8 @@ class _RegisterState extends State<Register> {
                     ),
                     onPressed: _isLoading ? null : () => _submitForm(context),
                     child: _isLoading
-                        ? CircularProgressIndicator(color: AppTheme.background)
-                        : Text("Register",
+                        ? const CircularProgressIndicator(color: AppTheme.background)
+                        : const Text("Register",
                             style: TextStyle(
                                 color: AppTheme.background, fontSize: 16.0)),
                   ),
@@ -146,7 +147,7 @@ class _RegisterState extends State<Register> {
                   Row(children: [
                     Expanded(
                         child:
-                            Divider(color: AppTheme.accent.withOpacity(0.5))),
+                            Divider(color: AppTheme.accent.withAlpha(128))),
                     const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Text("OR",
@@ -155,19 +156,19 @@ class _RegisterState extends State<Register> {
                                 fontWeight: FontWeight.bold))),
                     Expanded(
                         child:
-                            Divider(color: AppTheme.accent.withOpacity(0.5))),
+                            Divider(color: AppTheme.accent.withAlpha(128))),
                   ]),
                   const SizedBox(height: 24),
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: AppTheme.accentDark, width: 2),
+                      side: const BorderSide(color: AppTheme.accentDark, width: 2),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0)),
                     ),
                     icon: const Icon(Icons.g_mobiledata,
                         size: 32, color: Colors.blue),
-                    label: Text("Register with Google",
+                    label: const Text("Register with Google",
                         style: TextStyle(
                             color: AppTheme.accentDark,
                             fontSize: 16,
@@ -178,7 +179,7 @@ class _RegisterState extends State<Register> {
                   TextButton(
                     onPressed: () =>
                         Navigator.of(context).pushReplacementNamed('/login'),
-                    child: Text("Already have an account? Login",
+                    child: const Text("Already have an account? Login",
                         style: TextStyle(color: AppTheme.accentDark)),
                   ),
                 ],

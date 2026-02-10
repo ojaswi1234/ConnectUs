@@ -8,33 +8,25 @@ part of 'serializers.gql.dart';
 
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(FetchPolicy.serializer)
-      ..add(GChatMessageFieldsData.serializer)
-      ..add(GChatMessageFieldsReq.serializer)
-      ..add(GChatMessageFieldsVars.serializer)
-      ..add(GGetMessagesData.serializer)
-      ..add(GGetMessagesData_messages.serializer)
-      ..add(GGetMessagesReq.serializer)
-      ..add(GGetMessagesVars.serializer)
-      ..add(GListenToIncomingMessagesData.serializer)
-      ..add(GListenToIncomingMessagesData_messageSentToUser.serializer)
-      ..add(GListenToIncomingMessagesReq.serializer)
-      ..add(GListenToIncomingMessagesVars.serializer)
-      ..add(GOnMessageSentToUserData.serializer)
-      ..add(GOnMessageSentToUserData_messageSentToUser.serializer)
-      ..add(GOnMessageSentToUserReq.serializer)
-      ..add(GOnMessageSentToUserVars.serializer)
-      ..add(GOnNewMessageData.serializer)
-      ..add(GOnNewMessageData_messageAdded.serializer)
-      ..add(GOnNewMessageReq.serializer)
-      ..add(GOnNewMessageVars.serializer)
-      ..add(GPostMessageData.serializer)
-      ..add(GPostMessageData_postMessage.serializer)
-      ..add(GPostMessageReq.serializer)
-      ..add(GPostMessageVars.serializer)
+      ..add(GFetchChatHistoryData.serializer)
+      ..add(GFetchChatHistoryData_messages.serializer)
+      ..add(GFetchChatHistoryReq.serializer)
+      ..add(GFetchChatHistoryVars.serializer)
+      ..add(GListenToChatData.serializer)
+      ..add(GListenToChatData_messages.serializer)
+      ..add(GListenToChatReq.serializer)
+      ..add(GListenToChatVars.serializer)
+      ..add(GsendMessageData.serializer)
+      ..add(GsendMessageReq.serializer)
+      ..add(GsendMessageVars.serializer)
+      ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(GFetchChatHistoryData_messages)]),
+          () => new ListBuilder<GFetchChatHistoryData_messages>())
       ..addBuilderFactory(
           const FullType(
-              BuiltList, const [const FullType(GGetMessagesData_messages)]),
-          () => new ListBuilder<GGetMessagesData_messages>()))
+              BuiltList, const [const FullType(GListenToChatData_messages)]),
+          () => new ListBuilder<GListenToChatData_messages>()))
     .build();
 
 // ignore_for_file: deprecated_member_use_from_same_package,type=lint

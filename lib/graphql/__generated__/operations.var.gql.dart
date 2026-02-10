@@ -8,149 +8,73 @@ import 'package:ConnectUs/graphql/__generated__/serializers.gql.dart' as _i1;
 
 part 'operations.var.gql.g.dart';
 
-abstract class GGetMessagesVars
-    implements Built<GGetMessagesVars, GGetMessagesVarsBuilder> {
-  GGetMessagesVars._();
+abstract class GFetchChatHistoryVars
+    implements Built<GFetchChatHistoryVars, GFetchChatHistoryVarsBuilder> {
+  GFetchChatHistoryVars._();
 
-  factory GGetMessagesVars([void Function(GGetMessagesVarsBuilder b) updates]) =
-      _$GGetMessagesVars;
+  factory GFetchChatHistoryVars(
+          [void Function(GFetchChatHistoryVarsBuilder b) updates]) =
+      _$GFetchChatHistoryVars;
 
-  String get roomId;
-  static Serializer<GGetMessagesVars> get serializer =>
-      _$gGetMessagesVarsSerializer;
+  static Serializer<GFetchChatHistoryVars> get serializer =>
+      _$gFetchChatHistoryVarsSerializer;
 
   Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
-        GGetMessagesVars.serializer,
+        GFetchChatHistoryVars.serializer,
         this,
       ) as Map<String, dynamic>);
 
-  static GGetMessagesVars? fromJson(Map<String, dynamic> json) =>
+  static GFetchChatHistoryVars? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
-        GGetMessagesVars.serializer,
+        GFetchChatHistoryVars.serializer,
         json,
       );
 }
 
-abstract class GPostMessageVars
-    implements Built<GPostMessageVars, GPostMessageVarsBuilder> {
-  GPostMessageVars._();
+abstract class GsendMessageVars
+    implements Built<GsendMessageVars, GsendMessageVarsBuilder> {
+  GsendMessageVars._();
 
-  factory GPostMessageVars([void Function(GPostMessageVarsBuilder b) updates]) =
-      _$GPostMessageVars;
-
-  String get roomId;
-  String get user;
-  String get to;
-  String get content;
-  static Serializer<GPostMessageVars> get serializer =>
-      _$gPostMessageVarsSerializer;
-
-  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
-        GPostMessageVars.serializer,
-        this,
-      ) as Map<String, dynamic>);
-
-  static GPostMessageVars? fromJson(Map<String, dynamic> json) =>
-      _i1.serializers.deserializeWith(
-        GPostMessageVars.serializer,
-        json,
-      );
-}
-
-abstract class GOnNewMessageVars
-    implements Built<GOnNewMessageVars, GOnNewMessageVarsBuilder> {
-  GOnNewMessageVars._();
-
-  factory GOnNewMessageVars(
-          [void Function(GOnNewMessageVarsBuilder b) updates]) =
-      _$GOnNewMessageVars;
-
-  String get roomId;
-  static Serializer<GOnNewMessageVars> get serializer =>
-      _$gOnNewMessageVarsSerializer;
-
-  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
-        GOnNewMessageVars.serializer,
-        this,
-      ) as Map<String, dynamic>);
-
-  static GOnNewMessageVars? fromJson(Map<String, dynamic> json) =>
-      _i1.serializers.deserializeWith(
-        GOnNewMessageVars.serializer,
-        json,
-      );
-}
-
-abstract class GListenToIncomingMessagesVars
-    implements
-        Built<GListenToIncomingMessagesVars,
-            GListenToIncomingMessagesVarsBuilder> {
-  GListenToIncomingMessagesVars._();
-
-  factory GListenToIncomingMessagesVars(
-          [void Function(GListenToIncomingMessagesVarsBuilder b) updates]) =
-      _$GListenToIncomingMessagesVars;
+  factory GsendMessageVars([void Function(GsendMessageVarsBuilder b) updates]) =
+      _$GsendMessageVars;
 
   String get user;
-  static Serializer<GListenToIncomingMessagesVars> get serializer =>
-      _$gListenToIncomingMessagesVarsSerializer;
+  String get text;
+  String get roomId;
+  static Serializer<GsendMessageVars> get serializer =>
+      _$gsendMessageVarsSerializer;
 
   Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
-        GListenToIncomingMessagesVars.serializer,
+        GsendMessageVars.serializer,
         this,
       ) as Map<String, dynamic>);
 
-  static GListenToIncomingMessagesVars? fromJson(Map<String, dynamic> json) =>
+  static GsendMessageVars? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
-        GListenToIncomingMessagesVars.serializer,
+        GsendMessageVars.serializer,
         json,
       );
 }
 
-abstract class GOnMessageSentToUserVars
-    implements
-        Built<GOnMessageSentToUserVars, GOnMessageSentToUserVarsBuilder> {
-  GOnMessageSentToUserVars._();
+abstract class GListenToChatVars
+    implements Built<GListenToChatVars, GListenToChatVarsBuilder> {
+  GListenToChatVars._();
 
-  factory GOnMessageSentToUserVars(
-          [void Function(GOnMessageSentToUserVarsBuilder b) updates]) =
-      _$GOnMessageSentToUserVars;
+  factory GListenToChatVars(
+          [void Function(GListenToChatVarsBuilder b) updates]) =
+      _$GListenToChatVars;
 
-  String get user;
-  static Serializer<GOnMessageSentToUserVars> get serializer =>
-      _$gOnMessageSentToUserVarsSerializer;
+  static Serializer<GListenToChatVars> get serializer =>
+      _$gListenToChatVarsSerializer;
 
   Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
-        GOnMessageSentToUserVars.serializer,
+        GListenToChatVars.serializer,
         this,
       ) as Map<String, dynamic>);
 
-  static GOnMessageSentToUserVars? fromJson(Map<String, dynamic> json) =>
+  static GListenToChatVars? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
-        GOnMessageSentToUserVars.serializer,
-        json,
-      );
-}
-
-abstract class GChatMessageFieldsVars
-    implements Built<GChatMessageFieldsVars, GChatMessageFieldsVarsBuilder> {
-  GChatMessageFieldsVars._();
-
-  factory GChatMessageFieldsVars(
-          [void Function(GChatMessageFieldsVarsBuilder b) updates]) =
-      _$GChatMessageFieldsVars;
-
-  static Serializer<GChatMessageFieldsVars> get serializer =>
-      _$gChatMessageFieldsVarsSerializer;
-
-  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
-        GChatMessageFieldsVars.serializer,
-        this,
-      ) as Map<String, dynamic>);
-
-  static GChatMessageFieldsVars? fromJson(Map<String, dynamic> json) =>
-      _i1.serializers.deserializeWith(
-        GChatMessageFieldsVars.serializer,
+        GListenToChatVars.serializer,
         json,
       );
 }

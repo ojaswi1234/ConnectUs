@@ -1,41 +1,18 @@
-fragment ChatMessageFields on Message {
-  id
-  roomId
-  user
-  to
-  content
-  createdAt
-}
-
-query GetMessages($roomId: String!) {
-  messages(roomId: $roomId) {
-    ...ChatMessageFields
+query FetchChatHistory {
+  messages {
+    user
+    text
   }
 }
 
-mutation PostMessage($roomId: String!, $user: String!, $to: String!, $content: String!) {
-  postMessage(roomId: $roomId, user: $user, to: $to, content: $content) {
-    ...ChatMessageFields
+mutation sendMessage($user: String!, $text: String!, $roomId: String!) {
+    postMessage(user: $user, text: $text, roomId: $roomId)
+}
+
+subscription ListenToChat {
+  messages {
+    user
+    text
   }
 }
 
-subscription OnNewMessage($roomId: String!) {
-  messageAdded(roomId: $roomId) {
-    ...ChatMessageFields
-  }
-}
-
-# NEW: Operation to listen on Home Page
-subscription ListenToIncomingMessages($user: String!) {
-  messageSentToUser(user: $user) {
-    ...ChatMessageFields
-  }
-}
-subscription OnMessageSentToUser($user: String!) {
-  messageSentToUser(user: $user) {
-    id
-    content
-    user # The sender
-    createdAt
-  }
-}

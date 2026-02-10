@@ -12,10 +12,10 @@ class _AccountState extends State<Account> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 45, 45, 45),
+      backgroundColor: const Color.fromARGB(255, 45, 45, 45),
       appBar: AppBar(
-        leading: Icon(Icons.arrow_back),
-        title: Text("Account"),
+        leading: const Icon(Icons.arrow_back),
+        title: const Text("Account"),
         centerTitle: true,
         backgroundColor: AppTheme.accentDark,
       ),

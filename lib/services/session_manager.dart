@@ -15,7 +15,6 @@ class SessionManager {
   // Keys for storing session data
   static const String _keyRememberMe = 'remember_me';
   static const String _keyLastLoginEmail = 'last_login_email';
-  static const String _keySessionExpiry = 'session_expiry';
 
   /// Initialize session manager
   Future<void> initialize() async {

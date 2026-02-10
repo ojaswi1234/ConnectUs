@@ -1,26 +1,24 @@
 // lib/pages/chat/chatArea.dart
 import 'dart:async';
+import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
+import 'package:ConnectUs/services/ferry_client.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+// For kIsWeb
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:ConnectUs/services/security_services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:logger/logger.dart';
-import 'package:ferry/ferry.dart';
-import 'package:ferry_flutter/ferry_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
-import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
 
-class ChatArea extends StatefulWidget {
+class ChatArea extends ConsumerStatefulWidget {
   final String userName;
   const ChatArea({super.key, required this.userName});
 
   @override
-  State<ChatArea> createState() => _ChatAreaState();
+  ConsumerState<ChatArea> createState() => _ChatAreaState();
 }
 
-class _ChatAreaState extends State<ChatArea> {
+class _ChatAreaState extends ConsumerState<ChatArea> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -35,8 +33,8 @@ class _ChatAreaState extends State<ChatArea> {
   bool _isTargetOnline = false;
 
   // Subscription handlers
-  StreamSubscription? _messageSubscription;
   supabase.RealtimeChannel? _statusChannel;
+  StreamSubscription? _messageSubscription;
 
   // Local Storage
   late Box _chatBox;
@@ -54,8 +52,8 @@ class _ChatAreaState extends State<ChatArea> {
 
   @override
   void dispose() {
-    _messageSubscription?.cancel();
     _statusChannel?.unsubscribe(); // Stop listening to status
+    _messageSubscription?.cancel();
     _scrollController.dispose();
     _controller.dispose();
     super.dispose();
@@ -94,10 +92,9 @@ class _ChatAreaState extends State<ChatArea> {
         // 3. Start Subscriptions if we found the target user
         if (_targetUserId != null) {
           await _checkBlockStatus();
-          _startStatusSubscription(); // <--- Method Call
+          _startStatusSubscription();
+          _startMessageSubscription();
         }
-
-        _startSubscription(); // <--- Method Call
       }
     }
   }
@@ -132,15 +129,34 @@ class _ChatAreaState extends State<ChatArea> {
         .subscribe();
   }
 
-  // --- MISSING METHOD 2: FERRY SUBSCRIPTION ---
-  void _startSubscription() {
-    final client = Provider.of<Client>(context, listen: false);
-    final subReq = GOnNewMessageReq((b) => b
-          ..vars.roomId = _roomId
-          ..updateCacheHandlerKey =
-              'updateGetMessages' // Updates the cache automatically
-        );
-    _messageSubscription = client.request(subReq).listen(null);
+  void _startMessageSubscription() {
+    if (_roomId == "loading") return;
+    final client = ref.read(clientProvider);
+
+    final messageSubscriptionRequest = GListenToChatReq();
+
+    _messageSubscription =
+        client.request(messageSubscriptionRequest).listen((response) {
+      if (response.data != null &&
+          response.data!.messages != null &&
+          response.data!.messages!.isNotEmpty) {
+        final newMsg = response.data!.messages!.last;
+        if (newMsg.user != _myUsername) {
+          final currentMessages = List<dynamic>.from(_localHistory);
+          final messageMap = {
+            'content': newMsg.text,
+            'user': newMsg.user,
+            'createdAt': DateTime.now().toIso8601String()
+          };
+          currentMessages.add(messageMap);
+          _saveToLocal(currentMessages);
+          if (mounted) {
+            setState(() {});
+            _scrollToBottom();
+          }
+        }
+      }
+    });
   }
 
   // --- BLOCKING LOGIC ---
@@ -206,11 +222,7 @@ class _ChatAreaState extends State<ChatArea> {
   List<dynamic> get _localHistory => _chatBox.get(_roomId, defaultValue: []);
 
   void _saveToLocal(List<dynamic> messages) {
-    final simplified = messages
-        .map((m) =>
-            {'content': m.content, 'user': m.user, 'createdAt': m.createdAt})
-        .toList();
-    _chatBox.put(_roomId, simplified);
+    _chatBox.put(_roomId, messages);
   }
 
   void _sendChat() {
@@ -225,21 +237,26 @@ class _ChatAreaState extends State<ChatArea> {
     }
 
     if (_controller.text.trim().isEmpty || _myUsername == null) return;
-    final client = Provider.of<Client>(context, listen: false);
+    final newMessage = {
+      'content': _controller.text,
+      'user': _myUsername,
+      'createdAt': DateTime.now().toIso8601String()
+    };
+    final currentMessages = List<dynamic>.from(_localHistory);
+    currentMessages.add(newMessage);
+    _saveToLocal(currentMessages);
+    setState(() {});
 
-    // 2. Encrypt
-    final encryptedContent =
-        SecurityService.encryptMessage(_controller.text.trim());
-
-    final postMessageReq = GPostMessageReq((b) => b
-      ..vars.roomId = _roomId
-      ..vars.content = encryptedContent
+    final client = ref.read(clientProvider);
+    final sendMessageReq = GsendMessageReq((b) => b
       ..vars.user = _myUsername!
-      ..vars.to = widget.userName
-      ..updateCacheHandlerKey = 'updateGetMessages');
+      ..vars.text = _controller.text
+      ..vars.roomId = _roomId);
 
-    client.request(postMessageReq).listen((response) {
-      if (response.hasErrors) Logger().e(response.graphqlErrors);
+    client.request(sendMessageReq).listen((response) {
+      if (response.hasErrors) {
+        debugPrint('Error sending message: ${response.graphqlErrors}');
+      }
     });
 
     _controller.clear();
@@ -290,10 +307,10 @@ class _ChatAreaState extends State<ChatArea> {
                 shape: BoxShape.circle,
                 border: Border.all(color: _statusColor, width: 2.5),
               ),
-              child: CircleAvatar(
+              child: const CircleAvatar(
                 backgroundColor: AppTheme.accent,
                 radius: 18,
-                child: const Icon(Icons.person, color: Colors.black, size: 20),
+                child: Icon(Icons.person, color: Colors.black, size: 20),
               ),
             ),
             const SizedBox(width: 10),
@@ -340,40 +357,19 @@ class _ChatAreaState extends State<ChatArea> {
       body: Column(
         children: [
           Expanded(
-            child: Operation(
-              client: Provider.of<Client>(context),
-              operationRequest:
-                  GGetMessagesReq((b) => b..vars.roomId = _roomId),
-              builder: (context, response, error) {
-                List<dynamic> messages = [];
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16.0),
+              itemCount: _localHistory.length,
+              reverse: true,
+              itemBuilder: (context, index) {
+                final rawMsg = _localHistory[_localHistory.length - 1 - index];
+                final content = rawMsg is Map ? rawMsg['content'] : '';
+                final user = rawMsg is Map ? rawMsg['user'] : '';
 
-                if (response?.data?.messages != null) {
-                  messages = response!.data!.messages.toList();
-                  _saveToLocal(messages); // Sync to Hive
-                } else {
-                  messages = _localHistory; // Fallback to Hive
-                }
-
-                if (messages.isEmpty && response?.loading == true) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: messages.length,
-                  reverse: true,
-                  itemBuilder: (context, index) {
-                    final rawMsg = messages[messages.length - 1 - index];
-                    final content =
-                        rawMsg is Map ? rawMsg['content'] : rawMsg.content;
-                    final user = rawMsg is Map ? rawMsg['user'] : rawMsg.user;
-
-                    final decrypted = SecurityService.decryptMessage(content);
-                    return _buildMessageBubble(
-                        decrypted, user == _myUsername, user);
-                  },
-                );
+                final decrypted = SecurityService.decryptMessage(content);
+                return _buildMessageBubble(
+                    decrypted, user == _myUsername, user);
               },
             ),
           ),

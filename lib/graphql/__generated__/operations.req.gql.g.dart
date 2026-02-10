@@ -6,392 +6,31 @@ part of 'operations.req.gql.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializer<GGetMessagesReq> _$gGetMessagesReqSerializer =
-    new _$GGetMessagesReqSerializer();
-Serializer<GPostMessageReq> _$gPostMessageReqSerializer =
-    new _$GPostMessageReqSerializer();
-Serializer<GOnNewMessageReq> _$gOnNewMessageReqSerializer =
-    new _$GOnNewMessageReqSerializer();
-Serializer<GListenToIncomingMessagesReq>
-    _$gListenToIncomingMessagesReqSerializer =
-    new _$GListenToIncomingMessagesReqSerializer();
-Serializer<GOnMessageSentToUserReq> _$gOnMessageSentToUserReqSerializer =
-    new _$GOnMessageSentToUserReqSerializer();
-Serializer<GChatMessageFieldsReq> _$gChatMessageFieldsReqSerializer =
-    new _$GChatMessageFieldsReqSerializer();
+Serializer<GFetchChatHistoryReq> _$gFetchChatHistoryReqSerializer =
+    new _$GFetchChatHistoryReqSerializer();
+Serializer<GsendMessageReq> _$gsendMessageReqSerializer =
+    new _$GsendMessageReqSerializer();
+Serializer<GListenToChatReq> _$gListenToChatReqSerializer =
+    new _$GListenToChatReqSerializer();
 
-class _$GGetMessagesReqSerializer
-    implements StructuredSerializer<GGetMessagesReq> {
-  @override
-  final Iterable<Type> types = const [GGetMessagesReq, _$GGetMessagesReq];
-  @override
-  final String wireName = 'GGetMessagesReq';
-
-  @override
-  Iterable<Object?> serialize(Serializers serializers, GGetMessagesReq object,
-      {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object?>[
-      'vars',
-      serializers.serialize(object.vars,
-          specifiedType: const FullType(_i3.GGetMessagesVars)),
-      'operation',
-      serializers.serialize(object.operation,
-          specifiedType: const FullType(_i4.Operation)),
-      'executeOnListen',
-      serializers.serialize(object.executeOnListen,
-          specifiedType: const FullType(bool)),
-    ];
-    Object? value;
-    value = object.requestId;
-    if (value != null) {
-      result
-        ..add('requestId')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
-    }
-    value = object.optimisticResponse;
-    if (value != null) {
-      result
-        ..add('optimisticResponse')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(_i2.GGetMessagesData)));
-    }
-    value = object.updateCacheHandlerKey;
-    if (value != null) {
-      result
-        ..add('updateCacheHandlerKey')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
-    }
-    value = object.updateCacheHandlerContext;
-    if (value != null) {
-      result
-        ..add('updateCacheHandlerContext')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(
-                Map, const [const FullType(String), const FullType(dynamic)])));
-    }
-    value = object.fetchPolicy;
-    if (value != null) {
-      result
-        ..add('fetchPolicy')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(_i1.FetchPolicy)));
-    }
-    return result;
-  }
-
-  @override
-  GGetMessagesReq deserialize(
-      Serializers serializers, Iterable<Object?> serialized,
-      {FullType specifiedType = FullType.unspecified}) {
-    final result = new GGetMessagesReqBuilder();
-
-    final iterator = serialized.iterator;
-    while (iterator.moveNext()) {
-      final key = iterator.current! as String;
-      iterator.moveNext();
-      final Object? value = iterator.current;
-      switch (key) {
-        case 'vars':
-          result.vars.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(_i3.GGetMessagesVars))!
-              as _i3.GGetMessagesVars);
-          break;
-        case 'operation':
-          result.operation = serializers.deserialize(value,
-              specifiedType: const FullType(_i4.Operation))! as _i4.Operation;
-          break;
-        case 'requestId':
-          result.requestId = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String?;
-          break;
-        case 'optimisticResponse':
-          result.optimisticResponse.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(_i2.GGetMessagesData))!
-              as _i2.GGetMessagesData);
-          break;
-        case 'updateCacheHandlerKey':
-          result.updateCacheHandlerKey = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String?;
-          break;
-        case 'updateCacheHandlerContext':
-          result.updateCacheHandlerContext = serializers.deserialize(value,
-              specifiedType: const FullType(Map, const [
-                const FullType(String),
-                const FullType(dynamic)
-              ])) as Map<String, dynamic>?;
-          break;
-        case 'fetchPolicy':
-          result.fetchPolicy = serializers.deserialize(value,
-                  specifiedType: const FullType(_i1.FetchPolicy))
-              as _i1.FetchPolicy?;
-          break;
-        case 'executeOnListen':
-          result.executeOnListen = serializers.deserialize(value,
-              specifiedType: const FullType(bool))! as bool;
-          break;
-      }
-    }
-
-    return result.build();
-  }
-}
-
-class _$GPostMessageReqSerializer
-    implements StructuredSerializer<GPostMessageReq> {
-  @override
-  final Iterable<Type> types = const [GPostMessageReq, _$GPostMessageReq];
-  @override
-  final String wireName = 'GPostMessageReq';
-
-  @override
-  Iterable<Object?> serialize(Serializers serializers, GPostMessageReq object,
-      {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object?>[
-      'vars',
-      serializers.serialize(object.vars,
-          specifiedType: const FullType(_i3.GPostMessageVars)),
-      'operation',
-      serializers.serialize(object.operation,
-          specifiedType: const FullType(_i4.Operation)),
-      'executeOnListen',
-      serializers.serialize(object.executeOnListen,
-          specifiedType: const FullType(bool)),
-    ];
-    Object? value;
-    value = object.requestId;
-    if (value != null) {
-      result
-        ..add('requestId')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
-    }
-    value = object.optimisticResponse;
-    if (value != null) {
-      result
-        ..add('optimisticResponse')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(_i2.GPostMessageData)));
-    }
-    value = object.updateCacheHandlerKey;
-    if (value != null) {
-      result
-        ..add('updateCacheHandlerKey')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
-    }
-    value = object.updateCacheHandlerContext;
-    if (value != null) {
-      result
-        ..add('updateCacheHandlerContext')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(
-                Map, const [const FullType(String), const FullType(dynamic)])));
-    }
-    value = object.fetchPolicy;
-    if (value != null) {
-      result
-        ..add('fetchPolicy')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(_i1.FetchPolicy)));
-    }
-    return result;
-  }
-
-  @override
-  GPostMessageReq deserialize(
-      Serializers serializers, Iterable<Object?> serialized,
-      {FullType specifiedType = FullType.unspecified}) {
-    final result = new GPostMessageReqBuilder();
-
-    final iterator = serialized.iterator;
-    while (iterator.moveNext()) {
-      final key = iterator.current! as String;
-      iterator.moveNext();
-      final Object? value = iterator.current;
-      switch (key) {
-        case 'vars':
-          result.vars.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(_i3.GPostMessageVars))!
-              as _i3.GPostMessageVars);
-          break;
-        case 'operation':
-          result.operation = serializers.deserialize(value,
-              specifiedType: const FullType(_i4.Operation))! as _i4.Operation;
-          break;
-        case 'requestId':
-          result.requestId = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String?;
-          break;
-        case 'optimisticResponse':
-          result.optimisticResponse.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(_i2.GPostMessageData))!
-              as _i2.GPostMessageData);
-          break;
-        case 'updateCacheHandlerKey':
-          result.updateCacheHandlerKey = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String?;
-          break;
-        case 'updateCacheHandlerContext':
-          result.updateCacheHandlerContext = serializers.deserialize(value,
-              specifiedType: const FullType(Map, const [
-                const FullType(String),
-                const FullType(dynamic)
-              ])) as Map<String, dynamic>?;
-          break;
-        case 'fetchPolicy':
-          result.fetchPolicy = serializers.deserialize(value,
-                  specifiedType: const FullType(_i1.FetchPolicy))
-              as _i1.FetchPolicy?;
-          break;
-        case 'executeOnListen':
-          result.executeOnListen = serializers.deserialize(value,
-              specifiedType: const FullType(bool))! as bool;
-          break;
-      }
-    }
-
-    return result.build();
-  }
-}
-
-class _$GOnNewMessageReqSerializer
-    implements StructuredSerializer<GOnNewMessageReq> {
-  @override
-  final Iterable<Type> types = const [GOnNewMessageReq, _$GOnNewMessageReq];
-  @override
-  final String wireName = 'GOnNewMessageReq';
-
-  @override
-  Iterable<Object?> serialize(Serializers serializers, GOnNewMessageReq object,
-      {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object?>[
-      'vars',
-      serializers.serialize(object.vars,
-          specifiedType: const FullType(_i3.GOnNewMessageVars)),
-      'operation',
-      serializers.serialize(object.operation,
-          specifiedType: const FullType(_i4.Operation)),
-      'executeOnListen',
-      serializers.serialize(object.executeOnListen,
-          specifiedType: const FullType(bool)),
-    ];
-    Object? value;
-    value = object.requestId;
-    if (value != null) {
-      result
-        ..add('requestId')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
-    }
-    value = object.optimisticResponse;
-    if (value != null) {
-      result
-        ..add('optimisticResponse')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(_i2.GOnNewMessageData)));
-    }
-    value = object.updateCacheHandlerKey;
-    if (value != null) {
-      result
-        ..add('updateCacheHandlerKey')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
-    }
-    value = object.updateCacheHandlerContext;
-    if (value != null) {
-      result
-        ..add('updateCacheHandlerContext')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(
-                Map, const [const FullType(String), const FullType(dynamic)])));
-    }
-    value = object.fetchPolicy;
-    if (value != null) {
-      result
-        ..add('fetchPolicy')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(_i1.FetchPolicy)));
-    }
-    return result;
-  }
-
-  @override
-  GOnNewMessageReq deserialize(
-      Serializers serializers, Iterable<Object?> serialized,
-      {FullType specifiedType = FullType.unspecified}) {
-    final result = new GOnNewMessageReqBuilder();
-
-    final iterator = serialized.iterator;
-    while (iterator.moveNext()) {
-      final key = iterator.current! as String;
-      iterator.moveNext();
-      final Object? value = iterator.current;
-      switch (key) {
-        case 'vars':
-          result.vars.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(_i3.GOnNewMessageVars))!
-              as _i3.GOnNewMessageVars);
-          break;
-        case 'operation':
-          result.operation = serializers.deserialize(value,
-              specifiedType: const FullType(_i4.Operation))! as _i4.Operation;
-          break;
-        case 'requestId':
-          result.requestId = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String?;
-          break;
-        case 'optimisticResponse':
-          result.optimisticResponse.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(_i2.GOnNewMessageData))!
-              as _i2.GOnNewMessageData);
-          break;
-        case 'updateCacheHandlerKey':
-          result.updateCacheHandlerKey = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String?;
-          break;
-        case 'updateCacheHandlerContext':
-          result.updateCacheHandlerContext = serializers.deserialize(value,
-              specifiedType: const FullType(Map, const [
-                const FullType(String),
-                const FullType(dynamic)
-              ])) as Map<String, dynamic>?;
-          break;
-        case 'fetchPolicy':
-          result.fetchPolicy = serializers.deserialize(value,
-                  specifiedType: const FullType(_i1.FetchPolicy))
-              as _i1.FetchPolicy?;
-          break;
-        case 'executeOnListen':
-          result.executeOnListen = serializers.deserialize(value,
-              specifiedType: const FullType(bool))! as bool;
-          break;
-      }
-    }
-
-    return result.build();
-  }
-}
-
-class _$GListenToIncomingMessagesReqSerializer
-    implements StructuredSerializer<GListenToIncomingMessagesReq> {
+class _$GFetchChatHistoryReqSerializer
+    implements StructuredSerializer<GFetchChatHistoryReq> {
   @override
   final Iterable<Type> types = const [
-    GListenToIncomingMessagesReq,
-    _$GListenToIncomingMessagesReq
+    GFetchChatHistoryReq,
+    _$GFetchChatHistoryReq
   ];
   @override
-  final String wireName = 'GListenToIncomingMessagesReq';
+  final String wireName = 'GFetchChatHistoryReq';
 
   @override
   Iterable<Object?> serialize(
-      Serializers serializers, GListenToIncomingMessagesReq object,
+      Serializers serializers, GFetchChatHistoryReq object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
       'vars',
       serializers.serialize(object.vars,
-          specifiedType: const FullType(_i3.GListenToIncomingMessagesVars)),
+          specifiedType: const FullType(_i3.GFetchChatHistoryVars)),
       'operation',
       serializers.serialize(object.operation,
           specifiedType: const FullType(_i4.Operation)),
@@ -412,7 +51,7 @@ class _$GListenToIncomingMessagesReqSerializer
       result
         ..add('optimisticResponse')
         ..add(serializers.serialize(value,
-            specifiedType: const FullType(_i2.GListenToIncomingMessagesData)));
+            specifiedType: const FullType(_i2.GFetchChatHistoryData)));
     }
     value = object.updateCacheHandlerKey;
     if (value != null) {
@@ -440,10 +79,10 @@ class _$GListenToIncomingMessagesReqSerializer
   }
 
   @override
-  GListenToIncomingMessagesReq deserialize(
+  GFetchChatHistoryReq deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new GListenToIncomingMessagesReqBuilder();
+    final result = new GFetchChatHistoryReqBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -453,9 +92,8 @@ class _$GListenToIncomingMessagesReqSerializer
       switch (key) {
         case 'vars':
           result.vars.replace(serializers.deserialize(value,
-                  specifiedType:
-                      const FullType(_i3.GListenToIncomingMessagesVars))!
-              as _i3.GListenToIncomingMessagesVars);
+                  specifiedType: const FullType(_i3.GFetchChatHistoryVars))!
+              as _i3.GFetchChatHistoryVars);
           break;
         case 'operation':
           result.operation = serializers.deserialize(value,
@@ -467,9 +105,8 @@ class _$GListenToIncomingMessagesReqSerializer
           break;
         case 'optimisticResponse':
           result.optimisticResponse.replace(serializers.deserialize(value,
-                  specifiedType:
-                      const FullType(_i2.GListenToIncomingMessagesData))!
-              as _i2.GListenToIncomingMessagesData);
+                  specifiedType: const FullType(_i2.GFetchChatHistoryData))!
+              as _i2.GFetchChatHistoryData);
           break;
         case 'updateCacheHandlerKey':
           result.updateCacheHandlerKey = serializers.deserialize(value,
@@ -498,24 +135,20 @@ class _$GListenToIncomingMessagesReqSerializer
   }
 }
 
-class _$GOnMessageSentToUserReqSerializer
-    implements StructuredSerializer<GOnMessageSentToUserReq> {
+class _$GsendMessageReqSerializer
+    implements StructuredSerializer<GsendMessageReq> {
   @override
-  final Iterable<Type> types = const [
-    GOnMessageSentToUserReq,
-    _$GOnMessageSentToUserReq
-  ];
+  final Iterable<Type> types = const [GsendMessageReq, _$GsendMessageReq];
   @override
-  final String wireName = 'GOnMessageSentToUserReq';
+  final String wireName = 'GsendMessageReq';
 
   @override
-  Iterable<Object?> serialize(
-      Serializers serializers, GOnMessageSentToUserReq object,
+  Iterable<Object?> serialize(Serializers serializers, GsendMessageReq object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
       'vars',
       serializers.serialize(object.vars,
-          specifiedType: const FullType(_i3.GOnMessageSentToUserVars)),
+          specifiedType: const FullType(_i3.GsendMessageVars)),
       'operation',
       serializers.serialize(object.operation,
           specifiedType: const FullType(_i4.Operation)),
@@ -536,7 +169,7 @@ class _$GOnMessageSentToUserReqSerializer
       result
         ..add('optimisticResponse')
         ..add(serializers.serialize(value,
-            specifiedType: const FullType(_i2.GOnMessageSentToUserData)));
+            specifiedType: const FullType(_i2.GsendMessageData)));
     }
     value = object.updateCacheHandlerKey;
     if (value != null) {
@@ -564,10 +197,10 @@ class _$GOnMessageSentToUserReqSerializer
   }
 
   @override
-  GOnMessageSentToUserReq deserialize(
+  GsendMessageReq deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new GOnMessageSentToUserReqBuilder();
+    final result = new GsendMessageReqBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -577,8 +210,8 @@ class _$GOnMessageSentToUserReqSerializer
       switch (key) {
         case 'vars':
           result.vars.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(_i3.GOnMessageSentToUserVars))!
-              as _i3.GOnMessageSentToUserVars);
+                  specifiedType: const FullType(_i3.GsendMessageVars))!
+              as _i3.GsendMessageVars);
           break;
         case 'operation':
           result.operation = serializers.deserialize(value,
@@ -590,8 +223,8 @@ class _$GOnMessageSentToUserReqSerializer
           break;
         case 'optimisticResponse':
           result.optimisticResponse.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(_i2.GOnMessageSentToUserData))!
-              as _i2.GOnMessageSentToUserData);
+                  specifiedType: const FullType(_i2.GsendMessageData))!
+              as _i2.GsendMessageData);
           break;
         case 'updateCacheHandlerKey':
           result.updateCacheHandlerKey = serializers.deserialize(value,
@@ -620,48 +253,72 @@ class _$GOnMessageSentToUserReqSerializer
   }
 }
 
-class _$GChatMessageFieldsReqSerializer
-    implements StructuredSerializer<GChatMessageFieldsReq> {
+class _$GListenToChatReqSerializer
+    implements StructuredSerializer<GListenToChatReq> {
   @override
-  final Iterable<Type> types = const [
-    GChatMessageFieldsReq,
-    _$GChatMessageFieldsReq
-  ];
+  final Iterable<Type> types = const [GListenToChatReq, _$GListenToChatReq];
   @override
-  final String wireName = 'GChatMessageFieldsReq';
+  final String wireName = 'GListenToChatReq';
 
   @override
-  Iterable<Object?> serialize(
-      Serializers serializers, GChatMessageFieldsReq object,
+  Iterable<Object?> serialize(Serializers serializers, GListenToChatReq object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
       'vars',
       serializers.serialize(object.vars,
-          specifiedType: const FullType(_i3.GChatMessageFieldsVars)),
-      'document',
-      serializers.serialize(object.document,
-          specifiedType: const FullType(_i7.DocumentNode)),
-      'idFields',
-      serializers.serialize(object.idFields,
-          specifiedType: const FullType(
-              Map, const [const FullType(String), const FullType(dynamic)])),
+          specifiedType: const FullType(_i3.GListenToChatVars)),
+      'operation',
+      serializers.serialize(object.operation,
+          specifiedType: const FullType(_i4.Operation)),
+      'executeOnListen',
+      serializers.serialize(object.executeOnListen,
+          specifiedType: const FullType(bool)),
     ];
     Object? value;
-    value = object.fragmentName;
+    value = object.requestId;
     if (value != null) {
       result
-        ..add('fragmentName')
+        ..add('requestId')
         ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
+    }
+    value = object.optimisticResponse;
+    if (value != null) {
+      result
+        ..add('optimisticResponse')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(_i2.GListenToChatData)));
+    }
+    value = object.updateCacheHandlerKey;
+    if (value != null) {
+      result
+        ..add('updateCacheHandlerKey')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
+    value = object.updateCacheHandlerContext;
+    if (value != null) {
+      result
+        ..add('updateCacheHandlerContext')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(
+                Map, const [const FullType(String), const FullType(dynamic)])));
+    }
+    value = object.fetchPolicy;
+    if (value != null) {
+      result
+        ..add('fetchPolicy')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(_i1.FetchPolicy)));
     }
     return result;
   }
 
   @override
-  GChatMessageFieldsReq deserialize(
+  GListenToChatReq deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new GChatMessageFieldsReqBuilder();
+    final result = new GListenToChatReqBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -671,24 +328,41 @@ class _$GChatMessageFieldsReqSerializer
       switch (key) {
         case 'vars':
           result.vars.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(_i3.GChatMessageFieldsVars))!
-              as _i3.GChatMessageFieldsVars);
+                  specifiedType: const FullType(_i3.GListenToChatVars))!
+              as _i3.GListenToChatVars);
           break;
-        case 'document':
-          result.document = serializers.deserialize(value,
-                  specifiedType: const FullType(_i7.DocumentNode))!
-              as _i7.DocumentNode;
+        case 'operation':
+          result.operation = serializers.deserialize(value,
+              specifiedType: const FullType(_i4.Operation))! as _i4.Operation;
           break;
-        case 'fragmentName':
-          result.fragmentName = serializers.deserialize(value,
+        case 'requestId':
+          result.requestId = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String?;
           break;
-        case 'idFields':
-          result.idFields = serializers.deserialize(value,
+        case 'optimisticResponse':
+          result.optimisticResponse.replace(serializers.deserialize(value,
+                  specifiedType: const FullType(_i2.GListenToChatData))!
+              as _i2.GListenToChatData);
+          break;
+        case 'updateCacheHandlerKey':
+          result.updateCacheHandlerKey = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String?;
+          break;
+        case 'updateCacheHandlerContext':
+          result.updateCacheHandlerContext = serializers.deserialize(value,
               specifiedType: const FullType(Map, const [
                 const FullType(String),
                 const FullType(dynamic)
-              ]))! as Map<String, dynamic>;
+              ])) as Map<String, dynamic>?;
+          break;
+        case 'fetchPolicy':
+          result.fetchPolicy = serializers.deserialize(value,
+                  specifiedType: const FullType(_i1.FetchPolicy))
+              as _i1.FetchPolicy?;
+          break;
+        case 'executeOnListen':
+          result.executeOnListen = serializers.deserialize(value,
+              specifiedType: const FullType(bool))! as bool;
           break;
       }
     }
@@ -697,18 +371,18 @@ class _$GChatMessageFieldsReqSerializer
   }
 }
 
-class _$GGetMessagesReq extends GGetMessagesReq {
+class _$GFetchChatHistoryReq extends GFetchChatHistoryReq {
   @override
-  final _i3.GGetMessagesVars vars;
+  final _i3.GFetchChatHistoryVars vars;
   @override
   final _i4.Operation operation;
   @override
   final String? requestId;
   @override
-  final _i2.GGetMessagesData? Function(
-      _i2.GGetMessagesData?, _i2.GGetMessagesData?)? updateResult;
+  final _i2.GFetchChatHistoryData? Function(
+      _i2.GFetchChatHistoryData?, _i2.GFetchChatHistoryData?)? updateResult;
   @override
-  final _i2.GGetMessagesData? optimisticResponse;
+  final _i2.GFetchChatHistoryData? optimisticResponse;
   @override
   final String? updateCacheHandlerKey;
   @override
@@ -720,10 +394,11 @@ class _$GGetMessagesReq extends GGetMessagesReq {
   @override
   final _i4.Context? context;
 
-  factory _$GGetMessagesReq([void Function(GGetMessagesReqBuilder)? updates]) =>
-      (new GGetMessagesReqBuilder()..update(updates))._build();
+  factory _$GFetchChatHistoryReq(
+          [void Function(GFetchChatHistoryReqBuilder)? updates]) =>
+      (new GFetchChatHistoryReqBuilder()..update(updates))._build();
 
-  _$GGetMessagesReq._(
+  _$GFetchChatHistoryReq._(
       {required this.vars,
       required this.operation,
       this.requestId,
@@ -735,26 +410,28 @@ class _$GGetMessagesReq extends GGetMessagesReq {
       required this.executeOnListen,
       this.context})
       : super._() {
-    BuiltValueNullFieldError.checkNotNull(vars, r'GGetMessagesReq', 'vars');
     BuiltValueNullFieldError.checkNotNull(
-        operation, r'GGetMessagesReq', 'operation');
+        vars, r'GFetchChatHistoryReq', 'vars');
     BuiltValueNullFieldError.checkNotNull(
-        executeOnListen, r'GGetMessagesReq', 'executeOnListen');
+        operation, r'GFetchChatHistoryReq', 'operation');
+    BuiltValueNullFieldError.checkNotNull(
+        executeOnListen, r'GFetchChatHistoryReq', 'executeOnListen');
   }
 
   @override
-  GGetMessagesReq rebuild(void Function(GGetMessagesReqBuilder) updates) =>
+  GFetchChatHistoryReq rebuild(
+          void Function(GFetchChatHistoryReqBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  GGetMessagesReqBuilder toBuilder() =>
-      new GGetMessagesReqBuilder()..replace(this);
+  GFetchChatHistoryReqBuilder toBuilder() =>
+      new GFetchChatHistoryReqBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     final dynamic _$dynamicOther = other;
-    return other is GGetMessagesReq &&
+    return other is GFetchChatHistoryReq &&
         vars == other.vars &&
         operation == other.operation &&
         requestId == other.requestId &&
@@ -786,7 +463,7 @@ class _$GGetMessagesReq extends GGetMessagesReq {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'GGetMessagesReq')
+    return (newBuiltValueToStringHelper(r'GFetchChatHistoryReq')
           ..add('vars', vars)
           ..add('operation', operation)
           ..add('requestId', requestId)
@@ -801,249 +478,14 @@ class _$GGetMessagesReq extends GGetMessagesReq {
   }
 }
 
-class GGetMessagesReqBuilder
-    implements Builder<GGetMessagesReq, GGetMessagesReqBuilder> {
-  _$GGetMessagesReq? _$v;
+class GFetchChatHistoryReqBuilder
+    implements Builder<GFetchChatHistoryReq, GFetchChatHistoryReqBuilder> {
+  _$GFetchChatHistoryReq? _$v;
 
-  _i3.GGetMessagesVarsBuilder? _vars;
-  _i3.GGetMessagesVarsBuilder get vars =>
-      _$this._vars ??= new _i3.GGetMessagesVarsBuilder();
-  set vars(_i3.GGetMessagesVarsBuilder? vars) => _$this._vars = vars;
-
-  _i4.Operation? _operation;
-  _i4.Operation? get operation => _$this._operation;
-  set operation(_i4.Operation? operation) => _$this._operation = operation;
-
-  String? _requestId;
-  String? get requestId => _$this._requestId;
-  set requestId(String? requestId) => _$this._requestId = requestId;
-
-  _i2.GGetMessagesData? Function(_i2.GGetMessagesData?, _i2.GGetMessagesData?)?
-      _updateResult;
-  _i2.GGetMessagesData? Function(_i2.GGetMessagesData?, _i2.GGetMessagesData?)?
-      get updateResult => _$this._updateResult;
-  set updateResult(
-          _i2.GGetMessagesData? Function(
-                  _i2.GGetMessagesData?, _i2.GGetMessagesData?)?
-              updateResult) =>
-      _$this._updateResult = updateResult;
-
-  _i2.GGetMessagesDataBuilder? _optimisticResponse;
-  _i2.GGetMessagesDataBuilder get optimisticResponse =>
-      _$this._optimisticResponse ??= new _i2.GGetMessagesDataBuilder();
-  set optimisticResponse(_i2.GGetMessagesDataBuilder? optimisticResponse) =>
-      _$this._optimisticResponse = optimisticResponse;
-
-  String? _updateCacheHandlerKey;
-  String? get updateCacheHandlerKey => _$this._updateCacheHandlerKey;
-  set updateCacheHandlerKey(String? updateCacheHandlerKey) =>
-      _$this._updateCacheHandlerKey = updateCacheHandlerKey;
-
-  Map<String, dynamic>? _updateCacheHandlerContext;
-  Map<String, dynamic>? get updateCacheHandlerContext =>
-      _$this._updateCacheHandlerContext;
-  set updateCacheHandlerContext(
-          Map<String, dynamic>? updateCacheHandlerContext) =>
-      _$this._updateCacheHandlerContext = updateCacheHandlerContext;
-
-  _i1.FetchPolicy? _fetchPolicy;
-  _i1.FetchPolicy? get fetchPolicy => _$this._fetchPolicy;
-  set fetchPolicy(_i1.FetchPolicy? fetchPolicy) =>
-      _$this._fetchPolicy = fetchPolicy;
-
-  bool? _executeOnListen;
-  bool? get executeOnListen => _$this._executeOnListen;
-  set executeOnListen(bool? executeOnListen) =>
-      _$this._executeOnListen = executeOnListen;
-
-  _i4.Context? _context;
-  _i4.Context? get context => _$this._context;
-  set context(_i4.Context? context) => _$this._context = context;
-
-  GGetMessagesReqBuilder() {
-    GGetMessagesReq._initializeBuilder(this);
-  }
-
-  GGetMessagesReqBuilder get _$this {
-    final $v = _$v;
-    if ($v != null) {
-      _vars = $v.vars.toBuilder();
-      _operation = $v.operation;
-      _requestId = $v.requestId;
-      _updateResult = $v.updateResult;
-      _optimisticResponse = $v.optimisticResponse?.toBuilder();
-      _updateCacheHandlerKey = $v.updateCacheHandlerKey;
-      _updateCacheHandlerContext = $v.updateCacheHandlerContext;
-      _fetchPolicy = $v.fetchPolicy;
-      _executeOnListen = $v.executeOnListen;
-      _context = $v.context;
-      _$v = null;
-    }
-    return this;
-  }
-
-  @override
-  void replace(GGetMessagesReq other) {
-    ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$GGetMessagesReq;
-  }
-
-  @override
-  void update(void Function(GGetMessagesReqBuilder)? updates) {
-    if (updates != null) updates(this);
-  }
-
-  @override
-  GGetMessagesReq build() => _build();
-
-  _$GGetMessagesReq _build() {
-    _$GGetMessagesReq _$result;
-    try {
-      _$result = _$v ??
-          new _$GGetMessagesReq._(
-              vars: vars.build(),
-              operation: BuiltValueNullFieldError.checkNotNull(
-                  operation, r'GGetMessagesReq', 'operation'),
-              requestId: requestId,
-              updateResult: updateResult,
-              optimisticResponse: _optimisticResponse?.build(),
-              updateCacheHandlerKey: updateCacheHandlerKey,
-              updateCacheHandlerContext: updateCacheHandlerContext,
-              fetchPolicy: fetchPolicy,
-              executeOnListen: BuiltValueNullFieldError.checkNotNull(
-                  executeOnListen, r'GGetMessagesReq', 'executeOnListen'),
-              context: context);
-    } catch (_) {
-      late String _$failedField;
-      try {
-        _$failedField = 'vars';
-        vars.build();
-
-        _$failedField = 'optimisticResponse';
-        _optimisticResponse?.build();
-      } catch (e) {
-        throw new BuiltValueNestedFieldError(
-            r'GGetMessagesReq', _$failedField, e.toString());
-      }
-      rethrow;
-    }
-    replace(_$result);
-    return _$result;
-  }
-}
-
-class _$GPostMessageReq extends GPostMessageReq {
-  @override
-  final _i3.GPostMessageVars vars;
-  @override
-  final _i4.Operation operation;
-  @override
-  final String? requestId;
-  @override
-  final _i2.GPostMessageData? Function(
-      _i2.GPostMessageData?, _i2.GPostMessageData?)? updateResult;
-  @override
-  final _i2.GPostMessageData? optimisticResponse;
-  @override
-  final String? updateCacheHandlerKey;
-  @override
-  final Map<String, dynamic>? updateCacheHandlerContext;
-  @override
-  final _i1.FetchPolicy? fetchPolicy;
-  @override
-  final bool executeOnListen;
-  @override
-  final _i4.Context? context;
-
-  factory _$GPostMessageReq([void Function(GPostMessageReqBuilder)? updates]) =>
-      (new GPostMessageReqBuilder()..update(updates))._build();
-
-  _$GPostMessageReq._(
-      {required this.vars,
-      required this.operation,
-      this.requestId,
-      this.updateResult,
-      this.optimisticResponse,
-      this.updateCacheHandlerKey,
-      this.updateCacheHandlerContext,
-      this.fetchPolicy,
-      required this.executeOnListen,
-      this.context})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(vars, r'GPostMessageReq', 'vars');
-    BuiltValueNullFieldError.checkNotNull(
-        operation, r'GPostMessageReq', 'operation');
-    BuiltValueNullFieldError.checkNotNull(
-        executeOnListen, r'GPostMessageReq', 'executeOnListen');
-  }
-
-  @override
-  GPostMessageReq rebuild(void Function(GPostMessageReqBuilder) updates) =>
-      (toBuilder()..update(updates)).build();
-
-  @override
-  GPostMessageReqBuilder toBuilder() =>
-      new GPostMessageReqBuilder()..replace(this);
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(other, this)) return true;
-    final dynamic _$dynamicOther = other;
-    return other is GPostMessageReq &&
-        vars == other.vars &&
-        operation == other.operation &&
-        requestId == other.requestId &&
-        updateResult == _$dynamicOther.updateResult &&
-        optimisticResponse == other.optimisticResponse &&
-        updateCacheHandlerKey == other.updateCacheHandlerKey &&
-        updateCacheHandlerContext == other.updateCacheHandlerContext &&
-        fetchPolicy == other.fetchPolicy &&
-        executeOnListen == other.executeOnListen &&
-        context == other.context;
-  }
-
-  @override
-  int get hashCode {
-    var _$hash = 0;
-    _$hash = $jc(_$hash, vars.hashCode);
-    _$hash = $jc(_$hash, operation.hashCode);
-    _$hash = $jc(_$hash, requestId.hashCode);
-    _$hash = $jc(_$hash, updateResult.hashCode);
-    _$hash = $jc(_$hash, optimisticResponse.hashCode);
-    _$hash = $jc(_$hash, updateCacheHandlerKey.hashCode);
-    _$hash = $jc(_$hash, updateCacheHandlerContext.hashCode);
-    _$hash = $jc(_$hash, fetchPolicy.hashCode);
-    _$hash = $jc(_$hash, executeOnListen.hashCode);
-    _$hash = $jc(_$hash, context.hashCode);
-    _$hash = $jf(_$hash);
-    return _$hash;
-  }
-
-  @override
-  String toString() {
-    return (newBuiltValueToStringHelper(r'GPostMessageReq')
-          ..add('vars', vars)
-          ..add('operation', operation)
-          ..add('requestId', requestId)
-          ..add('updateResult', updateResult)
-          ..add('optimisticResponse', optimisticResponse)
-          ..add('updateCacheHandlerKey', updateCacheHandlerKey)
-          ..add('updateCacheHandlerContext', updateCacheHandlerContext)
-          ..add('fetchPolicy', fetchPolicy)
-          ..add('executeOnListen', executeOnListen)
-          ..add('context', context))
-        .toString();
-  }
-}
-
-class GPostMessageReqBuilder
-    implements Builder<GPostMessageReq, GPostMessageReqBuilder> {
-  _$GPostMessageReq? _$v;
-
-  _i3.GPostMessageVarsBuilder? _vars;
-  _i3.GPostMessageVarsBuilder get vars =>
-      _$this._vars ??= new _i3.GPostMessageVarsBuilder();
-  set vars(_i3.GPostMessageVarsBuilder? vars) => _$this._vars = vars;
+  _i3.GFetchChatHistoryVarsBuilder? _vars;
+  _i3.GFetchChatHistoryVarsBuilder get vars =>
+      _$this._vars ??= new _i3.GFetchChatHistoryVarsBuilder();
+  set vars(_i3.GFetchChatHistoryVarsBuilder? vars) => _$this._vars = vars;
 
   _i4.Operation? _operation;
   _i4.Operation? get operation => _$this._operation;
@@ -1053,505 +495,22 @@ class GPostMessageReqBuilder
   String? get requestId => _$this._requestId;
   set requestId(String? requestId) => _$this._requestId = requestId;
 
-  _i2.GPostMessageData? Function(_i2.GPostMessageData?, _i2.GPostMessageData?)?
-      _updateResult;
-  _i2.GPostMessageData? Function(_i2.GPostMessageData?, _i2.GPostMessageData?)?
+  _i2.GFetchChatHistoryData? Function(
+      _i2.GFetchChatHistoryData?, _i2.GFetchChatHistoryData?)? _updateResult;
+  _i2.GFetchChatHistoryData? Function(
+          _i2.GFetchChatHistoryData?, _i2.GFetchChatHistoryData?)?
       get updateResult => _$this._updateResult;
   set updateResult(
-          _i2.GPostMessageData? Function(
-                  _i2.GPostMessageData?, _i2.GPostMessageData?)?
+          _i2.GFetchChatHistoryData? Function(
+                  _i2.GFetchChatHistoryData?, _i2.GFetchChatHistoryData?)?
               updateResult) =>
       _$this._updateResult = updateResult;
 
-  _i2.GPostMessageDataBuilder? _optimisticResponse;
-  _i2.GPostMessageDataBuilder get optimisticResponse =>
-      _$this._optimisticResponse ??= new _i2.GPostMessageDataBuilder();
-  set optimisticResponse(_i2.GPostMessageDataBuilder? optimisticResponse) =>
-      _$this._optimisticResponse = optimisticResponse;
-
-  String? _updateCacheHandlerKey;
-  String? get updateCacheHandlerKey => _$this._updateCacheHandlerKey;
-  set updateCacheHandlerKey(String? updateCacheHandlerKey) =>
-      _$this._updateCacheHandlerKey = updateCacheHandlerKey;
-
-  Map<String, dynamic>? _updateCacheHandlerContext;
-  Map<String, dynamic>? get updateCacheHandlerContext =>
-      _$this._updateCacheHandlerContext;
-  set updateCacheHandlerContext(
-          Map<String, dynamic>? updateCacheHandlerContext) =>
-      _$this._updateCacheHandlerContext = updateCacheHandlerContext;
-
-  _i1.FetchPolicy? _fetchPolicy;
-  _i1.FetchPolicy? get fetchPolicy => _$this._fetchPolicy;
-  set fetchPolicy(_i1.FetchPolicy? fetchPolicy) =>
-      _$this._fetchPolicy = fetchPolicy;
-
-  bool? _executeOnListen;
-  bool? get executeOnListen => _$this._executeOnListen;
-  set executeOnListen(bool? executeOnListen) =>
-      _$this._executeOnListen = executeOnListen;
-
-  _i4.Context? _context;
-  _i4.Context? get context => _$this._context;
-  set context(_i4.Context? context) => _$this._context = context;
-
-  GPostMessageReqBuilder() {
-    GPostMessageReq._initializeBuilder(this);
-  }
-
-  GPostMessageReqBuilder get _$this {
-    final $v = _$v;
-    if ($v != null) {
-      _vars = $v.vars.toBuilder();
-      _operation = $v.operation;
-      _requestId = $v.requestId;
-      _updateResult = $v.updateResult;
-      _optimisticResponse = $v.optimisticResponse?.toBuilder();
-      _updateCacheHandlerKey = $v.updateCacheHandlerKey;
-      _updateCacheHandlerContext = $v.updateCacheHandlerContext;
-      _fetchPolicy = $v.fetchPolicy;
-      _executeOnListen = $v.executeOnListen;
-      _context = $v.context;
-      _$v = null;
-    }
-    return this;
-  }
-
-  @override
-  void replace(GPostMessageReq other) {
-    ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$GPostMessageReq;
-  }
-
-  @override
-  void update(void Function(GPostMessageReqBuilder)? updates) {
-    if (updates != null) updates(this);
-  }
-
-  @override
-  GPostMessageReq build() => _build();
-
-  _$GPostMessageReq _build() {
-    _$GPostMessageReq _$result;
-    try {
-      _$result = _$v ??
-          new _$GPostMessageReq._(
-              vars: vars.build(),
-              operation: BuiltValueNullFieldError.checkNotNull(
-                  operation, r'GPostMessageReq', 'operation'),
-              requestId: requestId,
-              updateResult: updateResult,
-              optimisticResponse: _optimisticResponse?.build(),
-              updateCacheHandlerKey: updateCacheHandlerKey,
-              updateCacheHandlerContext: updateCacheHandlerContext,
-              fetchPolicy: fetchPolicy,
-              executeOnListen: BuiltValueNullFieldError.checkNotNull(
-                  executeOnListen, r'GPostMessageReq', 'executeOnListen'),
-              context: context);
-    } catch (_) {
-      late String _$failedField;
-      try {
-        _$failedField = 'vars';
-        vars.build();
-
-        _$failedField = 'optimisticResponse';
-        _optimisticResponse?.build();
-      } catch (e) {
-        throw new BuiltValueNestedFieldError(
-            r'GPostMessageReq', _$failedField, e.toString());
-      }
-      rethrow;
-    }
-    replace(_$result);
-    return _$result;
-  }
-}
-
-class _$GOnNewMessageReq extends GOnNewMessageReq {
-  @override
-  final _i3.GOnNewMessageVars vars;
-  @override
-  final _i4.Operation operation;
-  @override
-  final String? requestId;
-  @override
-  final _i2.GOnNewMessageData? Function(
-      _i2.GOnNewMessageData?, _i2.GOnNewMessageData?)? updateResult;
-  @override
-  final _i2.GOnNewMessageData? optimisticResponse;
-  @override
-  final String? updateCacheHandlerKey;
-  @override
-  final Map<String, dynamic>? updateCacheHandlerContext;
-  @override
-  final _i1.FetchPolicy? fetchPolicy;
-  @override
-  final bool executeOnListen;
-  @override
-  final _i4.Context? context;
-
-  factory _$GOnNewMessageReq(
-          [void Function(GOnNewMessageReqBuilder)? updates]) =>
-      (new GOnNewMessageReqBuilder()..update(updates))._build();
-
-  _$GOnNewMessageReq._(
-      {required this.vars,
-      required this.operation,
-      this.requestId,
-      this.updateResult,
-      this.optimisticResponse,
-      this.updateCacheHandlerKey,
-      this.updateCacheHandlerContext,
-      this.fetchPolicy,
-      required this.executeOnListen,
-      this.context})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(vars, r'GOnNewMessageReq', 'vars');
-    BuiltValueNullFieldError.checkNotNull(
-        operation, r'GOnNewMessageReq', 'operation');
-    BuiltValueNullFieldError.checkNotNull(
-        executeOnListen, r'GOnNewMessageReq', 'executeOnListen');
-  }
-
-  @override
-  GOnNewMessageReq rebuild(void Function(GOnNewMessageReqBuilder) updates) =>
-      (toBuilder()..update(updates)).build();
-
-  @override
-  GOnNewMessageReqBuilder toBuilder() =>
-      new GOnNewMessageReqBuilder()..replace(this);
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(other, this)) return true;
-    final dynamic _$dynamicOther = other;
-    return other is GOnNewMessageReq &&
-        vars == other.vars &&
-        operation == other.operation &&
-        requestId == other.requestId &&
-        updateResult == _$dynamicOther.updateResult &&
-        optimisticResponse == other.optimisticResponse &&
-        updateCacheHandlerKey == other.updateCacheHandlerKey &&
-        updateCacheHandlerContext == other.updateCacheHandlerContext &&
-        fetchPolicy == other.fetchPolicy &&
-        executeOnListen == other.executeOnListen &&
-        context == other.context;
-  }
-
-  @override
-  int get hashCode {
-    var _$hash = 0;
-    _$hash = $jc(_$hash, vars.hashCode);
-    _$hash = $jc(_$hash, operation.hashCode);
-    _$hash = $jc(_$hash, requestId.hashCode);
-    _$hash = $jc(_$hash, updateResult.hashCode);
-    _$hash = $jc(_$hash, optimisticResponse.hashCode);
-    _$hash = $jc(_$hash, updateCacheHandlerKey.hashCode);
-    _$hash = $jc(_$hash, updateCacheHandlerContext.hashCode);
-    _$hash = $jc(_$hash, fetchPolicy.hashCode);
-    _$hash = $jc(_$hash, executeOnListen.hashCode);
-    _$hash = $jc(_$hash, context.hashCode);
-    _$hash = $jf(_$hash);
-    return _$hash;
-  }
-
-  @override
-  String toString() {
-    return (newBuiltValueToStringHelper(r'GOnNewMessageReq')
-          ..add('vars', vars)
-          ..add('operation', operation)
-          ..add('requestId', requestId)
-          ..add('updateResult', updateResult)
-          ..add('optimisticResponse', optimisticResponse)
-          ..add('updateCacheHandlerKey', updateCacheHandlerKey)
-          ..add('updateCacheHandlerContext', updateCacheHandlerContext)
-          ..add('fetchPolicy', fetchPolicy)
-          ..add('executeOnListen', executeOnListen)
-          ..add('context', context))
-        .toString();
-  }
-}
-
-class GOnNewMessageReqBuilder
-    implements Builder<GOnNewMessageReq, GOnNewMessageReqBuilder> {
-  _$GOnNewMessageReq? _$v;
-
-  _i3.GOnNewMessageVarsBuilder? _vars;
-  _i3.GOnNewMessageVarsBuilder get vars =>
-      _$this._vars ??= new _i3.GOnNewMessageVarsBuilder();
-  set vars(_i3.GOnNewMessageVarsBuilder? vars) => _$this._vars = vars;
-
-  _i4.Operation? _operation;
-  _i4.Operation? get operation => _$this._operation;
-  set operation(_i4.Operation? operation) => _$this._operation = operation;
-
-  String? _requestId;
-  String? get requestId => _$this._requestId;
-  set requestId(String? requestId) => _$this._requestId = requestId;
-
-  _i2.GOnNewMessageData? Function(
-      _i2.GOnNewMessageData?, _i2.GOnNewMessageData?)? _updateResult;
-  _i2.GOnNewMessageData? Function(
-          _i2.GOnNewMessageData?, _i2.GOnNewMessageData?)?
-      get updateResult => _$this._updateResult;
-  set updateResult(
-          _i2.GOnNewMessageData? Function(
-                  _i2.GOnNewMessageData?, _i2.GOnNewMessageData?)?
-              updateResult) =>
-      _$this._updateResult = updateResult;
-
-  _i2.GOnNewMessageDataBuilder? _optimisticResponse;
-  _i2.GOnNewMessageDataBuilder get optimisticResponse =>
-      _$this._optimisticResponse ??= new _i2.GOnNewMessageDataBuilder();
-  set optimisticResponse(_i2.GOnNewMessageDataBuilder? optimisticResponse) =>
-      _$this._optimisticResponse = optimisticResponse;
-
-  String? _updateCacheHandlerKey;
-  String? get updateCacheHandlerKey => _$this._updateCacheHandlerKey;
-  set updateCacheHandlerKey(String? updateCacheHandlerKey) =>
-      _$this._updateCacheHandlerKey = updateCacheHandlerKey;
-
-  Map<String, dynamic>? _updateCacheHandlerContext;
-  Map<String, dynamic>? get updateCacheHandlerContext =>
-      _$this._updateCacheHandlerContext;
-  set updateCacheHandlerContext(
-          Map<String, dynamic>? updateCacheHandlerContext) =>
-      _$this._updateCacheHandlerContext = updateCacheHandlerContext;
-
-  _i1.FetchPolicy? _fetchPolicy;
-  _i1.FetchPolicy? get fetchPolicy => _$this._fetchPolicy;
-  set fetchPolicy(_i1.FetchPolicy? fetchPolicy) =>
-      _$this._fetchPolicy = fetchPolicy;
-
-  bool? _executeOnListen;
-  bool? get executeOnListen => _$this._executeOnListen;
-  set executeOnListen(bool? executeOnListen) =>
-      _$this._executeOnListen = executeOnListen;
-
-  _i4.Context? _context;
-  _i4.Context? get context => _$this._context;
-  set context(_i4.Context? context) => _$this._context = context;
-
-  GOnNewMessageReqBuilder() {
-    GOnNewMessageReq._initializeBuilder(this);
-  }
-
-  GOnNewMessageReqBuilder get _$this {
-    final $v = _$v;
-    if ($v != null) {
-      _vars = $v.vars.toBuilder();
-      _operation = $v.operation;
-      _requestId = $v.requestId;
-      _updateResult = $v.updateResult;
-      _optimisticResponse = $v.optimisticResponse?.toBuilder();
-      _updateCacheHandlerKey = $v.updateCacheHandlerKey;
-      _updateCacheHandlerContext = $v.updateCacheHandlerContext;
-      _fetchPolicy = $v.fetchPolicy;
-      _executeOnListen = $v.executeOnListen;
-      _context = $v.context;
-      _$v = null;
-    }
-    return this;
-  }
-
-  @override
-  void replace(GOnNewMessageReq other) {
-    ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$GOnNewMessageReq;
-  }
-
-  @override
-  void update(void Function(GOnNewMessageReqBuilder)? updates) {
-    if (updates != null) updates(this);
-  }
-
-  @override
-  GOnNewMessageReq build() => _build();
-
-  _$GOnNewMessageReq _build() {
-    _$GOnNewMessageReq _$result;
-    try {
-      _$result = _$v ??
-          new _$GOnNewMessageReq._(
-              vars: vars.build(),
-              operation: BuiltValueNullFieldError.checkNotNull(
-                  operation, r'GOnNewMessageReq', 'operation'),
-              requestId: requestId,
-              updateResult: updateResult,
-              optimisticResponse: _optimisticResponse?.build(),
-              updateCacheHandlerKey: updateCacheHandlerKey,
-              updateCacheHandlerContext: updateCacheHandlerContext,
-              fetchPolicy: fetchPolicy,
-              executeOnListen: BuiltValueNullFieldError.checkNotNull(
-                  executeOnListen, r'GOnNewMessageReq', 'executeOnListen'),
-              context: context);
-    } catch (_) {
-      late String _$failedField;
-      try {
-        _$failedField = 'vars';
-        vars.build();
-
-        _$failedField = 'optimisticResponse';
-        _optimisticResponse?.build();
-      } catch (e) {
-        throw new BuiltValueNestedFieldError(
-            r'GOnNewMessageReq', _$failedField, e.toString());
-      }
-      rethrow;
-    }
-    replace(_$result);
-    return _$result;
-  }
-}
-
-class _$GListenToIncomingMessagesReq extends GListenToIncomingMessagesReq {
-  @override
-  final _i3.GListenToIncomingMessagesVars vars;
-  @override
-  final _i4.Operation operation;
-  @override
-  final String? requestId;
-  @override
-  final _i2.GListenToIncomingMessagesData? Function(
-      _i2.GListenToIncomingMessagesData?,
-      _i2.GListenToIncomingMessagesData?)? updateResult;
-  @override
-  final _i2.GListenToIncomingMessagesData? optimisticResponse;
-  @override
-  final String? updateCacheHandlerKey;
-  @override
-  final Map<String, dynamic>? updateCacheHandlerContext;
-  @override
-  final _i1.FetchPolicy? fetchPolicy;
-  @override
-  final bool executeOnListen;
-  @override
-  final _i4.Context? context;
-
-  factory _$GListenToIncomingMessagesReq(
-          [void Function(GListenToIncomingMessagesReqBuilder)? updates]) =>
-      (new GListenToIncomingMessagesReqBuilder()..update(updates))._build();
-
-  _$GListenToIncomingMessagesReq._(
-      {required this.vars,
-      required this.operation,
-      this.requestId,
-      this.updateResult,
-      this.optimisticResponse,
-      this.updateCacheHandlerKey,
-      this.updateCacheHandlerContext,
-      this.fetchPolicy,
-      required this.executeOnListen,
-      this.context})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(
-        vars, r'GListenToIncomingMessagesReq', 'vars');
-    BuiltValueNullFieldError.checkNotNull(
-        operation, r'GListenToIncomingMessagesReq', 'operation');
-    BuiltValueNullFieldError.checkNotNull(
-        executeOnListen, r'GListenToIncomingMessagesReq', 'executeOnListen');
-  }
-
-  @override
-  GListenToIncomingMessagesReq rebuild(
-          void Function(GListenToIncomingMessagesReqBuilder) updates) =>
-      (toBuilder()..update(updates)).build();
-
-  @override
-  GListenToIncomingMessagesReqBuilder toBuilder() =>
-      new GListenToIncomingMessagesReqBuilder()..replace(this);
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(other, this)) return true;
-    final dynamic _$dynamicOther = other;
-    return other is GListenToIncomingMessagesReq &&
-        vars == other.vars &&
-        operation == other.operation &&
-        requestId == other.requestId &&
-        updateResult == _$dynamicOther.updateResult &&
-        optimisticResponse == other.optimisticResponse &&
-        updateCacheHandlerKey == other.updateCacheHandlerKey &&
-        updateCacheHandlerContext == other.updateCacheHandlerContext &&
-        fetchPolicy == other.fetchPolicy &&
-        executeOnListen == other.executeOnListen &&
-        context == other.context;
-  }
-
-  @override
-  int get hashCode {
-    var _$hash = 0;
-    _$hash = $jc(_$hash, vars.hashCode);
-    _$hash = $jc(_$hash, operation.hashCode);
-    _$hash = $jc(_$hash, requestId.hashCode);
-    _$hash = $jc(_$hash, updateResult.hashCode);
-    _$hash = $jc(_$hash, optimisticResponse.hashCode);
-    _$hash = $jc(_$hash, updateCacheHandlerKey.hashCode);
-    _$hash = $jc(_$hash, updateCacheHandlerContext.hashCode);
-    _$hash = $jc(_$hash, fetchPolicy.hashCode);
-    _$hash = $jc(_$hash, executeOnListen.hashCode);
-    _$hash = $jc(_$hash, context.hashCode);
-    _$hash = $jf(_$hash);
-    return _$hash;
-  }
-
-  @override
-  String toString() {
-    return (newBuiltValueToStringHelper(r'GListenToIncomingMessagesReq')
-          ..add('vars', vars)
-          ..add('operation', operation)
-          ..add('requestId', requestId)
-          ..add('updateResult', updateResult)
-          ..add('optimisticResponse', optimisticResponse)
-          ..add('updateCacheHandlerKey', updateCacheHandlerKey)
-          ..add('updateCacheHandlerContext', updateCacheHandlerContext)
-          ..add('fetchPolicy', fetchPolicy)
-          ..add('executeOnListen', executeOnListen)
-          ..add('context', context))
-        .toString();
-  }
-}
-
-class GListenToIncomingMessagesReqBuilder
-    implements
-        Builder<GListenToIncomingMessagesReq,
-            GListenToIncomingMessagesReqBuilder> {
-  _$GListenToIncomingMessagesReq? _$v;
-
-  _i3.GListenToIncomingMessagesVarsBuilder? _vars;
-  _i3.GListenToIncomingMessagesVarsBuilder get vars =>
-      _$this._vars ??= new _i3.GListenToIncomingMessagesVarsBuilder();
-  set vars(_i3.GListenToIncomingMessagesVarsBuilder? vars) =>
-      _$this._vars = vars;
-
-  _i4.Operation? _operation;
-  _i4.Operation? get operation => _$this._operation;
-  set operation(_i4.Operation? operation) => _$this._operation = operation;
-
-  String? _requestId;
-  String? get requestId => _$this._requestId;
-  set requestId(String? requestId) => _$this._requestId = requestId;
-
-  _i2.GListenToIncomingMessagesData? Function(
-      _i2.GListenToIncomingMessagesData?,
-      _i2.GListenToIncomingMessagesData?)? _updateResult;
-  _i2.GListenToIncomingMessagesData? Function(
-          _i2.GListenToIncomingMessagesData?,
-          _i2.GListenToIncomingMessagesData?)?
-      get updateResult => _$this._updateResult;
-  set updateResult(
-          _i2.GListenToIncomingMessagesData? Function(
-                  _i2.GListenToIncomingMessagesData?,
-                  _i2.GListenToIncomingMessagesData?)?
-              updateResult) =>
-      _$this._updateResult = updateResult;
-
-  _i2.GListenToIncomingMessagesDataBuilder? _optimisticResponse;
-  _i2.GListenToIncomingMessagesDataBuilder get optimisticResponse =>
-      _$this._optimisticResponse ??=
-          new _i2.GListenToIncomingMessagesDataBuilder();
+  _i2.GFetchChatHistoryDataBuilder? _optimisticResponse;
+  _i2.GFetchChatHistoryDataBuilder get optimisticResponse =>
+      _$this._optimisticResponse ??= new _i2.GFetchChatHistoryDataBuilder();
   set optimisticResponse(
-          _i2.GListenToIncomingMessagesDataBuilder? optimisticResponse) =>
+          _i2.GFetchChatHistoryDataBuilder? optimisticResponse) =>
       _$this._optimisticResponse = optimisticResponse;
 
   String? _updateCacheHandlerKey;
@@ -1580,11 +539,11 @@ class GListenToIncomingMessagesReqBuilder
   _i4.Context? get context => _$this._context;
   set context(_i4.Context? context) => _$this._context = context;
 
-  GListenToIncomingMessagesReqBuilder() {
-    GListenToIncomingMessagesReq._initializeBuilder(this);
+  GFetchChatHistoryReqBuilder() {
+    GFetchChatHistoryReq._initializeBuilder(this);
   }
 
-  GListenToIncomingMessagesReqBuilder get _$this {
+  GFetchChatHistoryReqBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _vars = $v.vars.toBuilder();
@@ -1603,27 +562,27 @@ class GListenToIncomingMessagesReqBuilder
   }
 
   @override
-  void replace(GListenToIncomingMessagesReq other) {
+  void replace(GFetchChatHistoryReq other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$GListenToIncomingMessagesReq;
+    _$v = other as _$GFetchChatHistoryReq;
   }
 
   @override
-  void update(void Function(GListenToIncomingMessagesReqBuilder)? updates) {
+  void update(void Function(GFetchChatHistoryReqBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  GListenToIncomingMessagesReq build() => _build();
+  GFetchChatHistoryReq build() => _build();
 
-  _$GListenToIncomingMessagesReq _build() {
-    _$GListenToIncomingMessagesReq _$result;
+  _$GFetchChatHistoryReq _build() {
+    _$GFetchChatHistoryReq _$result;
     try {
       _$result = _$v ??
-          new _$GListenToIncomingMessagesReq._(
+          new _$GFetchChatHistoryReq._(
               vars: vars.build(),
               operation: BuiltValueNullFieldError.checkNotNull(
-                  operation, r'GListenToIncomingMessagesReq', 'operation'),
+                  operation, r'GFetchChatHistoryReq', 'operation'),
               requestId: requestId,
               updateResult: updateResult,
               optimisticResponse: _optimisticResponse?.build(),
@@ -1631,9 +590,7 @@ class GListenToIncomingMessagesReqBuilder
               updateCacheHandlerContext: updateCacheHandlerContext,
               fetchPolicy: fetchPolicy,
               executeOnListen: BuiltValueNullFieldError.checkNotNull(
-                  executeOnListen,
-                  r'GListenToIncomingMessagesReq',
-                  'executeOnListen'),
+                  executeOnListen, r'GFetchChatHistoryReq', 'executeOnListen'),
               context: context);
     } catch (_) {
       late String _$failedField;
@@ -1645,7 +602,7 @@ class GListenToIncomingMessagesReqBuilder
         _optimisticResponse?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            r'GListenToIncomingMessagesReq', _$failedField, e.toString());
+            r'GFetchChatHistoryReq', _$failedField, e.toString());
       }
       rethrow;
     }
@@ -1654,19 +611,18 @@ class GListenToIncomingMessagesReqBuilder
   }
 }
 
-class _$GOnMessageSentToUserReq extends GOnMessageSentToUserReq {
+class _$GsendMessageReq extends GsendMessageReq {
   @override
-  final _i3.GOnMessageSentToUserVars vars;
+  final _i3.GsendMessageVars vars;
   @override
   final _i4.Operation operation;
   @override
   final String? requestId;
   @override
-  final _i2.GOnMessageSentToUserData? Function(
-          _i2.GOnMessageSentToUserData?, _i2.GOnMessageSentToUserData?)?
-      updateResult;
+  final _i2.GsendMessageData? Function(
+      _i2.GsendMessageData?, _i2.GsendMessageData?)? updateResult;
   @override
-  final _i2.GOnMessageSentToUserData? optimisticResponse;
+  final _i2.GsendMessageData? optimisticResponse;
   @override
   final String? updateCacheHandlerKey;
   @override
@@ -1678,11 +634,10 @@ class _$GOnMessageSentToUserReq extends GOnMessageSentToUserReq {
   @override
   final _i4.Context? context;
 
-  factory _$GOnMessageSentToUserReq(
-          [void Function(GOnMessageSentToUserReqBuilder)? updates]) =>
-      (new GOnMessageSentToUserReqBuilder()..update(updates))._build();
+  factory _$GsendMessageReq([void Function(GsendMessageReqBuilder)? updates]) =>
+      (new GsendMessageReqBuilder()..update(updates))._build();
 
-  _$GOnMessageSentToUserReq._(
+  _$GsendMessageReq._(
       {required this.vars,
       required this.operation,
       this.requestId,
@@ -1694,28 +649,26 @@ class _$GOnMessageSentToUserReq extends GOnMessageSentToUserReq {
       required this.executeOnListen,
       this.context})
       : super._() {
+    BuiltValueNullFieldError.checkNotNull(vars, r'GsendMessageReq', 'vars');
     BuiltValueNullFieldError.checkNotNull(
-        vars, r'GOnMessageSentToUserReq', 'vars');
+        operation, r'GsendMessageReq', 'operation');
     BuiltValueNullFieldError.checkNotNull(
-        operation, r'GOnMessageSentToUserReq', 'operation');
-    BuiltValueNullFieldError.checkNotNull(
-        executeOnListen, r'GOnMessageSentToUserReq', 'executeOnListen');
+        executeOnListen, r'GsendMessageReq', 'executeOnListen');
   }
 
   @override
-  GOnMessageSentToUserReq rebuild(
-          void Function(GOnMessageSentToUserReqBuilder) updates) =>
+  GsendMessageReq rebuild(void Function(GsendMessageReqBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  GOnMessageSentToUserReqBuilder toBuilder() =>
-      new GOnMessageSentToUserReqBuilder()..replace(this);
+  GsendMessageReqBuilder toBuilder() =>
+      new GsendMessageReqBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     final dynamic _$dynamicOther = other;
-    return other is GOnMessageSentToUserReq &&
+    return other is GsendMessageReq &&
         vars == other.vars &&
         operation == other.operation &&
         requestId == other.requestId &&
@@ -1747,7 +700,7 @@ class _$GOnMessageSentToUserReq extends GOnMessageSentToUserReq {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'GOnMessageSentToUserReq')
+    return (newBuiltValueToStringHelper(r'GsendMessageReq')
           ..add('vars', vars)
           ..add('operation', operation)
           ..add('requestId', requestId)
@@ -1762,15 +715,14 @@ class _$GOnMessageSentToUserReq extends GOnMessageSentToUserReq {
   }
 }
 
-class GOnMessageSentToUserReqBuilder
-    implements
-        Builder<GOnMessageSentToUserReq, GOnMessageSentToUserReqBuilder> {
-  _$GOnMessageSentToUserReq? _$v;
+class GsendMessageReqBuilder
+    implements Builder<GsendMessageReq, GsendMessageReqBuilder> {
+  _$GsendMessageReq? _$v;
 
-  _i3.GOnMessageSentToUserVarsBuilder? _vars;
-  _i3.GOnMessageSentToUserVarsBuilder get vars =>
-      _$this._vars ??= new _i3.GOnMessageSentToUserVarsBuilder();
-  set vars(_i3.GOnMessageSentToUserVarsBuilder? vars) => _$this._vars = vars;
+  _i3.GsendMessageVarsBuilder? _vars;
+  _i3.GsendMessageVarsBuilder get vars =>
+      _$this._vars ??= new _i3.GsendMessageVarsBuilder();
+  set vars(_i3.GsendMessageVarsBuilder? vars) => _$this._vars = vars;
 
   _i4.Operation? _operation;
   _i4.Operation? get operation => _$this._operation;
@@ -1780,23 +732,20 @@ class GOnMessageSentToUserReqBuilder
   String? get requestId => _$this._requestId;
   set requestId(String? requestId) => _$this._requestId = requestId;
 
-  _i2.GOnMessageSentToUserData? Function(
-          _i2.GOnMessageSentToUserData?, _i2.GOnMessageSentToUserData?)?
+  _i2.GsendMessageData? Function(_i2.GsendMessageData?, _i2.GsendMessageData?)?
       _updateResult;
-  _i2.GOnMessageSentToUserData? Function(
-          _i2.GOnMessageSentToUserData?, _i2.GOnMessageSentToUserData?)?
+  _i2.GsendMessageData? Function(_i2.GsendMessageData?, _i2.GsendMessageData?)?
       get updateResult => _$this._updateResult;
   set updateResult(
-          _i2.GOnMessageSentToUserData? Function(
-                  _i2.GOnMessageSentToUserData?, _i2.GOnMessageSentToUserData?)?
+          _i2.GsendMessageData? Function(
+                  _i2.GsendMessageData?, _i2.GsendMessageData?)?
               updateResult) =>
       _$this._updateResult = updateResult;
 
-  _i2.GOnMessageSentToUserDataBuilder? _optimisticResponse;
-  _i2.GOnMessageSentToUserDataBuilder get optimisticResponse =>
-      _$this._optimisticResponse ??= new _i2.GOnMessageSentToUserDataBuilder();
-  set optimisticResponse(
-          _i2.GOnMessageSentToUserDataBuilder? optimisticResponse) =>
+  _i2.GsendMessageDataBuilder? _optimisticResponse;
+  _i2.GsendMessageDataBuilder get optimisticResponse =>
+      _$this._optimisticResponse ??= new _i2.GsendMessageDataBuilder();
+  set optimisticResponse(_i2.GsendMessageDataBuilder? optimisticResponse) =>
       _$this._optimisticResponse = optimisticResponse;
 
   String? _updateCacheHandlerKey;
@@ -1825,11 +774,11 @@ class GOnMessageSentToUserReqBuilder
   _i4.Context? get context => _$this._context;
   set context(_i4.Context? context) => _$this._context = context;
 
-  GOnMessageSentToUserReqBuilder() {
-    GOnMessageSentToUserReq._initializeBuilder(this);
+  GsendMessageReqBuilder() {
+    GsendMessageReq._initializeBuilder(this);
   }
 
-  GOnMessageSentToUserReqBuilder get _$this {
+  GsendMessageReqBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _vars = $v.vars.toBuilder();
@@ -1848,27 +797,27 @@ class GOnMessageSentToUserReqBuilder
   }
 
   @override
-  void replace(GOnMessageSentToUserReq other) {
+  void replace(GsendMessageReq other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$GOnMessageSentToUserReq;
+    _$v = other as _$GsendMessageReq;
   }
 
   @override
-  void update(void Function(GOnMessageSentToUserReqBuilder)? updates) {
+  void update(void Function(GsendMessageReqBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  GOnMessageSentToUserReq build() => _build();
+  GsendMessageReq build() => _build();
 
-  _$GOnMessageSentToUserReq _build() {
-    _$GOnMessageSentToUserReq _$result;
+  _$GsendMessageReq _build() {
+    _$GsendMessageReq _$result;
     try {
       _$result = _$v ??
-          new _$GOnMessageSentToUserReq._(
+          new _$GsendMessageReq._(
               vars: vars.build(),
               operation: BuiltValueNullFieldError.checkNotNull(
-                  operation, r'GOnMessageSentToUserReq', 'operation'),
+                  operation, r'GsendMessageReq', 'operation'),
               requestId: requestId,
               updateResult: updateResult,
               optimisticResponse: _optimisticResponse?.build(),
@@ -1876,9 +825,7 @@ class GOnMessageSentToUserReqBuilder
               updateCacheHandlerContext: updateCacheHandlerContext,
               fetchPolicy: fetchPolicy,
               executeOnListen: BuiltValueNullFieldError.checkNotNull(
-                  executeOnListen,
-                  r'GOnMessageSentToUserReq',
-                  'executeOnListen'),
+                  executeOnListen, r'GsendMessageReq', 'executeOnListen'),
               context: context);
     } catch (_) {
       late String _$failedField;
@@ -1890,7 +837,7 @@ class GOnMessageSentToUserReqBuilder
         _optimisticResponse?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            r'GOnMessageSentToUserReq', _$failedField, e.toString());
+            r'GsendMessageReq', _$failedField, e.toString());
       }
       rethrow;
     }
@@ -1899,145 +846,235 @@ class GOnMessageSentToUserReqBuilder
   }
 }
 
-class _$GChatMessageFieldsReq extends GChatMessageFieldsReq {
+class _$GListenToChatReq extends GListenToChatReq {
   @override
-  final _i3.GChatMessageFieldsVars vars;
+  final _i3.GListenToChatVars vars;
   @override
-  final _i7.DocumentNode document;
+  final _i4.Operation operation;
   @override
-  final String? fragmentName;
+  final String? requestId;
   @override
-  final Map<String, dynamic> idFields;
+  final _i2.GListenToChatData? Function(
+      _i2.GListenToChatData?, _i2.GListenToChatData?)? updateResult;
+  @override
+  final _i2.GListenToChatData? optimisticResponse;
+  @override
+  final String? updateCacheHandlerKey;
+  @override
+  final Map<String, dynamic>? updateCacheHandlerContext;
+  @override
+  final _i1.FetchPolicy? fetchPolicy;
+  @override
+  final bool executeOnListen;
+  @override
+  final _i4.Context? context;
 
-  factory _$GChatMessageFieldsReq(
-          [void Function(GChatMessageFieldsReqBuilder)? updates]) =>
-      (new GChatMessageFieldsReqBuilder()..update(updates))._build();
+  factory _$GListenToChatReq(
+          [void Function(GListenToChatReqBuilder)? updates]) =>
+      (new GListenToChatReqBuilder()..update(updates))._build();
 
-  _$GChatMessageFieldsReq._(
+  _$GListenToChatReq._(
       {required this.vars,
-      required this.document,
-      this.fragmentName,
-      required this.idFields})
+      required this.operation,
+      this.requestId,
+      this.updateResult,
+      this.optimisticResponse,
+      this.updateCacheHandlerKey,
+      this.updateCacheHandlerContext,
+      this.fetchPolicy,
+      required this.executeOnListen,
+      this.context})
       : super._() {
+    BuiltValueNullFieldError.checkNotNull(vars, r'GListenToChatReq', 'vars');
     BuiltValueNullFieldError.checkNotNull(
-        vars, r'GChatMessageFieldsReq', 'vars');
+        operation, r'GListenToChatReq', 'operation');
     BuiltValueNullFieldError.checkNotNull(
-        document, r'GChatMessageFieldsReq', 'document');
-    BuiltValueNullFieldError.checkNotNull(
-        idFields, r'GChatMessageFieldsReq', 'idFields');
+        executeOnListen, r'GListenToChatReq', 'executeOnListen');
   }
 
   @override
-  GChatMessageFieldsReq rebuild(
-          void Function(GChatMessageFieldsReqBuilder) updates) =>
+  GListenToChatReq rebuild(void Function(GListenToChatReqBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  GChatMessageFieldsReqBuilder toBuilder() =>
-      new GChatMessageFieldsReqBuilder()..replace(this);
+  GListenToChatReqBuilder toBuilder() =>
+      new GListenToChatReqBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GChatMessageFieldsReq &&
+    final dynamic _$dynamicOther = other;
+    return other is GListenToChatReq &&
         vars == other.vars &&
-        document == other.document &&
-        fragmentName == other.fragmentName &&
-        idFields == other.idFields;
+        operation == other.operation &&
+        requestId == other.requestId &&
+        updateResult == _$dynamicOther.updateResult &&
+        optimisticResponse == other.optimisticResponse &&
+        updateCacheHandlerKey == other.updateCacheHandlerKey &&
+        updateCacheHandlerContext == other.updateCacheHandlerContext &&
+        fetchPolicy == other.fetchPolicy &&
+        executeOnListen == other.executeOnListen &&
+        context == other.context;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, vars.hashCode);
-    _$hash = $jc(_$hash, document.hashCode);
-    _$hash = $jc(_$hash, fragmentName.hashCode);
-    _$hash = $jc(_$hash, idFields.hashCode);
+    _$hash = $jc(_$hash, operation.hashCode);
+    _$hash = $jc(_$hash, requestId.hashCode);
+    _$hash = $jc(_$hash, updateResult.hashCode);
+    _$hash = $jc(_$hash, optimisticResponse.hashCode);
+    _$hash = $jc(_$hash, updateCacheHandlerKey.hashCode);
+    _$hash = $jc(_$hash, updateCacheHandlerContext.hashCode);
+    _$hash = $jc(_$hash, fetchPolicy.hashCode);
+    _$hash = $jc(_$hash, executeOnListen.hashCode);
+    _$hash = $jc(_$hash, context.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'GChatMessageFieldsReq')
+    return (newBuiltValueToStringHelper(r'GListenToChatReq')
           ..add('vars', vars)
-          ..add('document', document)
-          ..add('fragmentName', fragmentName)
-          ..add('idFields', idFields))
+          ..add('operation', operation)
+          ..add('requestId', requestId)
+          ..add('updateResult', updateResult)
+          ..add('optimisticResponse', optimisticResponse)
+          ..add('updateCacheHandlerKey', updateCacheHandlerKey)
+          ..add('updateCacheHandlerContext', updateCacheHandlerContext)
+          ..add('fetchPolicy', fetchPolicy)
+          ..add('executeOnListen', executeOnListen)
+          ..add('context', context))
         .toString();
   }
 }
 
-class GChatMessageFieldsReqBuilder
-    implements Builder<GChatMessageFieldsReq, GChatMessageFieldsReqBuilder> {
-  _$GChatMessageFieldsReq? _$v;
+class GListenToChatReqBuilder
+    implements Builder<GListenToChatReq, GListenToChatReqBuilder> {
+  _$GListenToChatReq? _$v;
 
-  _i3.GChatMessageFieldsVarsBuilder? _vars;
-  _i3.GChatMessageFieldsVarsBuilder get vars =>
-      _$this._vars ??= new _i3.GChatMessageFieldsVarsBuilder();
-  set vars(_i3.GChatMessageFieldsVarsBuilder? vars) => _$this._vars = vars;
+  _i3.GListenToChatVarsBuilder? _vars;
+  _i3.GListenToChatVarsBuilder get vars =>
+      _$this._vars ??= new _i3.GListenToChatVarsBuilder();
+  set vars(_i3.GListenToChatVarsBuilder? vars) => _$this._vars = vars;
 
-  _i7.DocumentNode? _document;
-  _i7.DocumentNode? get document => _$this._document;
-  set document(_i7.DocumentNode? document) => _$this._document = document;
+  _i4.Operation? _operation;
+  _i4.Operation? get operation => _$this._operation;
+  set operation(_i4.Operation? operation) => _$this._operation = operation;
 
-  String? _fragmentName;
-  String? get fragmentName => _$this._fragmentName;
-  set fragmentName(String? fragmentName) => _$this._fragmentName = fragmentName;
+  String? _requestId;
+  String? get requestId => _$this._requestId;
+  set requestId(String? requestId) => _$this._requestId = requestId;
 
-  Map<String, dynamic>? _idFields;
-  Map<String, dynamic>? get idFields => _$this._idFields;
-  set idFields(Map<String, dynamic>? idFields) => _$this._idFields = idFields;
+  _i2.GListenToChatData? Function(
+      _i2.GListenToChatData?, _i2.GListenToChatData?)? _updateResult;
+  _i2.GListenToChatData? Function(
+          _i2.GListenToChatData?, _i2.GListenToChatData?)?
+      get updateResult => _$this._updateResult;
+  set updateResult(
+          _i2.GListenToChatData? Function(
+                  _i2.GListenToChatData?, _i2.GListenToChatData?)?
+              updateResult) =>
+      _$this._updateResult = updateResult;
 
-  GChatMessageFieldsReqBuilder() {
-    GChatMessageFieldsReq._initializeBuilder(this);
+  _i2.GListenToChatDataBuilder? _optimisticResponse;
+  _i2.GListenToChatDataBuilder get optimisticResponse =>
+      _$this._optimisticResponse ??= new _i2.GListenToChatDataBuilder();
+  set optimisticResponse(_i2.GListenToChatDataBuilder? optimisticResponse) =>
+      _$this._optimisticResponse = optimisticResponse;
+
+  String? _updateCacheHandlerKey;
+  String? get updateCacheHandlerKey => _$this._updateCacheHandlerKey;
+  set updateCacheHandlerKey(String? updateCacheHandlerKey) =>
+      _$this._updateCacheHandlerKey = updateCacheHandlerKey;
+
+  Map<String, dynamic>? _updateCacheHandlerContext;
+  Map<String, dynamic>? get updateCacheHandlerContext =>
+      _$this._updateCacheHandlerContext;
+  set updateCacheHandlerContext(
+          Map<String, dynamic>? updateCacheHandlerContext) =>
+      _$this._updateCacheHandlerContext = updateCacheHandlerContext;
+
+  _i1.FetchPolicy? _fetchPolicy;
+  _i1.FetchPolicy? get fetchPolicy => _$this._fetchPolicy;
+  set fetchPolicy(_i1.FetchPolicy? fetchPolicy) =>
+      _$this._fetchPolicy = fetchPolicy;
+
+  bool? _executeOnListen;
+  bool? get executeOnListen => _$this._executeOnListen;
+  set executeOnListen(bool? executeOnListen) =>
+      _$this._executeOnListen = executeOnListen;
+
+  _i4.Context? _context;
+  _i4.Context? get context => _$this._context;
+  set context(_i4.Context? context) => _$this._context = context;
+
+  GListenToChatReqBuilder() {
+    GListenToChatReq._initializeBuilder(this);
   }
 
-  GChatMessageFieldsReqBuilder get _$this {
+  GListenToChatReqBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _vars = $v.vars.toBuilder();
-      _document = $v.document;
-      _fragmentName = $v.fragmentName;
-      _idFields = $v.idFields;
+      _operation = $v.operation;
+      _requestId = $v.requestId;
+      _updateResult = $v.updateResult;
+      _optimisticResponse = $v.optimisticResponse?.toBuilder();
+      _updateCacheHandlerKey = $v.updateCacheHandlerKey;
+      _updateCacheHandlerContext = $v.updateCacheHandlerContext;
+      _fetchPolicy = $v.fetchPolicy;
+      _executeOnListen = $v.executeOnListen;
+      _context = $v.context;
       _$v = null;
     }
     return this;
   }
 
   @override
-  void replace(GChatMessageFieldsReq other) {
+  void replace(GListenToChatReq other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$GChatMessageFieldsReq;
+    _$v = other as _$GListenToChatReq;
   }
 
   @override
-  void update(void Function(GChatMessageFieldsReqBuilder)? updates) {
+  void update(void Function(GListenToChatReqBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  GChatMessageFieldsReq build() => _build();
+  GListenToChatReq build() => _build();
 
-  _$GChatMessageFieldsReq _build() {
-    _$GChatMessageFieldsReq _$result;
+  _$GListenToChatReq _build() {
+    _$GListenToChatReq _$result;
     try {
       _$result = _$v ??
-          new _$GChatMessageFieldsReq._(
+          new _$GListenToChatReq._(
               vars: vars.build(),
-              document: BuiltValueNullFieldError.checkNotNull(
-                  document, r'GChatMessageFieldsReq', 'document'),
-              fragmentName: fragmentName,
-              idFields: BuiltValueNullFieldError.checkNotNull(
-                  idFields, r'GChatMessageFieldsReq', 'idFields'));
+              operation: BuiltValueNullFieldError.checkNotNull(
+                  operation, r'GListenToChatReq', 'operation'),
+              requestId: requestId,
+              updateResult: updateResult,
+              optimisticResponse: _optimisticResponse?.build(),
+              updateCacheHandlerKey: updateCacheHandlerKey,
+              updateCacheHandlerContext: updateCacheHandlerContext,
+              fetchPolicy: fetchPolicy,
+              executeOnListen: BuiltValueNullFieldError.checkNotNull(
+                  executeOnListen, r'GListenToChatReq', 'executeOnListen'),
+              context: context);
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'vars';
         vars.build();
+
+        _$failedField = 'optimisticResponse';
+        _optimisticResponse?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            r'GChatMessageFieldsReq', _$failedField, e.toString());
+            r'GListenToChatReq', _$failedField, e.toString());
       }
       rethrow;
     }

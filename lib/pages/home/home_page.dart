@@ -1,7 +1,7 @@
 import 'dart:core';
 import 'dart:async';
 import 'dart:io';
-import 'package:ConnectUs/pages/chat/chatArea.dart';
+import 'package:ConnectUs/pages/chat/chat_area.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:collection';
@@ -9,14 +9,9 @@ import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:hive/hive.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ConnectUs/components/contactTile.dart';
+import 'package:ConnectUs/components/contact_tile.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:ConnectUs/models/contact.dart' as HiveContact;
-
-// NEW IMPORTS FOR FERRY
-import 'package:provider/provider.dart';
-import 'package:ferry/ferry.dart';
-import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
 
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});
@@ -29,11 +24,6 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _searchController = TextEditingController();
   
-  // Stores the currently logged-in user's username
-  String? _myUsername; 
-  // Listens for incoming messages globally
-  StreamSubscription? _incomingMessageSub; 
-
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
   bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
@@ -56,53 +46,6 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
     super.initState();
     _initializeHive();
     _loadContacts();
-    _loadMyProfileAndListen(); // Start the listener
-  }
-
-  // NEW: Fetch profile and start listening for messages
-  Future<void> _loadMyProfileAndListen() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) {
-      final data = await Supabase.instance.client
-          .from('users')
-          .select('usrname')
-          .eq('id', user.id)
-          .maybeSingle();
-      
-      if (mounted && data != null) {
-        setState(() {
-          _myUsername = data['usrname'];
-        });
-        _startGlobalListener();
-      }
-    }
-  }
-
-  // NEW: The "Auto-Refresh" Logic
-  void _startGlobalListener() {
-    if (_myUsername == null) return;
-    
-    // We access the Client provided in main.dart
-    // Note: ensure main.dart wraps the app in a Provider<Client>
-    final client = Provider.of<Client>(context, listen: false);
-
-    final listenReq = GListenToIncomingMessagesReq((b) => b
-      ..vars.user = _myUsername!
-    );
-
-    _incomingMessageSub = client.request(listenReq).listen((response) {
-      if (response.data?.messageSentToUser != null) {
-        final msg = response.data!.messageSentToUser;
-        
-        // When a message arrives, we automatically add/update the chat tile
-        setState(() {
-          // Remove if exists to re-add at top (simple LRU behavior)
-          final tempChat = Chats(contactName: msg.user, lastMessage: msg.content);
-          _chats.remove(tempChat); 
-          _chats.add(tempChat);
-        });
-      }
-    });
   }
 
   void _initializeHive() {
@@ -113,9 +56,6 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
     }
   }
 
-  // ... (Keep _loadContacts, _fetchRegisteredPhoneNumbers, _categorizeContacts, 
-  //      _normalizePhoneNumber, _fetchContactsFromDevice as they were) ...
-  
   Future<void> _loadContacts() async {
     if (contactBox != null && contactBox!.isNotEmpty) {
       final hiveContacts = contactBox!.values.toList();
@@ -136,7 +76,6 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   }
 
   Future<Set<String>> _fetchRegisteredPhoneNumbers() async {
-     // ... (Existing implementation) ...
      if (_cachedRegisteredNumbers != null) return _cachedRegisteredNumbers!;
     try {
       final response = await Supabase.instance.client.from('users').select('phone_number');
@@ -169,8 +108,11 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
           break;
         }
       }
-      if (isRegistered) _registeredContacts.add(contact);
-      else _nonRegisteredContacts.add(contact);
+      if (isRegistered) {
+        _registeredContacts.add(contact);
+      } else {
+        _nonRegisteredContacts.add(contact);
+      }
     }
   }
 
@@ -208,8 +150,6 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
     }
   }
   
-  // ... (End of existing helpers) ...
-
   void _createChatWithContact(Contact contact) {
     setState(() {
       // Logic to add manually started chats
@@ -257,7 +197,6 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
 
   @override
   void dispose() {
-    _incomingMessageSub?.cancel(); // Cancel listener
     _debounceTimer?.cancel();
     _searchController.dispose();
     super.dispose();

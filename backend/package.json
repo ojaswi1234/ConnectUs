@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "graphql": "^16.12.0",
     "graphql-ws": "^6.0.6",
     "graphql-yoga": "^5.18.0",

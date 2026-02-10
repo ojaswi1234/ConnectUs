@@ -1,4 +1,4 @@
-import 'package:ConnectUs/pages/chat/chatArea.dart';
+import 'package:ConnectUs/pages/chat/chat_area.dart';
 import 'package:flutter/material.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 
@@ -21,11 +21,11 @@ class ContactTile extends StatelessWidget {
                 context: context,
                 position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width - 200, 200, 20, 20),
                 items: [
-                  PopupMenuItem(
+                  const PopupMenuItem(
                     value: 'delete',
                     child: Text('Delete Chat', style: AppTheme.titleStyle),
                   ),
-                  PopupMenuItem(
+                  const PopupMenuItem(
                     value: 'mute',
                     child: Text('Mute Notifications', style: AppTheme.titleStyle),
                   ),
@@ -79,7 +79,7 @@ class ContactTile extends StatelessWidget {
                     Container(
                       margin: const EdgeInsets.only(left: 8, right: 8),
                       padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.redAccent,
                         shape: BoxShape.circle,
                       ),

@@ -25,31 +25,31 @@ class AppTheme {
     fontSize: 14,
   );
 
-  // Card decoration (not const because of withOpacity calls)
+  // Card decoration
   static final BoxDecoration cardDecoration = BoxDecoration(
     gradient: LinearGradient(
-      colors: [Color(0xFFA67B00).withOpacity(0.08), accentDark.withOpacity(0.04)],
+      colors: [const Color(0xFFA67B00).withAlpha(20), accentDark.withAlpha(10)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
     borderRadius: BorderRadius.circular(15),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withOpacity(0.25),
+        color: Colors.black.withAlpha(64),
         blurRadius: 10,
         offset: const Offset(0, 5),
       ),
     ],
   );
 
-  static BoxDecoration avatarDecoration() => BoxDecoration(
+  static BoxDecoration avatarDecoration() => const BoxDecoration(
         color: accentDark,
         shape: BoxShape.circle,
       );
 
   static ButtonStyle elevatedButtonStyle = ElevatedButton.styleFrom(
     backgroundColor: accentDark,
-    foregroundColor: Color(0xFF1E1E1E),
+    foregroundColor: const Color(0xFF1E1E1E),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
   );
 }

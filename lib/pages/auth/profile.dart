@@ -16,30 +16,30 @@ class _ProfileState extends State<Profile> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Color(0xFF1E1E1E),
-          title: Text('Logout', style: TextStyle(color: Colors.white)),
-          content: Text(
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: const Text('Logout', style: TextStyle(color: Colors.white)),
+          content: const Text(
             'Do you want to sign out?\n\n• Keep "Remember me": Quick login next time\n• Clear "Remember me": Full logout',
             style: TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _logout(clearRememberMe: false);
               },
-              child: Text('Keep Remember Me', style: TextStyle(color: Colors.yellow)),
+              child: const Text('Keep Remember Me', style: TextStyle(color: Colors.yellow)),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _logout(clearRememberMe: true);
               },
-              child: Text('Full Logout', style: TextStyle(color: Colors.red)),
+              child: const Text('Full Logout', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -71,42 +71,42 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:   Text(
+        title: const Text(
                 'Wassup ??',
                 style: TextStyle(color: Colors.white, fontSize: 24, decoration: TextDecoration.none),
               ),
         centerTitle: true,
         
-        backgroundColor: Color(0xFF1E1E1E),
+        backgroundColor: const Color(0xFF1E1E1E),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
     body: Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.yellow,
       ),
       child: Padding(
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Color(0xFF1E1E1E),
+          color: const Color(0xFF1E1E1E),
          
           borderRadius: BorderRadius.circular(12.0),
         ),
         alignment: Alignment.topCenter,
        child: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
             
               const SizedBox(height: 20),
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 60,
                 backgroundImage: AssetImage('assets/images/profile.png')
               ),
@@ -114,21 +114,21 @@ class _ProfileState extends State<Profile> {
               
               // User Info Section
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.grey[900],
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       'User Profile',
                       style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       _sessionManager.currentUser?.email ?? 'No email',
-                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                      style: const TextStyle(color: Colors.white70, fontSize: 16),
                     ),
                   ],
                 ),
@@ -138,14 +138,14 @@ class _ProfileState extends State<Profile> {
               
               // Session Settings
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.grey[900],
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       'Session Settings',
                       style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -157,7 +157,7 @@ class _ProfileState extends State<Profile> {
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Remember Me:', style: TextStyle(color: Colors.white70)),
+                            const Text('Remember Me:', style: TextStyle(color: Colors.white70)),
                             Text(
                               rememberMe ? 'Enabled ✅' : 'Disabled ❌',
                               style: TextStyle(
@@ -180,11 +180,11 @@ class _ProfileState extends State<Profile> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _showLogoutDialog,
-                  icon: Icon(Icons.logout, color: Colors.white),
-                  label: Text('Sign Out', style: TextStyle(color: Colors.white, fontSize: 16)),
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  label: const Text('Sign Out', style: TextStyle(color: Colors.white, fontSize: 16)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red[700],
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                 ),

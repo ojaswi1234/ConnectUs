@@ -217,7 +217,7 @@ class _AIPageState extends State<AIPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(borderRadius),
-                  border: Border.all(color: Colors.black12.withOpacity(0.1)),
+                  border: Border.all(color: Colors.black12.withAlpha(25)),
                 ),
                 child: _buildResponseArea(),
               ),
@@ -229,7 +229,7 @@ class _AIPageState extends State<AIPage> {
               style: const TextStyle(color: Colors.black87),
               decoration: InputDecoration(
                 hintText: "Ask Connectify",
-                hintStyle: TextStyle(color: Colors.black54.withOpacity(0.6)),
+                hintStyle: TextStyle(color: Colors.black54.withAlpha(153)),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -246,7 +246,7 @@ class _AIPageState extends State<AIPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   borderSide: BorderSide(
-                    color: Colors.black12.withOpacity(0.1),
+                    color: Colors.black12.withAlpha(25),
                     width: 1.0,
                   ),
                 ),

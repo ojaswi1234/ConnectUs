@@ -132,8 +132,8 @@ class _ContactsPageState extends State<ContactsPage>
       padding: const EdgeInsets.only(bottom: 8),
       child: Card(
         color: isRegistered
-            ? AppTheme.accentDark.withOpacity(0.08)
-            : AppTheme.accent.withOpacity(0.04),
+            ? AppTheme.accentDark.withAlpha(20)
+            : AppTheme.accent.withAlpha(10),
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: ListTile(

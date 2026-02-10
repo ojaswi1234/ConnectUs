@@ -9,23 +9,18 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-
-
-
   @override
   Widget build(BuildContext context) {
     // Define color scheme
     const primaryColor = AppTheme.accentDark;
-    const accentColor = Color(0xFFF5E6C0);
+    //const accentColor = Color(0xFFF5E6C0);
     const tileColor = Color(0xFF1E1E1E);
 
-
-  
-
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 45, 45, 45),
+      backgroundColor: const Color.fromARGB(255, 45, 45, 45),
       appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text('Settings',
+            style: TextStyle(fontWeight: FontWeight.w600)),
         backgroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
@@ -48,22 +43,18 @@ class _SettingsState extends State<Settings> {
                 },
                 primaryColor: primaryColor,
               ),
-             
-            
               _buildTile(
                 icon: Icons.notifications,
                 title: 'Notifications',
                 onTap: () {},
                 primaryColor: primaryColor,
               ),
-             
               _buildTile(
                 icon: Icons.lock,
                 title: 'Privacy',
                 onTap: () {},
                 primaryColor: primaryColor,
               ),
-              
               _buildTile(
                 icon: Icons.info,
                 title: 'About',
@@ -72,8 +63,6 @@ class _SettingsState extends State<Settings> {
                 },
                 primaryColor: primaryColor,
               ),
-            
-             
             ],
           ),
         ),
@@ -105,11 +94,12 @@ class _SettingsState extends State<Settings> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     );
   }
-
+/*
   Widget _buildDivider() {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Divider(thickness: 1, height: 0),
     );
   }
+*/
 }

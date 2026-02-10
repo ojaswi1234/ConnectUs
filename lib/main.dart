@@ -1,14 +1,12 @@
 // lib/main.dart
-import 'package:ConnectUs/pages/AI_page.dart';
+import 'package:ConnectUs/pages/ai_page.dart';
 import 'package:ConnectUs/pages/config/account.dart';
 import 'package:ConnectUs/pages/home/about.dart';
 import 'package:ConnectUs/models/contact.dart';
-import 'package:ConnectUs/services/ferry_client.dart';
 import 'package:flutter/foundation.dart'; // REQUIRED for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
-import 'package:provider/provider.dart';
 import 'package:ConnectUs/services/AuthChecker.dart';
 import 'package:ConnectUs/pages/auth/profile.dart';
 import 'package:ConnectUs/pages/config/settings.dart';
@@ -16,22 +14,23 @@ import 'package:ConnectUs/pages/home/home.dart';
 import 'package:ConnectUs/pages/landing.dart';
 import 'package:ConnectUs/pages/auth/login.dart';
 import 'package:ConnectUs/pages/auth/register.dart';
-import 'package:ConnectUs/pages/auth/registerPhone.dart';
+import 'package:ConnectUs/pages/auth/register_phone.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:ferry/ferry.dart';
+import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io'; // Safe to keep, but must use conditionally
 import 'package:path_provider/path_provider.dart';
 
-Future<void> main() async {
+Future<void> main(dynamic wiget) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   String? customPath;
 
   // FIX 2: Only create folder if NOT on web
-  if (!kIsWeb) { 
+  if (!kIsWeb) {
     try {
       final appDocDir = await getApplicationDocumentsDirectory();
       final connectUsDir = Directory('${appDocDir.path}/ConnectUs');
@@ -40,22 +39,19 @@ Future<void> main() async {
       }
       customPath = connectUsDir.path;
     } catch (e) {
-      print('Folder creation failed (Normal on Web): $e');
+      Logger(printer: PrettyPrinter()).e('Error creating custom path: $e');
     }
   }
 
   try {
     await _initializeApp(customPath).timeout(const Duration(seconds: 15));
   } catch (e) {
-    print('Initialization error: $e');
+    Logger(printer: PrettyPrinter()).e('Error initializing app: $e');
   }
+  
 
-  final client = initFerryClient();
   runApp(
-    Provider<Client>(
-      create: (_) => client,
-      child: const MainApp(),
-    ),
+    const ProviderScope(child: MainApp()),
   );
 }
 
@@ -77,15 +73,16 @@ Future<void> _initializeApp(String? customPath) async {
 
   Hive.registerAdapter(ContactAdapter());
   await Hive.openBox<Contact>('contacts');
-  
+
   // Ensure local_chats box is open (needed for chatArea)
   await Hive.openBox('local_chats');
+  await Hive.openBox('graphql_cache');
 
   try {
     // Note: On web, assets/.env might return 404. Consider using --dart-define for prod.
     await dotenv.load(fileName: "assets/.env");
   } catch (e) {
-    print("Error loading .env file: $e");
+    Logger(printer: PrettyPrinter()).e('Error loading .env: $e');
   }
 
   await Supabase.initialize(
@@ -103,7 +100,6 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
-  
   @override
   void initState() {
     super.initState();
@@ -121,7 +117,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _updateOnlineStatus(true);
-    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
       _updateOnlineStatus(false);
     }
   }
@@ -132,8 +129,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       if (user != null) {
         await Supabase.instance.client
             .from('users')
-            .update({'is_online': isOnline})
-            .eq('id', user.id);
+            .update({'is_online': isOnline}).eq('id', user.id);
       }
     } catch (e) {
       // Fail silently
@@ -147,7 +143,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       initialRoute: '/',
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(1.0)),
           child: child!,
         );
       },
@@ -159,23 +156,23 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       routes: {
         '/': (context) => const AuthChecker(),
         '/landing': (context) => const Landing(),
-        '/getStarted': (context) => Register(),
-        '/login': (context) => Login(),
-        '/home': (context) => Home(),
+        '/getStarted': (context) => const Register(),
+        '/login': (context) => const Login(),
+        '/home': (context) => const Home(),
         'login-callback': (context) => const AuthChecker(),
         '/contacts': (context) => ContactsPage(
-              registeredContacts: [],
-              nonRegisteredContacts: [],
+              registeredContacts: const [],
+              nonRegisteredContacts: const [],
               onContactTap: (contact) {},
               onInviteContact: (contact) {},
               isLoading: false,
             ),
-        '/registerPhone': (context) => RegisterPhone(),
-        '/profile': (context) => Profile(),
-        '/settings': (context) => Settings(),
-        '/ai': (context) => AIPage(),
+        '/registerPhone': (context) => const RegisterPhone(),
+        '/profile': (context) => const Profile(),
+        '/settings': (context) => const Settings(),
+        '/ai': (context) => const AIPage(),
         '/about': (context) => About(),
-        '/account': (context) => Account(),
+        '/account': (context) => const Account(),
       },
     );
   }

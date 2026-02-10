@@ -14,18 +14,20 @@ class _VoiceState extends State<Voice> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 124, 112, 0),
       appBar: AppBar(
-        title: Text(''),
+        title: const Text(''),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.transparent),
-          onPressed: () {Navigator.pop(context);},
+          icon: const Icon(Icons.arrow_back, color: Colors.transparent),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.black, const Color.fromARGB(255, 124, 112, 0)],
+            colors: [Colors.black, Color.fromARGB(255, 124, 112, 0)],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
           ),
@@ -34,13 +36,13 @@ class _VoiceState extends State<Voice> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 80,
-                backgroundImage: AssetImage('assets/profile_placeholder.png'), // Replace with actual image
+                backgroundImage: AssetImage(
+                    'assets/profile_placeholder.png'), // Replace with actual image
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Caller Name', // Replace with dynamic caller name
                 style: TextStyle(
                   fontSize: 24,
@@ -48,53 +50,52 @@ class _VoiceState extends State<Voice> {
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               AnimatedTextKit(
                 animatedTexts: [
                   TypewriterAnimatedText(
                     'Ringing...',
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                       fontSize: 18,
                       color: Colors.white70,
                     ),
-                    speed: Duration(milliseconds: 200),
+                    speed: const Duration(milliseconds: 200),
                     curve: Curves.easeInOut,
-                   
-
                   ),
                 ],
                 totalRepeatCount: 1,
-                pause: Duration(milliseconds: 1000),
+                pause: const Duration(milliseconds: 1000),
                 displayFullTextOnTap: true,
                 stopPauseOnTap: true,
               ),
-              SizedBox(height: 200),
+              const SizedBox(height: 200),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-               
                 children: [
                   IconButton(
-                    icon: Icon(Icons.mic_off, color: Colors.white, size: 30),
+                    icon: const Icon(Icons.mic_off,
+                        color: Colors.white, size: 30),
                     onPressed: () {
                       // Mute logic
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.call_end, color: Colors.red, size: 50),
+                    icon:
+                        const Icon(Icons.call_end, color: Colors.red, size: 50),
                     onPressed: () {
                       // Hang up logic
                       Navigator.pop(context);
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.volume_up, color: Colors.white, size: 30),
+                    icon: const Icon(Icons.volume_up,
+                        color: Colors.white, size: 30),
                     onPressed: () {
                       // Speaker logic
                     },
                   ),
                 ],
               ),
-              
             ],
           ),
         ),

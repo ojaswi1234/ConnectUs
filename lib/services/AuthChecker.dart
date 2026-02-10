@@ -93,15 +93,15 @@ class _AuthCheckerState extends State<AuthChecker> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: AppTheme.background,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Image(
+              Image(
                   image: AssetImage('assets/images/logo.png'), height: 150),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               CircularProgressIndicator(color: AppTheme.accentDark),
             ],
           ),

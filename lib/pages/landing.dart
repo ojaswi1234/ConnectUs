@@ -98,7 +98,7 @@ class Landing extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             TextButton(
-                              child: Text("Try our Android App",
+                              child: const Text("Try our Android App",
                                   style: TextStyle(color: AppTheme.accent)),
                               onPressed: () {},
                             ),
@@ -109,7 +109,7 @@ class Landing extends StatelessWidget {
                               endIndent: 30,
                             ),
                             TextButton(
-                              child: Text(
+                              child: const Text(
                                 "Try our iOS App",
                                 style: TextStyle(color: AppTheme.accent),
                               ),
@@ -122,7 +122,7 @@ class Landing extends StatelessWidget {
                               endIndent: 30,
                             ),
                             TextButton(
-                              child: Text("Try our Desktop App",
+                              child: const Text("Try our Desktop App",
                                   style: TextStyle(color: AppTheme.accent)),
                               onPressed: () {},
                             )

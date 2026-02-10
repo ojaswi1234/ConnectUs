@@ -13,6 +13,6 @@ class ContactSelectionPage extends StatefulWidget {
 class _ContactSelectionPageState extends State<ContactSelectionPage> {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("Still In Development plz wait for this feature"),);
+    return const Center(child: Text("Still In Development plz wait for this feature"),);
   }
 }

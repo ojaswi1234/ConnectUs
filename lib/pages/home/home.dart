@@ -4,19 +4,13 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ferry/ferry.dart';
 
 // Your App Imports
 import 'package:ConnectUs/utils/app_theme.dart';
-import 'package:ConnectUs/pages/chat/contactSelectionPage.dart';
+import 'package:ConnectUs/pages/chat/contact_selection_page.dart';
 import 'package:ConnectUs/pages/home/home_page.dart';
 import 'package:ConnectUs/pages/home/status.dart';
-import 'package:ConnectUs/pages/home/community.dart';
-
-// GraphQL Imports (Required for listener)
-import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -25,18 +19,15 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class _HomeState extends State<Home>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   // Platform Checks
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-  bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+  bool get isDesktop =>
+      kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
   int _selectedSection = 0;
   late PageController _pageController;
-  
-  // LOGIC: Variables for Realtime Updates
-  StreamSubscription? _messageSubscription;
-  String? _myUsername;
-  Key _chatListKey = UniqueKey(); // Forces refresh
 
   // Image Picker
   final ImagePicker _picker = ImagePicker();
@@ -47,61 +38,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin, Widget
     super.initState();
     _pageController = PageController(initialPage: 0);
     WidgetsBinding.instance.addObserver(this); // Observe App Lifecycle
-    _setupRealtimeListener(); // Start Listening
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _messageSubscription?.cancel();
     _pageController.dispose();
     super.dispose();
-  }
-
-  // LOGIC: Realtime Listener Implementation
-  Future<void> _setupRealtimeListener() async {
-    final client = Provider.of<Client>(context, listen: false);
-    final user = Supabase.instance.client.auth.currentUser;
-
-    if (user != null) {
-      // 1. Get my username
-      final data = await Supabase.instance.client
-          .from('users')
-          .select('usrname')
-          .eq('id', user.id)
-          .maybeSingle();
-
-      if (data != null) {
-        _myUsername = data['usrname'];
-
-        // 2. Subscribe to messages sent TO me
-        final subReq = GOnMessageSentToUserReq((b) => b
-          ..vars.user = _myUsername!
-        );
-
-        _messageSubscription = client.request(subReq).listen((response) {
-          if (response.data?.messageSentToUser != null) {
-            final msg = response.data!.messageSentToUser;
-            
-            // 3. Force UI Refresh when message arrives
-            if (mounted) {
-              setState(() {
-                _chatListKey = UniqueKey(); // This rebuilds Home_Page
-              });
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("New message from ${msg.user}"),
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 2),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
-          }
-        });
-      }
-    }
   }
 
   Future<void> _openingCamera() async {
@@ -159,7 +102,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin, Widget
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Camera Not Supported'),
-          content: const Text('Camera functionality is only available on mobile devices.'),
+          content: const Text(
+              'Camera functionality is only available on mobile devices.'),
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
@@ -173,11 +117,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin, Widget
 
   @override
   Widget build(BuildContext context) {
-    // LOGIC: Define pages here so Home_Page gets the updated key
     final List<Widget> pages = [
-      Home_Page(key: _chatListKey), // Pass key here
+      const Home_Page(),
       const Status(),
-      const Community(),
     ];
 
     return Scaffold(
@@ -216,23 +158,28 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin, Widget
               ),
               PopupMenuItem(
                 value: 'settings',
-                child: const Text('Settings', style: TextStyle(color: Colors.white)),
+                child: const Text('Settings',
+                    style: TextStyle(color: Colors.white)),
                 onTap: () {
                   Navigator.pushNamed(context, '/settings');
                 },
               ),
               PopupMenuItem(
                 value: 'logout',
-                child: const Text('Logout', style: TextStyle(color: Colors.white)),
+                child:
+                    const Text('Logout', style: TextStyle(color: Colors.white)),
                 onTap: () async {
                   try {
                     await Supabase.instance.client.auth.signOut();
                     if (mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/', (route) => false);
                     }
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Logout failed: $e'), backgroundColor: Colors.red),
+                      SnackBar(
+                          content: Text('Logout failed: $e'),
+                          backgroundColor: Colors.red),
                     );
                   }
                 },
@@ -271,7 +218,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin, Widget
             _selectedSection = index;
           });
         },
-        children: pages, // Use the local list
+        children: pages,
       ),
     );
   }

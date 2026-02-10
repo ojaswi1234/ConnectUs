@@ -6,33 +6,15 @@ import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart' show StandardJsonPlugin;
 import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart'
     show
-        GChatMessageFieldsData,
-        GGetMessagesData,
-        GGetMessagesData_messages,
-        GListenToIncomingMessagesData,
-        GListenToIncomingMessagesData_messageSentToUser,
-        GOnMessageSentToUserData,
-        GOnMessageSentToUserData_messageSentToUser,
-        GOnNewMessageData,
-        GOnNewMessageData_messageAdded,
-        GPostMessageData,
-        GPostMessageData_postMessage;
+        GFetchChatHistoryData,
+        GFetchChatHistoryData_messages,
+        GListenToChatData,
+        GListenToChatData_messages,
+        GsendMessageData;
 import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart'
-    show
-        GChatMessageFieldsReq,
-        GGetMessagesReq,
-        GListenToIncomingMessagesReq,
-        GOnMessageSentToUserReq,
-        GOnNewMessageReq,
-        GPostMessageReq;
+    show GFetchChatHistoryReq, GListenToChatReq, GsendMessageReq;
 import 'package:ConnectUs/graphql/__generated__/operations.var.gql.dart'
-    show
-        GChatMessageFieldsVars,
-        GGetMessagesVars,
-        GListenToIncomingMessagesVars,
-        GOnMessageSentToUserVars,
-        GOnNewMessageVars,
-        GPostMessageVars;
+    show GFetchChatHistoryVars, GListenToChatVars, GsendMessageVars;
 import 'package:ferry_exec/ferry_exec.dart';
 import 'package:gql_code_builder_serializers/gql_code_builder_serializers.dart'
     show OperationSerializer;
@@ -43,28 +25,16 @@ final SerializersBuilder _serializersBuilder = _$serializers.toBuilder()
   ..add(OperationSerializer())
   ..addPlugin(StandardJsonPlugin());
 @SerializersFor([
-  GChatMessageFieldsData,
-  GChatMessageFieldsReq,
-  GChatMessageFieldsVars,
-  GGetMessagesData,
-  GGetMessagesData_messages,
-  GGetMessagesReq,
-  GGetMessagesVars,
-  GListenToIncomingMessagesData,
-  GListenToIncomingMessagesData_messageSentToUser,
-  GListenToIncomingMessagesReq,
-  GListenToIncomingMessagesVars,
-  GOnMessageSentToUserData,
-  GOnMessageSentToUserData_messageSentToUser,
-  GOnMessageSentToUserReq,
-  GOnMessageSentToUserVars,
-  GOnNewMessageData,
-  GOnNewMessageData_messageAdded,
-  GOnNewMessageReq,
-  GOnNewMessageVars,
-  GPostMessageData,
-  GPostMessageData_postMessage,
-  GPostMessageReq,
-  GPostMessageVars,
+  GFetchChatHistoryData,
+  GFetchChatHistoryData_messages,
+  GFetchChatHistoryReq,
+  GFetchChatHistoryVars,
+  GListenToChatData,
+  GListenToChatData_messages,
+  GListenToChatReq,
+  GListenToChatVars,
+  GsendMessageData,
+  GsendMessageReq,
+  GsendMessageVars,
 ])
 final Serializers serializers = _serializersBuilder.build();

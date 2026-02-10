@@ -8,21 +8,21 @@ class Status extends StatelessWidget {
     return Scaffold(
      
       body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Color(0xFF1E1E1E),
           
           ),
         child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
 
           children: [
-            ListTile(
+            const ListTile(
               leading: CircleAvatar(
                 // Replace with your asset
               ),
-              title: const Text('My Status', style: TextStyle(color: Colors.white),),
-              subtitle: const Text('Tap to add status update', style: TextStyle(color: Colors.white70),),
+              title: Text('My Status', style: TextStyle(color: Colors.white),),
+              subtitle: Text('Tap to add status update', style: TextStyle(color: Colors.white70),),
               trailing: Icon(Icons.add_circle, color: Colors.yellow),
             ),
             const Divider(),
@@ -35,20 +35,20 @@ class Status extends StatelessWidget {
             ),
             Expanded(
               child: ListView(
-                children: [
+                children: const [
                   ListTile(
                     leading: CircleAvatar(
                      
                     ),
-                    title: const Text('Alice', style: TextStyle(color: Colors.white),),
-                    subtitle: const Text('10 minutes ago', style: TextStyle(color: Colors.white70),),
+                    title: Text('Alice', style: TextStyle(color: Colors.white),),
+                    subtitle: Text('10 minutes ago', style: TextStyle(color: Colors.white70),),
                   ),
                   ListTile(
                     leading: CircleAvatar(
                      
                     ),
-                    title: const Text('Bob', style: TextStyle(color: Colors.white),),
-                    subtitle: const Text('30 minutes ago', style: TextStyle(color: Colors.white70), ),
+                    title: Text('Bob', style: TextStyle(color: Colors.white),),
+                    subtitle: Text('30 minutes ago', style: TextStyle(color: Colors.white70), ),
                   ),
                   // Add more ListTiles for other statuses
                 ],

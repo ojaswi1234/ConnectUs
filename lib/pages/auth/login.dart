@@ -115,7 +115,7 @@ class _LoginState extends State<Login> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     "Login",
                     style: TextStyle(
                       fontSize: 32,
@@ -128,21 +128,21 @@ class _LoginState extends State<Login> {
                   const SizedBox(height: 20),
                   TextFormField(
                     initialValue: _email,
-                    style: TextStyle(color: AppTheme.accentDark),
+                    style: const TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.email, color: AppTheme.accent),
+                      prefixIcon: const Icon(Icons.email, color: AppTheme.accent),
                       labelText: "Email",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide:
-                            BorderSide(color: AppTheme.accent, width: 2.0),
+                            const BorderSide(color: AppTheme.accent, width: 2.0),
                       ),
                       filled: true,
                       fillColor: AppTheme.background,
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 16.0, horizontal: 12.0),
                       labelStyle:
-                          TextStyle(color: AppTheme.accent, fontSize: 16.0),
+                          const TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) =>
@@ -151,21 +151,21 @@ class _LoginState extends State<Login> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    style: TextStyle(color: AppTheme.accentDark),
+                    style: const TextStyle(color: AppTheme.accentDark),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock, color: AppTheme.accent),
+                      prefixIcon: const Icon(Icons.lock, color: AppTheme.accent),
                       labelText: "Password",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide:
-                            BorderSide(color: AppTheme.accentDark, width: 2.0),
+                            const BorderSide(color: AppTheme.accentDark, width: 2.0),
                       ),
                       filled: true,
                       fillColor: AppTheme.background,
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 16.0, horizontal: 12.0),
                       labelStyle:
-                          TextStyle(color: AppTheme.accent, fontSize: 16.0),
+                          const TextStyle(color: AppTheme.accent, fontSize: 16.0),
                     ),
                     obscureText: true,
                     validator: (value) =>
@@ -182,7 +182,7 @@ class _LoginState extends State<Login> {
                         activeColor: AppTheme.accent,
                         checkColor: AppTheme.background,
                       ),
-                      Text('Remember me',
+                      const Text('Remember me',
                           style:
                               TextStyle(color: AppTheme.accent, fontSize: 16)),
                     ],
@@ -196,7 +196,7 @@ class _LoginState extends State<Login> {
                     ),
                     onPressed: _isLoading ? null : _validateUser,
                     child: _isLoading
-                        ? CircularProgressIndicator(color: AppTheme.background)
+                        ? const CircularProgressIndicator(color: AppTheme.background)
                         : const Text("Login",
                             style: TextStyle(
                                 color: Color(0xFF1E1E1E), fontSize: 16)),
@@ -208,7 +208,7 @@ class _LoginState extends State<Login> {
                     children: [
                       Expanded(
                           child:
-                              Divider(color: AppTheme.accent.withOpacity(0.5))),
+                              Divider(color: AppTheme.accent.withAlpha(128))),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Text("OR",
@@ -218,20 +218,20 @@ class _LoginState extends State<Login> {
                       ),
                       Expanded(
                           child:
-                              Divider(color: AppTheme.accent.withOpacity(0.5))),
+                              Divider(color: AppTheme.accent.withAlpha(128))),
                     ],
                   ),
                   const SizedBox(height: 24),
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: AppTheme.accentDark, width: 2),
+                      side: const BorderSide(color: AppTheme.accentDark, width: 2),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0)),
                     ),
                     icon: const Icon(Icons.g_mobiledata,
                         size: 32, color: Colors.blue), // Or use an Image.asset
-                    label: Text(
+                    label: const Text(
                       "Continue with Google",
                       style: TextStyle(
                           color: AppTheme.accentDark,

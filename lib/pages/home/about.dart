@@ -16,7 +16,7 @@ class About extends StatelessWidget {
         foregroundColor: Colors.black,
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppTheme.background, // Background: Dark Gray-Black
         ),
         child: Padding(
@@ -25,9 +25,10 @@ class About extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.info_outline, size: 64, color: AppTheme.highlight),
+                const Icon(Icons.info_outline,
+                    size: 64, color: AppTheme.highlight),
                 const SizedBox(height: 24),
-                Text(
+                const Text(
                   'ConnectUs',
                   style: TextStyle(
                     fontSize: 28,
@@ -41,9 +42,7 @@ class About extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
-                    color: AppTheme.accent.withOpacity(
-                      0.9,
-                    ), // Text: Warm Yellow
+                    color: AppTheme.accent.withAlpha(230), // Text: Warm Yellow
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -68,7 +67,7 @@ class About extends StatelessWidget {
                   onPressed: () {
                     launchUrl(Uri.parse('https://github.com/ojaswi1234'));
                   },
-                  child: Text(
+                  child: const Text(
                     "ojaswi1234 (GitHub)",
                     style: TextStyle(
                       color: AppTheme.accent, // Text: Warm Yellow
