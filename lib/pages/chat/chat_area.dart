@@ -297,7 +297,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     // Send via GraphQL for real-time delivery
     final client = ref.read(clientProvider);
     final sendMessageReq = GsendMessageReq((b) => b
-      ..vars.user = _myUsername!
+      ..vars.user = widget.userName
       ..vars.text = _controller.text
       ..vars.roomId = _roomId);
 
