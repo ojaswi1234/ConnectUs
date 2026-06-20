@@ -59,7 +59,7 @@ dependencies:
   gql_code_builder_serializers: ^0.1.0+1
   ferry_hive_store: ^0.6.0+1
   ferry_flutter: ^0.9.1+1
-  flutter_riverpod: ^3.2.0
+  flutter_riverpod: ^2.6.1
   gql_websocket_link: ^2.1.0
   gql: ^1.0.1
   
