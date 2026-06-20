@@ -10,8 +10,8 @@ import 'package:ConnectUs/services/security_services.dart';
 import 'package:cryptography/cryptography.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
-
-
+import 'package:ConnectUs/pages/chat/video.dart';
+import 'package:ConnectUs/pages/chat/voice.dart';
 class ChatArea extends ConsumerStatefulWidget {
   final String userName;
   const ChatArea({super.key, required this.userName});
@@ -419,6 +419,32 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.call, color: Colors.black),
+            onPressed: _isBlocked || _roomId == "loading"
+                ? null
+                : () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Voice(roomId: _roomId, isCaller: true),
+                      ),
+                    );
+                  },
+          ),
+          IconButton(
+            icon: const Icon(Icons.videocam, color: Colors.black),
+            onPressed: _isBlocked || _roomId == "loading"
+                ? null
+                : () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Video(roomId: _roomId, isCaller: true),
+                      ),
+                    );
+                  },
+          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.black),
             onSelected: (value) {

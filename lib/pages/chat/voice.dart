@@ -1,14 +1,57 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:ConnectUs/services/webrtc_service.dart';
 
 class Voice extends StatefulWidget {
-  const Voice({super.key});
+  final String roomId;
+  final bool isCaller;
+
+  const Voice({super.key, required this.roomId, this.isCaller = false});
 
   @override
   State<Voice> createState() => _VoiceState();
 }
 
 class _VoiceState extends State<Voice> {
+  final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
+  final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
+  WebRTCService? _webRTCService;
+  bool _isMuted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initRenderers();
+  }
+
+  Future<void> _initRenderers() async {
+    await _localRenderer.initialize();
+    await _remoteRenderer.initialize();
+    
+    _webRTCService = WebRTCService(
+      roomId: widget.roomId,
+      isCaller: widget.isCaller,
+      localRenderer: _localRenderer,
+      remoteRenderer: _remoteRenderer,
+    );
+    await _webRTCService!.init();
+    
+    // For voice calls, we turn off video by default
+    _webRTCService!.toggleVideo();
+    
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _webRTCService?.dispose();
+    _localRenderer.dispose();
+    _remoteRenderer.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,10 +116,13 @@ class _VoiceState extends State<Voice> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.mic_off,
-                        color: Colors.white, size: 30),
+                    icon: Icon(_isMuted ? Icons.mic_off : Icons.mic,
+                        color: _isMuted ? Colors.red : Colors.white, size: 30),
                     onPressed: () {
-                      // Mute logic
+                      _webRTCService?.toggleMute();
+                      setState(() {
+                        _isMuted = !_isMuted;
+                      });
                     },
                   ),
                   IconButton(

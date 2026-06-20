@@ -1,13 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:ConnectUs/services/webrtc_service.dart';
 
 class Video extends StatefulWidget {
-  const Video({super.key});
+  final String roomId;
+  final bool isCaller;
+
+  const Video({super.key, required this.roomId, this.isCaller = false});
 
   @override
   State<Video> createState() => _VideoState();
 }
 
 class _VideoState extends State<Video> {
+  final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
+  final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
+  WebRTCService? _webRTCService;
+
+  bool _isMuted = false;
+  bool _isVideoOff = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initRenderers();
+  }
+
+  Future<void> _initRenderers() async {
+    await _localRenderer.initialize();
+    await _remoteRenderer.initialize();
+    
+    _webRTCService = WebRTCService(
+      roomId: widget.roomId,
+      isCaller: widget.isCaller,
+      localRenderer: _localRenderer,
+      remoteRenderer: _remoteRenderer,
+    );
+    await _webRTCService!.init();
+    
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _webRTCService?.dispose();
+    _localRenderer.dispose();
+    _remoteRenderer.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +70,7 @@ class _VideoState extends State<Video> {
           IconButton(
             icon: const Icon(Icons.flip_camera_ios, color: Colors.white),
             onPressed: () {
-              // Add camera flip functionality
+              _webRTCService?.toggleCamera();
             },
           ),
           IconButton(
@@ -47,31 +90,36 @@ class _VideoState extends State<Video> {
             decoration: BoxDecoration(
              color: Colors.grey[900],
             ),
-            child: const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Color(0xFFFFC107),
-                    child: Icon(
-                      Icons.person,
-                      size: 80,
-                      color: Color(0xFF1E1E1E),
+              child: _remoteRenderer.renderVideo
+                  ? RTCVideoView(
+                      _remoteRenderer,
+                      objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                    )
+                  : const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Color(0xFFFFC107),
+                            child: Icon(
+                              Icons.person,
+                              size: 80,
+                              color: Color(0xFF1E1E1E),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            'Connecting...',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Connecting...',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
           
           // Self video preview (top right)
@@ -95,16 +143,22 @@ class _VideoState extends State<Video> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  color: Colors.grey[700],
-                  child: const Center(
-                    child: Icon(
-                      Icons.videocam,
-                      color: Colors.white70,
-                      size: 40,
-                    ),
-                  ),
-                ),
+                child: _localRenderer.renderVideo
+                    ? RTCVideoView(
+                        _localRenderer,
+                        mirror: true,
+                        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                      )
+                    : Container(
+                        color: Colors.grey[700],
+                        child: const Center(
+                          child: Icon(
+                            Icons.videocam,
+                            color: Colors.white70,
+                            size: 40,
+                          ),
+                        ),
+                      ),
               ),
             ),
           ),
@@ -132,11 +186,14 @@ class _VideoState extends State<Video> {
                 children: [
                   // Mute button
                   _buildControlButton(
-                    icon: Icons.mic_off,
+                    icon: _isMuted ? Icons.mic_off : Icons.mic,
                     color: Colors.white,
-                    backgroundColor: Colors.grey[700]!,
+                    backgroundColor: _isMuted ? Colors.red : Colors.grey[700]!,
                     onPressed: () {
-                      // Toggle mute
+                      _webRTCService?.toggleMute();
+                      setState(() {
+                        _isMuted = !_isMuted;
+                      });
                     },
                   ),
                   
@@ -154,11 +211,14 @@ class _VideoState extends State<Video> {
                   
                   // Video toggle button
                   _buildControlButton(
-                    icon: Icons.videocam_off,
+                    icon: _isVideoOff ? Icons.videocam_off : Icons.videocam,
                     color: Colors.white,
-                    backgroundColor: Colors.grey[700]!,
+                    backgroundColor: _isVideoOff ? Colors.red : Colors.grey[700]!,
                     onPressed: () {
-                      // Toggle video
+                      _webRTCService?.toggleVideo();
+                      setState(() {
+                        _isVideoOff = !_isVideoOff;
+                      });
                     },
                   ),
                 ],
