@@ -14,26 +14,24 @@ import 'package:gql_exec/gql_exec.dart' as _i4;
 
 part 'operations.req.gql.g.dart';
 
-abstract class GFetchChatHistoryReq
+abstract class GGetMessagesReq
     implements
-        Built<GFetchChatHistoryReq, GFetchChatHistoryReqBuilder>,
-        _i1.OperationRequest<_i2.GFetchChatHistoryData,
-            _i3.GFetchChatHistoryVars> {
-  GFetchChatHistoryReq._();
+        Built<GGetMessagesReq, GGetMessagesReqBuilder>,
+        _i1.OperationRequest<_i2.GGetMessagesData, _i3.GGetMessagesVars> {
+  GGetMessagesReq._();
 
-  factory GFetchChatHistoryReq(
-          [void Function(GFetchChatHistoryReqBuilder b) updates]) =
-      _$GFetchChatHistoryReq;
+  factory GGetMessagesReq([void Function(GGetMessagesReqBuilder b) updates]) =
+      _$GGetMessagesReq;
 
-  static void _initializeBuilder(GFetchChatHistoryReqBuilder b) => b
+  static void _initializeBuilder(GGetMessagesReqBuilder b) => b
     ..operation = _i4.Operation(
       document: _i5.document,
-      operationName: 'FetchChatHistory',
+      operationName: 'GetMessages',
     )
     ..executeOnListen = true;
 
   @override
-  _i3.GFetchChatHistoryVars get vars;
+  _i3.GGetMessagesVars get vars;
   @override
   _i4.Operation get operation;
   @override
@@ -47,12 +45,12 @@ abstract class GFetchChatHistoryReq
   String? get requestId;
   @override
   @BuiltValueField(serialize: false)
-  _i2.GFetchChatHistoryData? Function(
-    _i2.GFetchChatHistoryData?,
-    _i2.GFetchChatHistoryData?,
+  _i2.GGetMessagesData? Function(
+    _i2.GGetMessagesData?,
+    _i2.GGetMessagesData?,
   )? get updateResult;
   @override
-  _i2.GFetchChatHistoryData? get optimisticResponse;
+  _i2.GGetMessagesData? get optimisticResponse;
   @override
   String? get updateCacheHandlerKey;
   @override
@@ -65,54 +63,53 @@ abstract class GFetchChatHistoryReq
   @BuiltValueField(serialize: false)
   _i4.Context? get context;
   @override
-  _i2.GFetchChatHistoryData? parseData(Map<String, dynamic> json) =>
-      _i2.GFetchChatHistoryData.fromJson(json);
+  _i2.GGetMessagesData? parseData(Map<String, dynamic> json) =>
+      _i2.GGetMessagesData.fromJson(json);
 
   @override
   Map<String, dynamic> varsToJson() => vars.toJson();
 
   @override
-  Map<String, dynamic> dataToJson(_i2.GFetchChatHistoryData data) =>
-      data.toJson();
+  Map<String, dynamic> dataToJson(_i2.GGetMessagesData data) => data.toJson();
 
   @override
-  _i1.OperationRequest<_i2.GFetchChatHistoryData, _i3.GFetchChatHistoryVars>
+  _i1.OperationRequest<_i2.GGetMessagesData, _i3.GGetMessagesVars>
       transformOperation(_i4.Operation Function(_i4.Operation) transform) =>
           this.rebuild((b) => b..operation = transform(operation));
 
-  static Serializer<GFetchChatHistoryReq> get serializer =>
-      _$gFetchChatHistoryReqSerializer;
+  static Serializer<GGetMessagesReq> get serializer =>
+      _$gGetMessagesReqSerializer;
 
   Map<String, dynamic> toJson() => (_i6.serializers.serializeWith(
-        GFetchChatHistoryReq.serializer,
+        GGetMessagesReq.serializer,
         this,
       ) as Map<String, dynamic>);
 
-  static GFetchChatHistoryReq? fromJson(Map<String, dynamic> json) =>
+  static GGetMessagesReq? fromJson(Map<String, dynamic> json) =>
       _i6.serializers.deserializeWith(
-        GFetchChatHistoryReq.serializer,
+        GGetMessagesReq.serializer,
         json,
       );
 }
 
-abstract class GsendMessageReq
+abstract class GSendMessageReq
     implements
-        Built<GsendMessageReq, GsendMessageReqBuilder>,
-        _i1.OperationRequest<_i2.GsendMessageData, _i3.GsendMessageVars> {
-  GsendMessageReq._();
+        Built<GSendMessageReq, GSendMessageReqBuilder>,
+        _i1.OperationRequest<_i2.GSendMessageData, _i3.GSendMessageVars> {
+  GSendMessageReq._();
 
-  factory GsendMessageReq([void Function(GsendMessageReqBuilder b) updates]) =
-      _$GsendMessageReq;
+  factory GSendMessageReq([void Function(GSendMessageReqBuilder b) updates]) =
+      _$GSendMessageReq;
 
-  static void _initializeBuilder(GsendMessageReqBuilder b) => b
+  static void _initializeBuilder(GSendMessageReqBuilder b) => b
     ..operation = _i4.Operation(
       document: _i5.document,
-      operationName: 'sendMessage',
+      operationName: 'SendMessage',
     )
     ..executeOnListen = true;
 
   @override
-  _i3.GsendMessageVars get vars;
+  _i3.GSendMessageVars get vars;
   @override
   _i4.Operation get operation;
   @override
@@ -126,12 +123,12 @@ abstract class GsendMessageReq
   String? get requestId;
   @override
   @BuiltValueField(serialize: false)
-  _i2.GsendMessageData? Function(
-    _i2.GsendMessageData?,
-    _i2.GsendMessageData?,
+  _i2.GSendMessageData? Function(
+    _i2.GSendMessageData?,
+    _i2.GSendMessageData?,
   )? get updateResult;
   @override
-  _i2.GsendMessageData? get optimisticResponse;
+  _i2.GSendMessageData? get optimisticResponse;
   @override
   String? get updateCacheHandlerKey;
   @override
@@ -144,31 +141,31 @@ abstract class GsendMessageReq
   @BuiltValueField(serialize: false)
   _i4.Context? get context;
   @override
-  _i2.GsendMessageData? parseData(Map<String, dynamic> json) =>
-      _i2.GsendMessageData.fromJson(json);
+  _i2.GSendMessageData? parseData(Map<String, dynamic> json) =>
+      _i2.GSendMessageData.fromJson(json);
 
   @override
   Map<String, dynamic> varsToJson() => vars.toJson();
 
   @override
-  Map<String, dynamic> dataToJson(_i2.GsendMessageData data) => data.toJson();
+  Map<String, dynamic> dataToJson(_i2.GSendMessageData data) => data.toJson();
 
   @override
-  _i1.OperationRequest<_i2.GsendMessageData, _i3.GsendMessageVars>
+  _i1.OperationRequest<_i2.GSendMessageData, _i3.GSendMessageVars>
       transformOperation(_i4.Operation Function(_i4.Operation) transform) =>
           this.rebuild((b) => b..operation = transform(operation));
 
-  static Serializer<GsendMessageReq> get serializer =>
-      _$gsendMessageReqSerializer;
+  static Serializer<GSendMessageReq> get serializer =>
+      _$gSendMessageReqSerializer;
 
   Map<String, dynamic> toJson() => (_i6.serializers.serializeWith(
-        GsendMessageReq.serializer,
+        GSendMessageReq.serializer,
         this,
       ) as Map<String, dynamic>);
 
-  static GsendMessageReq? fromJson(Map<String, dynamic> json) =>
+  static GSendMessageReq? fromJson(Map<String, dynamic> json) =>
       _i6.serializers.deserializeWith(
-        GsendMessageReq.serializer,
+        GSendMessageReq.serializer,
         json,
       );
 }

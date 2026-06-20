@@ -14,15 +14,15 @@ type Message {
   user: String!
   text: String!
   roomId: String!
-  createdAt: String!
-}
-
-type Mutation {
-  postMessage(roomId: String!, user: String!, text: String!): ID!
+  createdAt: String
 }
 
 type Query {
   messages(roomId: String!): [Message!]!
+}
+
+type Mutation {
+  postMessage(roomId: String!, user: String!, text: String!): ID!
 }
 
 type Subscription {

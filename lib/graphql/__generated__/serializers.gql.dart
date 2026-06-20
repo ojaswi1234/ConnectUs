@@ -6,15 +6,15 @@ import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart' show StandardJsonPlugin;
 import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart'
     show
-        GFetchChatHistoryData,
-        GFetchChatHistoryData_messages,
+        GGetMessagesData,
+        GGetMessagesData_messages,
         GListenToChatData,
         GListenToChatData_messages,
-        GsendMessageData;
+        GSendMessageData;
 import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart'
-    show GFetchChatHistoryReq, GListenToChatReq, GsendMessageReq;
+    show GGetMessagesReq, GListenToChatReq, GSendMessageReq;
 import 'package:ConnectUs/graphql/__generated__/operations.var.gql.dart'
-    show GFetchChatHistoryVars, GListenToChatVars, GsendMessageVars;
+    show GGetMessagesVars, GListenToChatVars, GSendMessageVars;
 import 'package:ferry_exec/ferry_exec.dart';
 import 'package:gql_code_builder_serializers/gql_code_builder_serializers.dart'
     show OperationSerializer;
@@ -25,16 +25,16 @@ final SerializersBuilder _serializersBuilder = _$serializers.toBuilder()
   ..add(OperationSerializer())
   ..addPlugin(StandardJsonPlugin());
 @SerializersFor([
-  GFetchChatHistoryData,
-  GFetchChatHistoryData_messages,
-  GFetchChatHistoryReq,
-  GFetchChatHistoryVars,
+  GGetMessagesData,
+  GGetMessagesData_messages,
+  GGetMessagesReq,
+  GGetMessagesVars,
   GListenToChatData,
   GListenToChatData_messages,
   GListenToChatReq,
   GListenToChatVars,
-  GsendMessageData,
-  GsendMessageReq,
-  GsendMessageVars,
+  GSendMessageData,
+  GSendMessageReq,
+  GSendMessageVars,
 ])
 final Serializers serializers = _serializersBuilder.build();

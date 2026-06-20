@@ -101,7 +101,7 @@ class _ContactsPageState extends State<ContactsPage>
       // Querying the 'usrname' column specifically
       final List<dynamic> response = await Supabase.instance.client
           .from('users')
-          .select('usrname, phone_number')
+          .select('usrname')
           .ilike('usrname', '%$query%')
           .limit(20);
 
@@ -109,9 +109,10 @@ class _ContactsPageState extends State<ContactsPage>
         final contact = Contact();
         // Explicitly map 'usrname' to displayName
         contact.displayName = userData['usrname'] ?? 'Unknown User';
-        if (userData['phone_number'] != null) {
-          contact.phones = [Phone(userData['phone_number'].toString())];
-        }
+        // Remove phone number to prevent enumeration
+        // if (userData['phone_number'] != null) {
+        //   contact.phones = [Phone(userData['phone_number'].toString())];
+        // }
         return contact;
       }).toList();
 

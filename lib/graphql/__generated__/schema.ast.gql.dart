@@ -73,9 +73,38 @@ const Message = _i1.ObjectTypeDefinitionNode(
       args: [],
       type: _i1.NamedTypeNode(
         name: _i1.NameNode(value: 'String'),
-        isNonNull: true,
+        isNonNull: false,
       ),
     ),
+  ],
+);
+const Query = _i1.ObjectTypeDefinitionNode(
+  name: _i1.NameNode(value: 'Query'),
+  directives: [],
+  interfaces: [],
+  fields: [
+    _i1.FieldDefinitionNode(
+      name: _i1.NameNode(value: 'messages'),
+      directives: [],
+      args: [
+        _i1.InputValueDefinitionNode(
+          name: _i1.NameNode(value: 'roomId'),
+          directives: [],
+          type: _i1.NamedTypeNode(
+            name: _i1.NameNode(value: 'String'),
+            isNonNull: true,
+          ),
+          defaultValue: null,
+        )
+      ],
+      type: _i1.ListTypeNode(
+        type: _i1.NamedTypeNode(
+          name: _i1.NameNode(value: 'Message'),
+          isNonNull: true,
+        ),
+        isNonNull: true,
+      ),
+    )
   ],
 );
 const Mutation = _i1.ObjectTypeDefinitionNode(
@@ -122,35 +151,6 @@ const Mutation = _i1.ObjectTypeDefinitionNode(
     )
   ],
 );
-const Query = _i1.ObjectTypeDefinitionNode(
-  name: _i1.NameNode(value: 'Query'),
-  directives: [],
-  interfaces: [],
-  fields: [
-    _i1.FieldDefinitionNode(
-      name: _i1.NameNode(value: 'messages'),
-      directives: [],
-      args: [
-        _i1.InputValueDefinitionNode(
-          name: _i1.NameNode(value: 'roomId'),
-          directives: [],
-          type: _i1.NamedTypeNode(
-            name: _i1.NameNode(value: 'String'),
-            isNonNull: true,
-          ),
-          defaultValue: null,
-        )
-      ],
-      type: _i1.ListTypeNode(
-        type: _i1.NamedTypeNode(
-          name: _i1.NameNode(value: 'Message'),
-          isNonNull: true,
-        ),
-        isNonNull: true,
-      ),
-    )
-  ],
-);
 const Subscription = _i1.ObjectTypeDefinitionNode(
   name: _i1.NameNode(value: 'Subscription'),
   directives: [],
@@ -184,7 +184,7 @@ const document = _i1.DocumentNode(definitions: [
   specifiedBy,
   oneOf,
   Message,
-  Mutation,
   Query,
+  Mutation,
   Subscription,
 ]);

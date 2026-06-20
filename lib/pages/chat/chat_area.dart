@@ -9,6 +9,8 @@ import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:ConnectUs/services/security_services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 import 'package:ConnectUs/providers/call_provider.dart';
 import 'package:ConnectUs/pages/chat/voice.dart';
 import 'package:ConnectUs/pages/chat/video.dart';
@@ -310,7 +312,9 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   String get _roomId {
     if (_myUsername == null) return "loading";
     final users = [_myUsername!, widget.userName]..sort();
-    return users.join("_");
+    final rawId = users.join("_");
+    final bytes = utf8.encode(rawId);
+    return sha256.convert(bytes).toString();
   }
 
   List<dynamic> get _localHistory => _chatBox.get(_roomId, defaultValue: []);
@@ -352,7 +356,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
     // Send via GraphQL for real-time delivery
     final client = ref.read(clientProvider);
-    final sendMessageReq = GsendMessageReq((b) => b
+    final sendMessageReq = GSendMessageReq((b) => b
       ..vars.roomId = _roomId
       ..vars.user = _myUsername!
       ..vars.text = _controller.text);

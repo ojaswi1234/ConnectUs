@@ -26,6 +26,8 @@ import 'dart:io'; // Safe to keep, but must use conditionally
 import 'package:path_provider/path_provider.dart';
 import 'package:ConnectUs/providers/call_provider.dart';
 import 'package:ConnectUs/pages/chat/incoming_call_screen.dart';
+import 'package:ConnectUs/services/encryption_key_manager.dart';
+import 'package:ConnectUs/services/security_services.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -77,10 +79,24 @@ Future<void> _initializeApp(String? customPath) async {
   }
 
   Hive.registerAdapter(ContactAdapter());
+  
+  // Initialize Encryption
+  final encryptionKey = await EncryptionKeyManager().getOrCreateEncryptionKey();
+  SecurityService.initialize(encryptionKey);
+  
+  // Open contacts (assuming we might encrypt it later, but keeping as is for backward compatibility or we can just leave it unencrypted)
   await Hive.openBox<Contact>('contacts');
 
-  // Ensure local_chats box is open (needed for chatArea)
-  await Hive.openBox('local_chats');
+  // Ensure local_chats box is open with encryption
+  try {
+    await Hive.openBox('local_chats', encryptionCipher: HiveAesCipher(encryptionKey));
+  } catch (e) {
+    // If it fails (e.g. was unencrypted before), delete and recreate
+    Logger(printer: PrettyPrinter()).w('Failed to open local_chats with encryption. Deleting old box...');
+    await Hive.deleteBoxFromDisk('local_chats');
+    await Hive.openBox('local_chats', encryptionCipher: HiveAesCipher(encryptionKey));
+  }
+  
   await Hive.openBox('graphql_cache');
 
   try {

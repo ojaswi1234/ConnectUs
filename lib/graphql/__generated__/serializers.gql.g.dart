@@ -8,21 +8,21 @@ part of 'serializers.gql.dart';
 
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(FetchPolicy.serializer)
-      ..add(GFetchChatHistoryData.serializer)
-      ..add(GFetchChatHistoryData_messages.serializer)
-      ..add(GFetchChatHistoryReq.serializer)
-      ..add(GFetchChatHistoryVars.serializer)
+      ..add(GGetMessagesData.serializer)
+      ..add(GGetMessagesData_messages.serializer)
+      ..add(GGetMessagesReq.serializer)
+      ..add(GGetMessagesVars.serializer)
       ..add(GListenToChatData.serializer)
       ..add(GListenToChatData_messages.serializer)
       ..add(GListenToChatReq.serializer)
       ..add(GListenToChatVars.serializer)
-      ..add(GsendMessageData.serializer)
-      ..add(GsendMessageReq.serializer)
-      ..add(GsendMessageVars.serializer)
+      ..add(GSendMessageData.serializer)
+      ..add(GSendMessageReq.serializer)
+      ..add(GSendMessageVars.serializer)
       ..addBuilderFactory(
-          const FullType(BuiltList,
-              const [const FullType(GFetchChatHistoryData_messages)]),
-          () => new ListBuilder<GFetchChatHistoryData_messages>())
+          const FullType(
+              BuiltList, const [const FullType(GGetMessagesData_messages)]),
+          () => new ListBuilder<GGetMessagesData_messages>())
       ..addBuilderFactory(
           const FullType(
               BuiltList, const [const FullType(GListenToChatData_messages)]),

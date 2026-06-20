@@ -9,91 +9,92 @@ import 'package:ConnectUs/graphql/__generated__/serializers.gql.dart' as _i1;
 
 part 'operations.data.gql.g.dart';
 
-abstract class GFetchChatHistoryData
-    implements Built<GFetchChatHistoryData, GFetchChatHistoryDataBuilder> {
-  GFetchChatHistoryData._();
+abstract class GGetMessagesData
+    implements Built<GGetMessagesData, GGetMessagesDataBuilder> {
+  GGetMessagesData._();
 
-  factory GFetchChatHistoryData(
-          [void Function(GFetchChatHistoryDataBuilder b) updates]) =
-      _$GFetchChatHistoryData;
+  factory GGetMessagesData([void Function(GGetMessagesDataBuilder b) updates]) =
+      _$GGetMessagesData;
 
-  static void _initializeBuilder(GFetchChatHistoryDataBuilder b) =>
+  static void _initializeBuilder(GGetMessagesDataBuilder b) =>
       b..G__typename = 'Query';
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
-  BuiltList<GFetchChatHistoryData_messages> get messages;
-  static Serializer<GFetchChatHistoryData> get serializer =>
-      _$gFetchChatHistoryDataSerializer;
+  BuiltList<GGetMessagesData_messages> get messages;
+  static Serializer<GGetMessagesData> get serializer =>
+      _$gGetMessagesDataSerializer;
 
   Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
-        GFetchChatHistoryData.serializer,
+        GGetMessagesData.serializer,
         this,
       ) as Map<String, dynamic>);
 
-  static GFetchChatHistoryData? fromJson(Map<String, dynamic> json) =>
+  static GGetMessagesData? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
-        GFetchChatHistoryData.serializer,
+        GGetMessagesData.serializer,
         json,
       );
 }
 
-abstract class GFetchChatHistoryData_messages
+abstract class GGetMessagesData_messages
     implements
-        Built<GFetchChatHistoryData_messages,
-            GFetchChatHistoryData_messagesBuilder> {
-  GFetchChatHistoryData_messages._();
+        Built<GGetMessagesData_messages, GGetMessagesData_messagesBuilder> {
+  GGetMessagesData_messages._();
 
-  factory GFetchChatHistoryData_messages(
-          [void Function(GFetchChatHistoryData_messagesBuilder b) updates]) =
-      _$GFetchChatHistoryData_messages;
+  factory GGetMessagesData_messages(
+          [void Function(GGetMessagesData_messagesBuilder b) updates]) =
+      _$GGetMessagesData_messages;
 
-  static void _initializeBuilder(GFetchChatHistoryData_messagesBuilder b) =>
+  static void _initializeBuilder(GGetMessagesData_messagesBuilder b) =>
       b..G__typename = 'Message';
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
+  String get id;
   String get user;
   String get text;
-  static Serializer<GFetchChatHistoryData_messages> get serializer =>
-      _$gFetchChatHistoryDataMessagesSerializer;
+  String get roomId;
+  String? get createdAt;
+  static Serializer<GGetMessagesData_messages> get serializer =>
+      _$gGetMessagesDataMessagesSerializer;
 
   Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
-        GFetchChatHistoryData_messages.serializer,
+        GGetMessagesData_messages.serializer,
         this,
       ) as Map<String, dynamic>);
 
-  static GFetchChatHistoryData_messages? fromJson(Map<String, dynamic> json) =>
+  static GGetMessagesData_messages? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
-        GFetchChatHistoryData_messages.serializer,
+        GGetMessagesData_messages.serializer,
         json,
       );
 }
 
-abstract class GsendMessageData
-    implements Built<GsendMessageData, GsendMessageDataBuilder> {
-  GsendMessageData._();
+abstract class GSendMessageData
+    implements Built<GSendMessageData, GSendMessageDataBuilder> {
+  GSendMessageData._();
 
-  factory GsendMessageData([void Function(GsendMessageDataBuilder b) updates]) =
-      _$GsendMessageData;
+  factory GSendMessageData([void Function(GSendMessageDataBuilder b) updates]) =
+      _$GSendMessageData;
 
-  static void _initializeBuilder(GsendMessageDataBuilder b) =>
+  static void _initializeBuilder(GSendMessageDataBuilder b) =>
       b..G__typename = 'Mutation';
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
   String get postMessage;
-  static Serializer<GsendMessageData> get serializer =>
-      _$gsendMessageDataSerializer;
+  static Serializer<GSendMessageData> get serializer =>
+      _$gSendMessageDataSerializer;
 
   Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
-        GsendMessageData.serializer,
+        GSendMessageData.serializer,
         this,
       ) as Map<String, dynamic>);
 
-  static GsendMessageData? fromJson(Map<String, dynamic> json) =>
+  static GSendMessageData? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
-        GsendMessageData.serializer,
+        GSendMessageData.serializer,
         json,
       );
 }
@@ -141,8 +142,11 @@ abstract class GListenToChatData_messages
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
+  String get id;
   String get user;
   String get text;
+  String get roomId;
+  String? get createdAt;
   static Serializer<GListenToChatData_messages> get serializer =>
       _$gListenToChatDataMessagesSerializer;
 

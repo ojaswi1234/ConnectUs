@@ -1,18 +1,24 @@
-query FetchChatHistory {
-  messages {
+query GetMessages($roomId: String!) {
+  messages(roomId: $roomId) {
+    id
     user
     text
+    roomId
+    createdAt
   }
 }
 
-mutation sendMessage($user: String!, $text: String!, $roomId: String!) {
-    postMessage(user: $user, text: $text, roomId: $roomId)
+mutation SendMessage($roomId: String!, $user: String!, $text: String!) {
+  postMessage(roomId: $roomId, user: $user, text: $text)
 }
 
-subscription ListenToChat {
-  messages {
+subscription ListenToChat($roomId: String!) {
+  messages(roomId: $roomId) {
+    id
     user
     text
+    roomId
+    createdAt
   }
 }
 

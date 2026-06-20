@@ -6,31 +6,26 @@ part of 'operations.data.gql.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializer<GFetchChatHistoryData> _$gFetchChatHistoryDataSerializer =
-    new _$GFetchChatHistoryDataSerializer();
-Serializer<GFetchChatHistoryData_messages>
-    _$gFetchChatHistoryDataMessagesSerializer =
-    new _$GFetchChatHistoryData_messagesSerializer();
-Serializer<GsendMessageData> _$gsendMessageDataSerializer =
-    new _$GsendMessageDataSerializer();
+Serializer<GGetMessagesData> _$gGetMessagesDataSerializer =
+    new _$GGetMessagesDataSerializer();
+Serializer<GGetMessagesData_messages> _$gGetMessagesDataMessagesSerializer =
+    new _$GGetMessagesData_messagesSerializer();
+Serializer<GSendMessageData> _$gSendMessageDataSerializer =
+    new _$GSendMessageDataSerializer();
 Serializer<GListenToChatData> _$gListenToChatDataSerializer =
     new _$GListenToChatDataSerializer();
 Serializer<GListenToChatData_messages> _$gListenToChatDataMessagesSerializer =
     new _$GListenToChatData_messagesSerializer();
 
-class _$GFetchChatHistoryDataSerializer
-    implements StructuredSerializer<GFetchChatHistoryData> {
+class _$GGetMessagesDataSerializer
+    implements StructuredSerializer<GGetMessagesData> {
   @override
-  final Iterable<Type> types = const [
-    GFetchChatHistoryData,
-    _$GFetchChatHistoryData
-  ];
+  final Iterable<Type> types = const [GGetMessagesData, _$GGetMessagesData];
   @override
-  final String wireName = 'GFetchChatHistoryData';
+  final String wireName = 'GGetMessagesData';
 
   @override
-  Iterable<Object?> serialize(
-      Serializers serializers, GFetchChatHistoryData object,
+  Iterable<Object?> serialize(Serializers serializers, GGetMessagesData object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
       '__typename',
@@ -38,18 +33,18 @@ class _$GFetchChatHistoryDataSerializer
           specifiedType: const FullType(String)),
       'messages',
       serializers.serialize(object.messages,
-          specifiedType: const FullType(BuiltList,
-              const [const FullType(GFetchChatHistoryData_messages)])),
+          specifiedType: const FullType(
+              BuiltList, const [const FullType(GGetMessagesData_messages)])),
     ];
 
     return result;
   }
 
   @override
-  GFetchChatHistoryData deserialize(
+  GGetMessagesData deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new GFetchChatHistoryDataBuilder();
+    final result = new GGetMessagesDataBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -64,7 +59,7 @@ class _$GFetchChatHistoryDataSerializer
         case 'messages':
           result.messages.replace(serializers.deserialize(value,
               specifiedType: const FullType(BuiltList, const [
-                const FullType(GFetchChatHistoryData_messages)
+                const FullType(GGetMessagesData_messages)
               ]))! as BuiltList<Object?>);
           break;
       }
@@ -74,38 +69,50 @@ class _$GFetchChatHistoryDataSerializer
   }
 }
 
-class _$GFetchChatHistoryData_messagesSerializer
-    implements StructuredSerializer<GFetchChatHistoryData_messages> {
+class _$GGetMessagesData_messagesSerializer
+    implements StructuredSerializer<GGetMessagesData_messages> {
   @override
   final Iterable<Type> types = const [
-    GFetchChatHistoryData_messages,
-    _$GFetchChatHistoryData_messages
+    GGetMessagesData_messages,
+    _$GGetMessagesData_messages
   ];
   @override
-  final String wireName = 'GFetchChatHistoryData_messages';
+  final String wireName = 'GGetMessagesData_messages';
 
   @override
   Iterable<Object?> serialize(
-      Serializers serializers, GFetchChatHistoryData_messages object,
+      Serializers serializers, GGetMessagesData_messages object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
       '__typename',
       serializers.serialize(object.G__typename,
           specifiedType: const FullType(String)),
+      'id',
+      serializers.serialize(object.id, specifiedType: const FullType(String)),
       'user',
       serializers.serialize(object.user, specifiedType: const FullType(String)),
       'text',
       serializers.serialize(object.text, specifiedType: const FullType(String)),
+      'roomId',
+      serializers.serialize(object.roomId,
+          specifiedType: const FullType(String)),
     ];
-
+    Object? value;
+    value = object.createdAt;
+    if (value != null) {
+      result
+        ..add('createdAt')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
     return result;
   }
 
   @override
-  GFetchChatHistoryData_messages deserialize(
+  GGetMessagesData_messages deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new GFetchChatHistoryData_messagesBuilder();
+    final result = new GGetMessagesData_messagesBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -117,6 +124,10 @@ class _$GFetchChatHistoryData_messagesSerializer
           result.G__typename = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
+        case 'id':
+          result.id = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
         case 'user':
           result.user = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
@@ -125,6 +136,14 @@ class _$GFetchChatHistoryData_messagesSerializer
           result.text = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
+        case 'roomId':
+          result.roomId = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'createdAt':
+          result.createdAt = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String?;
+          break;
       }
     }
 
@@ -132,15 +151,15 @@ class _$GFetchChatHistoryData_messagesSerializer
   }
 }
 
-class _$GsendMessageDataSerializer
-    implements StructuredSerializer<GsendMessageData> {
+class _$GSendMessageDataSerializer
+    implements StructuredSerializer<GSendMessageData> {
   @override
-  final Iterable<Type> types = const [GsendMessageData, _$GsendMessageData];
+  final Iterable<Type> types = const [GSendMessageData, _$GSendMessageData];
   @override
-  final String wireName = 'GsendMessageData';
+  final String wireName = 'GSendMessageData';
 
   @override
-  Iterable<Object?> serialize(Serializers serializers, GsendMessageData object,
+  Iterable<Object?> serialize(Serializers serializers, GSendMessageData object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
       '__typename',
@@ -155,10 +174,10 @@ class _$GsendMessageDataSerializer
   }
 
   @override
-  GsendMessageData deserialize(
+  GSendMessageData deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new GsendMessageDataBuilder();
+    final result = new GSendMessageDataBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -251,12 +270,24 @@ class _$GListenToChatData_messagesSerializer
       '__typename',
       serializers.serialize(object.G__typename,
           specifiedType: const FullType(String)),
+      'id',
+      serializers.serialize(object.id, specifiedType: const FullType(String)),
       'user',
       serializers.serialize(object.user, specifiedType: const FullType(String)),
       'text',
       serializers.serialize(object.text, specifiedType: const FullType(String)),
+      'roomId',
+      serializers.serialize(object.roomId,
+          specifiedType: const FullType(String)),
     ];
-
+    Object? value;
+    value = object.createdAt;
+    if (value != null) {
+      result
+        ..add('createdAt')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
     return result;
   }
 
@@ -276,6 +307,10 @@ class _$GListenToChatData_messagesSerializer
           result.G__typename = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
+        case 'id':
+          result.id = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
         case 'user':
           result.user = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
@@ -284,6 +319,14 @@ class _$GListenToChatData_messagesSerializer
           result.text = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
+        case 'roomId':
+          result.roomId = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'createdAt':
+          result.createdAt = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String?;
+          break;
       }
     }
 
@@ -291,37 +334,36 @@ class _$GListenToChatData_messagesSerializer
   }
 }
 
-class _$GFetchChatHistoryData extends GFetchChatHistoryData {
+class _$GGetMessagesData extends GGetMessagesData {
   @override
   final String G__typename;
   @override
-  final BuiltList<GFetchChatHistoryData_messages> messages;
+  final BuiltList<GGetMessagesData_messages> messages;
 
-  factory _$GFetchChatHistoryData(
-          [void Function(GFetchChatHistoryDataBuilder)? updates]) =>
-      (new GFetchChatHistoryDataBuilder()..update(updates))._build();
+  factory _$GGetMessagesData(
+          [void Function(GGetMessagesDataBuilder)? updates]) =>
+      (new GGetMessagesDataBuilder()..update(updates))._build();
 
-  _$GFetchChatHistoryData._({required this.G__typename, required this.messages})
+  _$GGetMessagesData._({required this.G__typename, required this.messages})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
-        G__typename, r'GFetchChatHistoryData', 'G__typename');
+        G__typename, r'GGetMessagesData', 'G__typename');
     BuiltValueNullFieldError.checkNotNull(
-        messages, r'GFetchChatHistoryData', 'messages');
+        messages, r'GGetMessagesData', 'messages');
   }
 
   @override
-  GFetchChatHistoryData rebuild(
-          void Function(GFetchChatHistoryDataBuilder) updates) =>
+  GGetMessagesData rebuild(void Function(GGetMessagesDataBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  GFetchChatHistoryDataBuilder toBuilder() =>
-      new GFetchChatHistoryDataBuilder()..replace(this);
+  GGetMessagesDataBuilder toBuilder() =>
+      new GGetMessagesDataBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GFetchChatHistoryData &&
+    return other is GGetMessagesData &&
         G__typename == other.G__typename &&
         messages == other.messages;
   }
@@ -337,32 +379,32 @@ class _$GFetchChatHistoryData extends GFetchChatHistoryData {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'GFetchChatHistoryData')
+    return (newBuiltValueToStringHelper(r'GGetMessagesData')
           ..add('G__typename', G__typename)
           ..add('messages', messages))
         .toString();
   }
 }
 
-class GFetchChatHistoryDataBuilder
-    implements Builder<GFetchChatHistoryData, GFetchChatHistoryDataBuilder> {
-  _$GFetchChatHistoryData? _$v;
+class GGetMessagesDataBuilder
+    implements Builder<GGetMessagesData, GGetMessagesDataBuilder> {
+  _$GGetMessagesData? _$v;
 
   String? _G__typename;
   String? get G__typename => _$this._G__typename;
   set G__typename(String? G__typename) => _$this._G__typename = G__typename;
 
-  ListBuilder<GFetchChatHistoryData_messages>? _messages;
-  ListBuilder<GFetchChatHistoryData_messages> get messages =>
-      _$this._messages ??= new ListBuilder<GFetchChatHistoryData_messages>();
-  set messages(ListBuilder<GFetchChatHistoryData_messages>? messages) =>
+  ListBuilder<GGetMessagesData_messages>? _messages;
+  ListBuilder<GGetMessagesData_messages> get messages =>
+      _$this._messages ??= new ListBuilder<GGetMessagesData_messages>();
+  set messages(ListBuilder<GGetMessagesData_messages>? messages) =>
       _$this._messages = messages;
 
-  GFetchChatHistoryDataBuilder() {
-    GFetchChatHistoryData._initializeBuilder(this);
+  GGetMessagesDataBuilder() {
+    GGetMessagesData._initializeBuilder(this);
   }
 
-  GFetchChatHistoryDataBuilder get _$this {
+  GGetMessagesDataBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _G__typename = $v.G__typename;
@@ -373,26 +415,26 @@ class GFetchChatHistoryDataBuilder
   }
 
   @override
-  void replace(GFetchChatHistoryData other) {
+  void replace(GGetMessagesData other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$GFetchChatHistoryData;
+    _$v = other as _$GGetMessagesData;
   }
 
   @override
-  void update(void Function(GFetchChatHistoryDataBuilder)? updates) {
+  void update(void Function(GGetMessagesDataBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  GFetchChatHistoryData build() => _build();
+  GGetMessagesData build() => _build();
 
-  _$GFetchChatHistoryData _build() {
-    _$GFetchChatHistoryData _$result;
+  _$GGetMessagesData _build() {
+    _$GGetMessagesData _$result;
     try {
       _$result = _$v ??
-          new _$GFetchChatHistoryData._(
+          new _$GGetMessagesData._(
               G__typename: BuiltValueNullFieldError.checkNotNull(
-                  G__typename, r'GFetchChatHistoryData', 'G__typename'),
+                  G__typename, r'GGetMessagesData', 'G__typename'),
               messages: messages.build());
     } catch (_) {
       late String _$failedField;
@@ -401,7 +443,7 @@ class GFetchChatHistoryDataBuilder
         messages.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            r'GFetchChatHistoryData', _$failedField, e.toString());
+            r'GGetMessagesData', _$failedField, e.toString());
       }
       rethrow;
     }
@@ -410,76 +452,103 @@ class GFetchChatHistoryDataBuilder
   }
 }
 
-class _$GFetchChatHistoryData_messages extends GFetchChatHistoryData_messages {
+class _$GGetMessagesData_messages extends GGetMessagesData_messages {
   @override
   final String G__typename;
+  @override
+  final String id;
   @override
   final String user;
   @override
   final String text;
+  @override
+  final String roomId;
+  @override
+  final String? createdAt;
 
-  factory _$GFetchChatHistoryData_messages(
-          [void Function(GFetchChatHistoryData_messagesBuilder)? updates]) =>
-      (new GFetchChatHistoryData_messagesBuilder()..update(updates))._build();
+  factory _$GGetMessagesData_messages(
+          [void Function(GGetMessagesData_messagesBuilder)? updates]) =>
+      (new GGetMessagesData_messagesBuilder()..update(updates))._build();
 
-  _$GFetchChatHistoryData_messages._(
-      {required this.G__typename, required this.user, required this.text})
+  _$GGetMessagesData_messages._(
+      {required this.G__typename,
+      required this.id,
+      required this.user,
+      required this.text,
+      required this.roomId,
+      this.createdAt})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
-        G__typename, r'GFetchChatHistoryData_messages', 'G__typename');
+        G__typename, r'GGetMessagesData_messages', 'G__typename');
     BuiltValueNullFieldError.checkNotNull(
-        user, r'GFetchChatHistoryData_messages', 'user');
+        id, r'GGetMessagesData_messages', 'id');
     BuiltValueNullFieldError.checkNotNull(
-        text, r'GFetchChatHistoryData_messages', 'text');
+        user, r'GGetMessagesData_messages', 'user');
+    BuiltValueNullFieldError.checkNotNull(
+        text, r'GGetMessagesData_messages', 'text');
+    BuiltValueNullFieldError.checkNotNull(
+        roomId, r'GGetMessagesData_messages', 'roomId');
   }
 
   @override
-  GFetchChatHistoryData_messages rebuild(
-          void Function(GFetchChatHistoryData_messagesBuilder) updates) =>
+  GGetMessagesData_messages rebuild(
+          void Function(GGetMessagesData_messagesBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  GFetchChatHistoryData_messagesBuilder toBuilder() =>
-      new GFetchChatHistoryData_messagesBuilder()..replace(this);
+  GGetMessagesData_messagesBuilder toBuilder() =>
+      new GGetMessagesData_messagesBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GFetchChatHistoryData_messages &&
+    return other is GGetMessagesData_messages &&
         G__typename == other.G__typename &&
+        id == other.id &&
         user == other.user &&
-        text == other.text;
+        text == other.text &&
+        roomId == other.roomId &&
+        createdAt == other.createdAt;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, user.hashCode);
     _$hash = $jc(_$hash, text.hashCode);
+    _$hash = $jc(_$hash, roomId.hashCode);
+    _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'GFetchChatHistoryData_messages')
+    return (newBuiltValueToStringHelper(r'GGetMessagesData_messages')
           ..add('G__typename', G__typename)
+          ..add('id', id)
           ..add('user', user)
-          ..add('text', text))
+          ..add('text', text)
+          ..add('roomId', roomId)
+          ..add('createdAt', createdAt))
         .toString();
   }
 }
 
-class GFetchChatHistoryData_messagesBuilder
+class GGetMessagesData_messagesBuilder
     implements
-        Builder<GFetchChatHistoryData_messages,
-            GFetchChatHistoryData_messagesBuilder> {
-  _$GFetchChatHistoryData_messages? _$v;
+        Builder<GGetMessagesData_messages, GGetMessagesData_messagesBuilder> {
+  _$GGetMessagesData_messages? _$v;
 
   String? _G__typename;
   String? get G__typename => _$this._G__typename;
   set G__typename(String? G__typename) => _$this._G__typename = G__typename;
+
+  String? _id;
+  String? get id => _$this._id;
+  set id(String? id) => _$this._id = id;
 
   String? _user;
   String? get user => _$this._user;
@@ -489,79 +558,95 @@ class GFetchChatHistoryData_messagesBuilder
   String? get text => _$this._text;
   set text(String? text) => _$this._text = text;
 
-  GFetchChatHistoryData_messagesBuilder() {
-    GFetchChatHistoryData_messages._initializeBuilder(this);
+  String? _roomId;
+  String? get roomId => _$this._roomId;
+  set roomId(String? roomId) => _$this._roomId = roomId;
+
+  String? _createdAt;
+  String? get createdAt => _$this._createdAt;
+  set createdAt(String? createdAt) => _$this._createdAt = createdAt;
+
+  GGetMessagesData_messagesBuilder() {
+    GGetMessagesData_messages._initializeBuilder(this);
   }
 
-  GFetchChatHistoryData_messagesBuilder get _$this {
+  GGetMessagesData_messagesBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _G__typename = $v.G__typename;
+      _id = $v.id;
       _user = $v.user;
       _text = $v.text;
+      _roomId = $v.roomId;
+      _createdAt = $v.createdAt;
       _$v = null;
     }
     return this;
   }
 
   @override
-  void replace(GFetchChatHistoryData_messages other) {
+  void replace(GGetMessagesData_messages other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$GFetchChatHistoryData_messages;
+    _$v = other as _$GGetMessagesData_messages;
   }
 
   @override
-  void update(void Function(GFetchChatHistoryData_messagesBuilder)? updates) {
+  void update(void Function(GGetMessagesData_messagesBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  GFetchChatHistoryData_messages build() => _build();
+  GGetMessagesData_messages build() => _build();
 
-  _$GFetchChatHistoryData_messages _build() {
+  _$GGetMessagesData_messages _build() {
     final _$result = _$v ??
-        new _$GFetchChatHistoryData_messages._(
+        new _$GGetMessagesData_messages._(
             G__typename: BuiltValueNullFieldError.checkNotNull(
-                G__typename, r'GFetchChatHistoryData_messages', 'G__typename'),
+                G__typename, r'GGetMessagesData_messages', 'G__typename'),
+            id: BuiltValueNullFieldError.checkNotNull(
+                id, r'GGetMessagesData_messages', 'id'),
             user: BuiltValueNullFieldError.checkNotNull(
-                user, r'GFetchChatHistoryData_messages', 'user'),
+                user, r'GGetMessagesData_messages', 'user'),
             text: BuiltValueNullFieldError.checkNotNull(
-                text, r'GFetchChatHistoryData_messages', 'text'));
+                text, r'GGetMessagesData_messages', 'text'),
+            roomId: BuiltValueNullFieldError.checkNotNull(
+                roomId, r'GGetMessagesData_messages', 'roomId'),
+            createdAt: createdAt);
     replace(_$result);
     return _$result;
   }
 }
 
-class _$GsendMessageData extends GsendMessageData {
+class _$GSendMessageData extends GSendMessageData {
   @override
   final String G__typename;
   @override
   final String postMessage;
 
-  factory _$GsendMessageData(
-          [void Function(GsendMessageDataBuilder)? updates]) =>
-      (new GsendMessageDataBuilder()..update(updates))._build();
+  factory _$GSendMessageData(
+          [void Function(GSendMessageDataBuilder)? updates]) =>
+      (new GSendMessageDataBuilder()..update(updates))._build();
 
-  _$GsendMessageData._({required this.G__typename, required this.postMessage})
+  _$GSendMessageData._({required this.G__typename, required this.postMessage})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
-        G__typename, r'GsendMessageData', 'G__typename');
+        G__typename, r'GSendMessageData', 'G__typename');
     BuiltValueNullFieldError.checkNotNull(
-        postMessage, r'GsendMessageData', 'postMessage');
+        postMessage, r'GSendMessageData', 'postMessage');
   }
 
   @override
-  GsendMessageData rebuild(void Function(GsendMessageDataBuilder) updates) =>
+  GSendMessageData rebuild(void Function(GSendMessageDataBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  GsendMessageDataBuilder toBuilder() =>
-      new GsendMessageDataBuilder()..replace(this);
+  GSendMessageDataBuilder toBuilder() =>
+      new GSendMessageDataBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GsendMessageData &&
+    return other is GSendMessageData &&
         G__typename == other.G__typename &&
         postMessage == other.postMessage;
   }
@@ -577,16 +662,16 @@ class _$GsendMessageData extends GsendMessageData {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'GsendMessageData')
+    return (newBuiltValueToStringHelper(r'GSendMessageData')
           ..add('G__typename', G__typename)
           ..add('postMessage', postMessage))
         .toString();
   }
 }
 
-class GsendMessageDataBuilder
-    implements Builder<GsendMessageData, GsendMessageDataBuilder> {
-  _$GsendMessageData? _$v;
+class GSendMessageDataBuilder
+    implements Builder<GSendMessageData, GSendMessageDataBuilder> {
+  _$GSendMessageData? _$v;
 
   String? _G__typename;
   String? get G__typename => _$this._G__typename;
@@ -596,11 +681,11 @@ class GsendMessageDataBuilder
   String? get postMessage => _$this._postMessage;
   set postMessage(String? postMessage) => _$this._postMessage = postMessage;
 
-  GsendMessageDataBuilder() {
-    GsendMessageData._initializeBuilder(this);
+  GSendMessageDataBuilder() {
+    GSendMessageData._initializeBuilder(this);
   }
 
-  GsendMessageDataBuilder get _$this {
+  GSendMessageDataBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _G__typename = $v.G__typename;
@@ -611,26 +696,26 @@ class GsendMessageDataBuilder
   }
 
   @override
-  void replace(GsendMessageData other) {
+  void replace(GSendMessageData other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$GsendMessageData;
+    _$v = other as _$GSendMessageData;
   }
 
   @override
-  void update(void Function(GsendMessageDataBuilder)? updates) {
+  void update(void Function(GSendMessageDataBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  GsendMessageData build() => _build();
+  GSendMessageData build() => _build();
 
-  _$GsendMessageData _build() {
+  _$GSendMessageData _build() {
     final _$result = _$v ??
-        new _$GsendMessageData._(
+        new _$GSendMessageData._(
             G__typename: BuiltValueNullFieldError.checkNotNull(
-                G__typename, r'GsendMessageData', 'G__typename'),
+                G__typename, r'GSendMessageData', 'G__typename'),
             postMessage: BuiltValueNullFieldError.checkNotNull(
-                postMessage, r'GsendMessageData', 'postMessage'));
+                postMessage, r'GSendMessageData', 'postMessage'));
     replace(_$result);
     return _$result;
   }
@@ -758,23 +843,38 @@ class _$GListenToChatData_messages extends GListenToChatData_messages {
   @override
   final String G__typename;
   @override
+  final String id;
+  @override
   final String user;
   @override
   final String text;
+  @override
+  final String roomId;
+  @override
+  final String? createdAt;
 
   factory _$GListenToChatData_messages(
           [void Function(GListenToChatData_messagesBuilder)? updates]) =>
       (new GListenToChatData_messagesBuilder()..update(updates))._build();
 
   _$GListenToChatData_messages._(
-      {required this.G__typename, required this.user, required this.text})
+      {required this.G__typename,
+      required this.id,
+      required this.user,
+      required this.text,
+      required this.roomId,
+      this.createdAt})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         G__typename, r'GListenToChatData_messages', 'G__typename');
     BuiltValueNullFieldError.checkNotNull(
+        id, r'GListenToChatData_messages', 'id');
+    BuiltValueNullFieldError.checkNotNull(
         user, r'GListenToChatData_messages', 'user');
     BuiltValueNullFieldError.checkNotNull(
         text, r'GListenToChatData_messages', 'text');
+    BuiltValueNullFieldError.checkNotNull(
+        roomId, r'GListenToChatData_messages', 'roomId');
   }
 
   @override
@@ -791,16 +891,22 @@ class _$GListenToChatData_messages extends GListenToChatData_messages {
     if (identical(other, this)) return true;
     return other is GListenToChatData_messages &&
         G__typename == other.G__typename &&
+        id == other.id &&
         user == other.user &&
-        text == other.text;
+        text == other.text &&
+        roomId == other.roomId &&
+        createdAt == other.createdAt;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, user.hashCode);
     _$hash = $jc(_$hash, text.hashCode);
+    _$hash = $jc(_$hash, roomId.hashCode);
+    _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -809,8 +915,11 @@ class _$GListenToChatData_messages extends GListenToChatData_messages {
   String toString() {
     return (newBuiltValueToStringHelper(r'GListenToChatData_messages')
           ..add('G__typename', G__typename)
+          ..add('id', id)
           ..add('user', user)
-          ..add('text', text))
+          ..add('text', text)
+          ..add('roomId', roomId)
+          ..add('createdAt', createdAt))
         .toString();
   }
 }
@@ -824,6 +933,10 @@ class GListenToChatData_messagesBuilder
   String? get G__typename => _$this._G__typename;
   set G__typename(String? G__typename) => _$this._G__typename = G__typename;
 
+  String? _id;
+  String? get id => _$this._id;
+  set id(String? id) => _$this._id = id;
+
   String? _user;
   String? get user => _$this._user;
   set user(String? user) => _$this._user = user;
@@ -831,6 +944,14 @@ class GListenToChatData_messagesBuilder
   String? _text;
   String? get text => _$this._text;
   set text(String? text) => _$this._text = text;
+
+  String? _roomId;
+  String? get roomId => _$this._roomId;
+  set roomId(String? roomId) => _$this._roomId = roomId;
+
+  String? _createdAt;
+  String? get createdAt => _$this._createdAt;
+  set createdAt(String? createdAt) => _$this._createdAt = createdAt;
 
   GListenToChatData_messagesBuilder() {
     GListenToChatData_messages._initializeBuilder(this);
@@ -840,8 +961,11 @@ class GListenToChatData_messagesBuilder
     final $v = _$v;
     if ($v != null) {
       _G__typename = $v.G__typename;
+      _id = $v.id;
       _user = $v.user;
       _text = $v.text;
+      _roomId = $v.roomId;
+      _createdAt = $v.createdAt;
       _$v = null;
     }
     return this;
@@ -866,10 +990,15 @@ class GListenToChatData_messagesBuilder
         new _$GListenToChatData_messages._(
             G__typename: BuiltValueNullFieldError.checkNotNull(
                 G__typename, r'GListenToChatData_messages', 'G__typename'),
+            id: BuiltValueNullFieldError.checkNotNull(
+                id, r'GListenToChatData_messages', 'id'),
             user: BuiltValueNullFieldError.checkNotNull(
                 user, r'GListenToChatData_messages', 'user'),
             text: BuiltValueNullFieldError.checkNotNull(
-                text, r'GListenToChatData_messages', 'text'));
+                text, r'GListenToChatData_messages', 'text'),
+            roomId: BuiltValueNullFieldError.checkNotNull(
+                roomId, r'GListenToChatData_messages', 'roomId'),
+            createdAt: createdAt);
     replace(_$result);
     return _$result;
   }
