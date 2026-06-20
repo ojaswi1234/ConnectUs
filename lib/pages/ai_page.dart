@@ -2,18 +2,18 @@ import 'dart:io';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:langchain/langchain.dart';
-import 'package:langchain_openai/langchain_openai.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ConnectUs/services/ferry_client.dart';
+import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
 
-class AIPage extends StatefulWidget {
+class AIPage extends ConsumerStatefulWidget {
   const AIPage({super.key});
 
   @override
-  State<AIPage> createState() => _AIPageState();
+  ConsumerState<AIPage> createState() => _AIPageState();
 }
 
-class _AIPageState extends State<AIPage> {
+class _AIPageState extends ConsumerState<AIPage> {
   final TextEditingController _textController = TextEditingController();
   String _response = '';
   bool _isLoading = false;
@@ -27,54 +27,29 @@ class _AIPageState extends State<AIPage> {
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   Future<void> _generateResponse(String prompt) async {
-    // Get API key from environment inside the method
-    final String? apiKey = dotenv.env['GROQ_API_KEY'];
-
-    // Check if API key exists and is valid
-    if (apiKey == null || apiKey.isEmpty || apiKey == "YOUR_GROQ_API_KEY") {
-      setState(() {
-        _response = "Error: Please add your Groq API Key to the .env file.\n\n"
-            "Steps:\n"
-            "1. Create a .env file in your project root\n"
-            "2. Add: GROQ_API_KEY=your_actual_key_here\n"
-            "3. Get your key from https://console.groq.com/keys";
-        _isLoading = false;
-      });
-      return;
-    }
-
     setState(() {
       _isLoading = true;
-      _response = '';
+      _response = 'Connectify is thinking...';
     });
 
     try {
-      final chat = ChatOpenAI(
-        apiKey: apiKey,
-        baseUrl: 'https://api.groq.com/openai/v1',
-        defaultOptions: const ChatOpenAIOptions(
-          model: 'llama-3.3-70b-versatile', // Updated to a valid Groq model
-          temperature: 0.7,
-        ),
-      );
-
-      final promptTemplate = PromptTemplate.fromTemplate(
-        'You are a chatty chatbot and a part of ConnectUs App, your name is Connectify. '
-        'Chat casually as much as possible and also help user in their queries. '
-        'The user has asked: {question}'
-      );
-
-      final chain = promptTemplate.pipe(chat).pipe(const StringOutputParser());
-      final stream = chain.stream({'question': prompt});
-
-      await for (final chunk in stream) {
+      final client = ref.read(clientProvider);
+      final req = GAskAssistantReq((b) => b..vars.prompt = prompt);
+      
+      final response = await client.request(req).first;
+      
+      if (response.data != null && response.data!.askAssistant != null) {
         setState(() {
-          _response += chunk;
+          _response = response.data!.askAssistant!;
+        });
+      } else if (response.hasErrors) {
+        setState(() {
+          _response = 'Error: ${response.graphqlErrors}';
         });
       }
     } catch (e) {
       setState(() {
-        _response = 'Too bad !!! \n Server Error';
+        _response = 'Too bad !!! \n Server Error: $e';
       });
     } finally {
       setState(() {
@@ -269,7 +244,8 @@ class _AIPageState extends State<AIPage> {
                   horizontal: 20.0,
                 ),
               ),
-              onSubmitted: (_) => _handleSend,
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _handleSend(),
             ),
           ],
         ),

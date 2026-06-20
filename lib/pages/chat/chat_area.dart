@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // For kIsWeb
 import 'package:ConnectUs/utils/app_theme.dart';
-import 'package:ConnectUs/services/security_services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
@@ -92,7 +91,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
         // 3. Start Subscriptions if we found the target user
         if (_targetUserId != null) {
           await _checkBlockStatus();
-          await _fetchHistoryFromSupabase(); // Load old messages
+          await _fetchHistoryFromGraphQL(); // Load old messages
           _startStatusSubscription();
           _startMessageSubscription();
         }
@@ -100,45 +99,30 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     }
   }
 
-  // --- NEW: FETCH AND UPDATE SUPABASE HISTORY ---
-
-  // Fetch the full message history from Supabase when the chat opens
-  Future<void> _fetchHistoryFromSupabase() async {
+  // --- FETCH HISTORY FROM GRAPHQL ---
+  Future<void> _fetchHistoryFromGraphQL() async {
     if (_roomId == "loading") return;
     try {
-      final client = supabase.Supabase.instance.client;
-      final response = await client
-          .from('messages')
-          .select('messages')
-          .eq('room_id', _roomId)
-          .maybeSingle();
+      final client = ref.read(clientProvider);
+      final req = GFetchChatHistoryReq((b) => b..vars.roomId = _roomId);
+      final response = await client.request(req).first;
 
-      if (response != null && response['messages'] != null) {
-        final history = List<dynamic>.from(response['messages']);
-        _saveToLocal(history); // Update local cache with fetched history
+      if (response.data != null && response.data!.messages != null) {
+        final messages = response.data!.messages!.map((m) => {
+          'id': m.id,
+          'content': m.text,
+          'user': m.user,
+          'createdAt': m.createdAt,
+        }).toList();
+
+        _saveToLocal(messages);
         if (mounted) {
-          setState(() {}); // Refresh UI
+          setState(() {});
           _scrollToBottom();
         }
       }
     } catch (e) {
-      debugPrint("Error fetching history from Supabase: $e");
-    }
-  }
-
-  // Update (or insert) the message history in Supabase
-  Future<void> _updateHistoryInSupabase(List<dynamic> messages) async {
-    if (_roomId == "loading" || _myUserId == null) return;
-    try {
-      final client = supabase.Supabase.instance.client;
-      // Use upsert to create or replace the chat history for the room
-      await client.from('messages').upsert({
-        'room_id': _roomId,
-        'user_id': _myUserId, // To know who last updated it
-        'messages': messages,
-      });
-    } catch (e) {
-      debugPrint("Error updating history in Supabase: $e");
+      debugPrint("Error fetching history from GraphQL: $e");
     }
   }
 
@@ -175,24 +159,24 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     if (_roomId == "loading") return;
     final client = ref.read(clientProvider);
 
-    final messageSubscriptionRequest = GListenToChatReq();
+    final messageSubscriptionRequest = GListenToChatReq((b) => b..vars.roomId = _roomId);
 
     _messageSubscription =
         client.request(messageSubscriptionRequest).listen((response) {
       if (response.data != null &&
-          response.data!.messages != null &&
-          response.data!.messages!.isNotEmpty) {
-        final newMsg = response.data!.messages!.last;
+          response.data!.messages != null) {
+        final newMsg = response.data!.messages!;
         // Only process messages from the other user
         if (newMsg.user != _myUsername) {
           final currentMessages = List<dynamic>.from(_localHistory);
           final messageMap = {
+            'id': newMsg.id,
             'content': newMsg.text,
             'user': newMsg.user,
-            'createdAt': DateTime.now().toIso8601String()
+            'createdAt': newMsg.createdAt,
           };
           currentMessages.add(messageMap);
-          // Only save to local cache. The sender is responsible for Supabase.
+          // Only save to local cache. The sender is responsible for DB.
           _saveToLocal(currentMessages);
 
           if (mounted) {
@@ -279,8 +263,10 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     }
 
     if (_controller.text.trim().isEmpty || _myUsername == null) return;
+    
+    final text = _controller.text;
     final newMessage = {
-      'content': _controller.text,
+      'content': text,
       'user': _myUsername,
       'createdAt': DateTime.now().toIso8601String()
     };
@@ -289,16 +275,13 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
     // Save to local cache for instant UI update
     _saveToLocal(currentMessages);
-    // Save the new complete history to Supabase
-    _updateHistoryInSupabase(currentMessages);
-
     setState(() {});
 
     // Send via GraphQL for real-time delivery
     final client = ref.read(clientProvider);
     final sendMessageReq = GsendMessageReq((b) => b
-      ..vars.user = widget.userName
-      ..vars.text = _controller.text
+      ..vars.user = _myUsername!
+      ..vars.text = text
       ..vars.roomId = _roomId);
 
     client.request(sendMessageReq).listen((response) {
@@ -402,6 +385,18 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
       ),
       body: Column(
         children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            color: Colors.amber[100],
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_open, size: 14, color: Colors.black54),
+                SizedBox(width: 4),
+                Text('Messages are not end-to-end encrypted', style: TextStyle(fontSize: 12, color: Colors.black54)),
+              ],
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -413,7 +408,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
                 final content = rawMsg is Map ? rawMsg['content'] : '';
                 final user = rawMsg is Map ? rawMsg['user'] : '';
 
-                final decrypted = SecurityService.decryptMessage(content);
+                final decrypted = content.toString();
                 return _buildMessageBubble(
                     decrypted, user == _myUsername, user);
               },

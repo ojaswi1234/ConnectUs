@@ -1,0 +1,232 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 67.0.0 (104.0.0 available)
+  analyzer 6.4.1 (14.0.0 available)
+  app_links 6.4.1 (7.1.2 available)
+  app_links_platform_interface 2.0.2 (2.0.3 available)
+  archive 4.0.7 (4.0.9 available)
+  async 2.13.0 (2.13.1 available)
+  build 2.4.1 (4.0.6 available)
+  build_config 1.1.2 (1.3.0 available)
+  build_resolvers 2.4.2 (3.0.4 available)
+  build_runner 2.4.13 (2.15.0 available)
+  build_runner_core 7.3.2 (9.3.2 available)
+  built_value 8.9.5 (8.12.6 available)
+  built_value_generator 8.9.2 (8.12.6 available)
+  characters 1.4.0 (1.4.1 available)
+  code_builder 4.10.1 (4.11.1 available)
+  coverage 1.15.0 (1.15.1 available)
+  cross_file 0.3.5+1 (0.3.5+2 available)
+  cupertino_icons 1.0.8 (1.0.9 available)
+  dart_jsonwebtoken 3.1.1 (3.4.1 available)
+  dart_style 2.3.6 (3.1.9 available)
+  dart_webrtc 1.7.0 (1.8.1 available)
+  dbus 0.7.11 (0.7.14 available)
+  ferry_generator 0.12.0+2 (0.12.0+5 available)
+  ffi 2.1.5 (2.2.0 available)
+  file_picker 10.3.8 (11.0.2 available)
+  flutter_contacts 1.1.9+2 (2.2.2 available)
+  flutter_dotenv 6.0.0 (6.0.1 available)
+  flutter_lints 2.0.3 (6.0.0 available)
+  flutter_plugin_android_lifecycle 2.0.33 (2.0.35 available)
+  flutter_riverpod 3.2.0 (3.3.2 available)
+  flutter_webrtc 1.2.1 (1.5.2 available)
+  functions_client 2.5.0 (2.6.1 available)
+  gotrue 2.18.0 (2.22.0 available)
+  gql_code_builder 0.13.1 (0.15.2 available)
+  gtk 2.1.0 (2.2.0 available)
+  image_picker 1.2.1 (1.2.2 available)
+  image_picker_android 0.8.13+12 (0.8.13+19 available)
+  image_picker_ios 0.8.13+3 (0.8.13+6 available)
+  json_annotation 4.9.0 (4.12.0 available)
+  lints 2.1.1 (6.1.0 available)
+  logger 2.6.2 (2.7.0 available)
+  matcher 0.12.17 (0.12.20 available)
+  material_color_utilities 0.11.1 (0.13.0 available)
+  meta 1.16.0 (1.18.3 available)
+  ollama_dart 0.3.0+1 (2.3.0 available)
+  open_file 3.5.11 (4.0.0 available)
+  open_file_android 1.0.6 (1.1.0 available)
+  open_file_ios 1.0.4 (1.1.0 available)
+  open_file_linux 0.0.5 (1.1.0 available)
+  open_file_mac 1.0.4 (1.1.0 available)
+  open_file_platform_interface 1.0.3 (1.1.0 available)
+  open_file_web 0.0.4 (1.1.0 available)
+  open_file_windows 0.0.3 (1.1.0 available)
+  openai_dart 0.6.2 (6.2.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  path_provider 2.1.5 (2.1.6 available)
+  path_provider_android 2.2.22 (2.3.1 available)
+  path_provider_foundation 2.5.1 (2.6.0 available)
+  path_provider_platform_interface 2.1.2 (2.1.3 available)
+  permission_handler 12.0.1 (12.0.3 available)
+  permission_handler_apple 9.4.7 (9.4.10 available)
+  petitparser 7.0.1 (7.0.2 available)
+  pointycastle 3.9.1 (4.0.0 available)
+  posix 6.0.3 (6.5.0 available)
+  postgrest 2.6.0 (2.7.2 available)
+  realtime_client 2.7.0 (2.8.0 available)
+  riverpod 3.2.0 (3.3.2 available)
+  shared_preferences 2.5.4 (2.5.5 available)
+  shared_preferences_android 2.4.18 (2.4.26 available)
+  shared_preferences_platform_interface 2.4.1 (2.4.2 available)
+  shelf_web_socket 2.0.1 (3.0.0 available)
+  source_gen 1.5.0 (4.2.3 available)
+  source_helper 1.3.5 (1.3.12 available)
+  source_span 1.10.1 (1.10.2 available)
+  storage_client 2.4.1 (2.5.7 available)
+  supabase 2.10.2 (2.13.0 available)
+  supabase_flutter 2.12.0 (2.15.0 available)
+  synchronized 3.4.0 (3.4.1 available)
+  test 1.26.2 (1.31.1 available)
+  test_api 0.7.6 (0.7.12 available)
+  test_core 0.6.11 (0.6.18 available)
+  url_launcher_android 6.3.28 (6.3.32 available)
+  url_launcher_ios 6.3.6 (6.4.1 available)
+  url_launcher_web 2.4.1 (2.4.3 available)
+  uuid 4.5.2 (4.5.3 available)
+  vector_math 2.2.0 (2.4.0 available)
+  vm_service 15.0.2 (15.2.0 available)
+  webrtc_interface 1.4.0 (1.5.1 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+  yet_another_json_isolate 2.1.0 (2.1.1 available)
+Got dependencies!
+91 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:01 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:02 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:03 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:04 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:05 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:06 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:07 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:08 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:09 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:10 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:11 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:12 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:13 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:14 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:15 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:16 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:17 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:18 +0: loading /workspaces/ConnectUs/test/widget_test.dart                                                                                                                                          00:18 +0: Counter increments smoke test                                                                                                                                                                00:18 +0: Counter increments smoke test                                                                                                                                                                
+══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞═══════════════════════════════════════════════════════════
+The following assertion was thrown building Builder:
+You must initialize the supabase instance before calling Supabase.instance
+'package:supabase_flutter/src/supabase.dart':
+Failed assertion: line 45 pos 7: '_instance._isInitialized'
+
+The relevant error-causing widget was:
+  MediaQuery MediaQuery:file:///workspaces/ConnectUs/lib/main.dart:145:16
+
+When the exception was thrown, this was the stack:
+#2      Supabase.instance (package:supabase_flutter/src/supabase.dart:45:7)
+#3      new _AuthCheckerState (package:ConnectUs/services/AuthChecker.dart:16:30)
+#4      AuthChecker.createState (package:ConnectUs/services/AuthChecker.dart:11:39)
+#5      new StatefulElement (package:flutter/src/widgets/framework.dart:5804:60)
+#6      StatefulWidget.createElement (package:flutter/src/widgets/framework.dart:779:38)
+...     Normal element mounting (228 frames)
+#234    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4548:16)
+#235    MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7169:36)
+#236    MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7185:32)
+...     Normal element mounting (468 frames)
+#704    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4548:16)
+#705    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:20)
+#706    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#707    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#708    ProxyElement.update (package:flutter/src/widgets/framework.dart:6051:5)
+#709    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#710    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#711    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#712    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5884:11)
+#713    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#714    StatefulElement.update (package:flutter/src/widgets/framework.dart:5909:5)
+#715    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#716    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#717    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#718    ProxyElement.update (package:flutter/src/widgets/framework.dart:6051:5)
+#719    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#720    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#721    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#722    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5884:11)
+#723    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#724    StatefulElement.update (package:flutter/src/widgets/framework.dart:5909:5)
+#725    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#726    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#727    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5884:11)
+#728    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#729    StatefulElement.update (package:flutter/src/widgets/framework.dart:5909:5)
+#730    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#731    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#732    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#733    ProxyElement.update (package:flutter/src/widgets/framework.dart:6051:5)
+#734    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#735    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#736    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5884:11)
+#737    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#738    StatefulElement.update (package:flutter/src/widgets/framework.dart:5909:5)
+#739    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#740    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#741    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#742    ProxyElement.update (package:flutter/src/widgets/framework.dart:6051:5)
+#743    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#744    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#745    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#746    ProxyElement.update (package:flutter/src/widgets/framework.dart:6051:5)
+#747    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#748    _RawViewElement._updateChild (package:flutter/src/widgets/view.dart:481:16)
+#749    _RawViewElement.update (package:flutter/src/widgets/view.dart:568:5)
+#750    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#751    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#752    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#753    StatelessElement.update (package:flutter/src/widgets/framework.dart:5797:5)
+#754    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#755    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5747:16)
+#756    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5884:11)
+#757    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#758    StatefulElement.update (package:flutter/src/widgets/framework.dart:5909:5)
+#759    Element.updateChild (package:flutter/src/widgets/framework.dart:3982:15)
+#760    RootElement._rebuild (package:flutter/src/widgets/binding.dart:1716:16)
+#761    RootElement.update (package:flutter/src/widgets/binding.dart:1694:5)
+#762    RootElement.performRebuild (package:flutter/src/widgets/binding.dart:1708:7)
+#763    Element.rebuild (package:flutter/src/widgets/framework.dart:5435:7)
+#764    BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2695:15)
+#765    BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2752:11)
+#766    BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3056:18)
+#767    AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:1506:19)
+#768    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:495:5)
+#769    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1434:15)
+#770    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1347:9)
+#771    AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:1335:9)
+#774    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#775    AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:1324:27)
+#776    WidgetTester.pumpWidget.<anonymous closure> (package:flutter_test/src/widget_tester.dart:598:22)
+#779    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#780    WidgetTester.pumpWidget (package:flutter_test/src/widget_tester.dart:595:27)
+#781    main.<anonymous closure> (file:///workspaces/ConnectUs/test/widget_test.dart:16:18)
+#782    testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#783    TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from class _AssertionError, dart:async, and package:stack_trace)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "0": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///workspaces/ConnectUs/test/widget_test.dart:19:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///workspaces/ConnectUs/test/widget_test.dart line 19
+The test description was:
+  Counter increments smoke test
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (2) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:18 +0 -1: Counter increments smoke test [E]                                                                                                                                                         
+  Test failed. See exception logs above.
+  The test description was: Counter increments smoke test
+  
+
+To run this test again: /workspaces/ConnectUs/flutter/bin/cache/dart-sdk/bin/dart test /workspaces/ConnectUs/test/widget_test.dart -p vm --plain-name 'Counter increments smoke test'
+00:19 +0 -1: Some tests failed.                                                                                                                                                                        

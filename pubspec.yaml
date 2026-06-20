@@ -51,9 +51,6 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_webrtc: ^1.1.0
   avatar_glow: ^3.0.1
-  langchain: ^0.8.0+1
-  langchain_ollama: ^0.4.0+1
-  langchain_openai: ^0.8.0+1
   encrypt: ^5.0.3
   archive: ^4.0.7
   path_provider: ^2.1.5
@@ -62,7 +59,7 @@ dependencies:
   gql_code_builder_serializers: ^0.1.0+1
   ferry_hive_store: ^0.6.0+1
   ferry_flutter: ^0.9.1+1
-  flutter_riverpod: ^3.2.0
+  flutter_riverpod: ^2.6.1
   gql_websocket_link: ^2.1.0
   gql: ^1.0.1
   
@@ -87,7 +84,6 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
-    - assets/.env
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

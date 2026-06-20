@@ -36,8 +36,14 @@ class _RegisterState extends State<Register> {
         // AuthChecker will detect the session and redirect to /registerPhone
       } catch (error) {
         if (!mounted) return;
+        String msg = 'An unexpected error occurred';
+        if (error is AuthException) {
+          msg = error.message;
+        } else if (error is PostgrestException) {
+          msg = error.message;
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Registration failed: $error")));
+            SnackBar(content: Text("Registration failed: $msg")));
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
@@ -50,9 +56,15 @@ class _RegisterState extends State<Register> {
       await _sessionManager.signInWithGoogle();
     } catch (error) {
       if (mounted) {
+        String msg = 'An unexpected error occurred';
+        if (error is AuthException) {
+          msg = error.message;
+        } else if (error is PostgrestException) {
+          msg = error.message;
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Google Registration failed: ${error.toString()}'),
+            content: Text('Google Registration failed: $msg'),
             backgroundColor: Colors.red,
           ),
         );
