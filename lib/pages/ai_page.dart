@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 
@@ -28,10 +27,10 @@ class _AIPageState extends State<AIPage> {
 
   Future<void> _generateResponse(String prompt) async {
     // Get API key from environment inside the method
-    final String? apiKey = dotenv.env['GROQ_API_KEY'];
+    const String apiKey = String.fromEnvironment('GROQ_API_KEY');
 
     // Check if API key exists and is valid
-    if (apiKey == null || apiKey.isEmpty || apiKey == "YOUR_GROQ_API_KEY") {
+    if (apiKey.isEmpty || apiKey == "YOUR_GROQ_API_KEY") {
       setState(() {
         _response = "Error: Please add your Groq API Key to the .env file.\n\n"
             "Steps:\n"

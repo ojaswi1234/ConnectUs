@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // For kIsWeb
 import 'package:ConnectUs/utils/app_theme.dart';
-import 'package:ConnectUs/services/security_services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
@@ -402,6 +401,18 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
       ),
       body: Column(
         children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            color: Colors.amber[100],
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_open, size: 14, color: Colors.black54),
+                SizedBox(width: 4),
+                Text('Messages are not end-to-end encrypted', style: TextStyle(fontSize: 12, color: Colors.black54)),
+              ],
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -413,7 +424,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
                 final content = rawMsg is Map ? rawMsg['content'] : '';
                 final user = rawMsg is Map ? rawMsg['user'] : '';
 
-                final decrypted = SecurityService.decryptMessage(content);
+                final decrypted = content.toString();
                 return _buildMessageBubble(
                     decrypted, user == _myUsername, user);
               },

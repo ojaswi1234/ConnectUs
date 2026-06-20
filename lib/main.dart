@@ -16,7 +16,6 @@ import 'package:ConnectUs/pages/auth/login.dart';
 import 'package:ConnectUs/pages/auth/register.dart';
 import 'package:ConnectUs/pages/auth/register_phone.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:logger/logger.dart';
@@ -78,16 +77,9 @@ Future<void> _initializeApp(String? customPath) async {
   await Hive.openBox('local_chats');
   await Hive.openBox('graphql_cache');
 
-  try {
-    // Note: On web, assets/.env might return 404. Consider using --dart-define for prod.
-    await dotenv.load(fileName: "assets/.env");
-  } catch (e) {
-    Logger(printer: PrettyPrinter()).e('Error loading .env: $e');
-  }
-
   await Supabase.initialize(
-    url: dotenv.get('SUPABASE_URL'),
-    anonKey: dotenv.get('SUPABASE_ANON_KEY'),
+    url: const String.fromEnvironment('SUPABASE_URL'),
+    anonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
     debug: false,
   );
 }
