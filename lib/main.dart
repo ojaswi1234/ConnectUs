@@ -24,6 +24,10 @@ import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io'; // Safe to keep, but must use conditionally
 import 'package:path_provider/path_provider.dart';
+import 'package:ConnectUs/providers/call_provider.dart';
+import 'package:ConnectUs/pages/chat/incoming_call_screen.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main(dynamic wiget) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -93,15 +97,16 @@ Future<void> _initializeApp(String? customPath) async {
   );
 }
 
-class MainApp extends StatefulWidget {
+class MainApp extends ConsumerStatefulWidget {
   const MainApp({super.key});
 
   @override
-  State<MainApp> createState() => _MainAppState();
+  ConsumerState<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
+class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
   Timer? _heartbeatTimer;
+  StreamSubscription? _incomingCallSub;
 
   @override
   void initState() {
@@ -109,6 +114,19 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _updateOnlineStatus(true);
     _startHeartbeat();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(callServiceProvider).initSignaling();
+      _incomingCallSub = ref.read(callServiceProvider).incomingCallStream.listen((callData) {
+        if (navigatorKey.currentContext != null) {
+          showDialog(
+            context: navigatorKey.currentContext!,
+            barrierDismissible: false,
+            builder: (_) => IncomingCallScreen(callData: callData),
+          );
+        }
+      });
+    });
   }
 
   void _startHeartbeat() {
@@ -120,6 +138,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     _heartbeatTimer?.cancel();
+    _incomingCallSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _updateOnlineStatus(false);
     super.dispose();
@@ -151,6 +170,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       builder: (context, child) {

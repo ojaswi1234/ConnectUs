@@ -1,24 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:ConnectUs/services/call_service.dart';
 
 class Video extends StatefulWidget {
-  const Video({super.key});
+  final String userName;
+  final CallService callService;
+
+  const Video({super.key, required this.userName, required this.callService});
 
   @override
   State<Video> createState() => _VideoState();
 }
 
 class _VideoState extends State<Video> {
+  final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
+  final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
+
+  @override
+  void initState() {
+    super.initState();
+    _initRenderers();
+    widget.callService.addListener(_onCallStateChanged);
+  }
+
+  Future<void> _initRenderers() async {
+    await _localRenderer.initialize();
+    await _remoteRenderer.initialize();
+    _updateRenderers();
+  }
+
+  void _onCallStateChanged() {
+    if (!mounted) return;
+    
+    final state = widget.callService.callState;
+    if (state == CallState.ended || state == CallState.declined) {
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+    } else {
+      _updateRenderers();
+      setState(() {});
+    }
+  }
+
+  void _updateRenderers() {
+    if (widget.callService.localStream != null) {
+      _localRenderer.srcObject = widget.callService.localStream;
+    }
+    if (widget.callService.remoteStream != null) {
+      _remoteRenderer.srcObject = widget.callService.remoteStream;
+    }
+  }
+
+  @override
+  void dispose() {
+    _localRenderer.dispose();
+    _remoteRenderer.dispose();
+    widget.callService.removeListener(_onCallStateChanged);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isMuted = widget.callService.isMuted;
+    final isVideoOn = widget.callService.isVideoOn;
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         title: const Text(
           'Video Call',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
@@ -27,14 +79,12 @@ class _VideoState extends State<Video> {
           IconButton(
             icon: const Icon(Icons.flip_camera_ios, color: Colors.white),
             onPressed: () {
-              // Add camera flip functionality
+              widget.callService.switchCamera();
             },
           ),
           IconButton(
             icon: const Icon(Icons.more_vert, color: Colors.white),
-            onPressed: () {
-              // Add more options
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -44,34 +94,37 @@ class _VideoState extends State<Video> {
           Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration(
-             color: Colors.grey[900],
-            ),
-            child: const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Color(0xFFFFC107),
-                    child: Icon(
-                      Icons.person,
-                      size: 80,
-                      color: Color(0xFF1E1E1E),
+            color: Colors.grey[900],
+            child: widget.callService.remoteStream != null
+                ? RTCVideoView(
+                    _remoteRenderer,
+                    objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                  )
+                : const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Color(0xFFFFC107),
+                          child: Icon(
+                            Icons.person,
+                            size: 80,
+                            color: Color(0xFF1E1E1E),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          'Connecting...',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Connecting...',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
           
           // Self video preview (top right)
@@ -95,22 +148,27 @@ class _VideoState extends State<Video> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  color: Colors.grey[700],
-                  child: const Center(
-                    child: Icon(
-                      Icons.videocam,
-                      color: Colors.white70,
-                      size: 40,
-                    ),
-                  ),
-                ),
+                child: widget.callService.localStream != null && isVideoOn
+                    ? RTCVideoView(
+                        _localRenderer,
+                        mirror: true,
+                        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                      )
+                    : Container(
+                        color: Colors.grey[700],
+                        child: const Center(
+                          child: Icon(
+                            Icons.videocam_off,
+                            color: Colors.white70,
+                            size: 40,
+                          ),
+                        ),
+                      ),
               ),
             ),
           ),
           
           // Bottom controls
-
           Positioned(
             bottom: 10,
             left: 0,
@@ -130,17 +188,14 @@ class _VideoState extends State<Video> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Mute button
                   _buildControlButton(
-                    icon: Icons.mic_off,
+                    icon: isMuted ? Icons.mic_off : Icons.mic,
                     color: Colors.white,
                     backgroundColor: Colors.grey[700]!,
                     onPressed: () {
-                      // Toggle mute
+                      widget.callService.toggleMute();
                     },
                   ),
-                  
-                  // End call button
                   _buildControlButton(
                     icon: Icons.call_end,
                     color: Colors.white,
@@ -148,27 +203,22 @@ class _VideoState extends State<Video> {
                     size: 70,
                     iconSize: 35,
                     onPressed: () {
-                      Navigator.pop(context);
+                      widget.callService.endCall();
                     },
                   ),
-                  
-                  // Video toggle button
                   _buildControlButton(
-                    icon: Icons.videocam_off,
+                    icon: isVideoOn ? Icons.videocam : Icons.videocam_off,
                     color: Colors.white,
                     backgroundColor: Colors.grey[700]!,
                     onPressed: () {
-                      // Toggle video
+                      widget.callService.toggleVideo();
                     },
                   ),
                 ],
-
               ),
-             
             ),
           ),
         ],
-
       ),
     );
   }

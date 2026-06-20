@@ -9,6 +9,9 @@ import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:ConnectUs/services/security_services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
+import 'package:ConnectUs/providers/call_provider.dart';
+import 'package:ConnectUs/pages/chat/voice.dart';
+import 'package:ConnectUs/pages/chat/video.dart';
 
 class ChatArea extends ConsumerStatefulWidget {
   final String userName;
@@ -437,6 +440,22 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.call, color: Colors.black),
+            onPressed: () {
+              final callService = ref.read(callServiceProvider);
+              callService.initiateCall(widget.userName, 'voice');
+              Navigator.push(context, MaterialPageRoute(builder: (_) => Voice(userName: widget.userName, callService: callService)));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.videocam, color: Colors.black),
+            onPressed: () {
+              final callService = ref.read(callServiceProvider);
+              callService.initiateCall(widget.userName, 'video');
+              Navigator.push(context, MaterialPageRoute(builder: (_) => Video(userName: widget.userName, callService: callService)));
+            },
+          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.black),
             onSelected: (value) {
