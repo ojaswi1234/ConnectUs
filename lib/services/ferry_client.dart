@@ -31,7 +31,6 @@ final clientProvider = Provider<Client>((ref) {
 
 Client initClient() {
   final httpLink = HttpLink("https://connectus-backend-server.onrender.com/graphql");
-
   final authLink = AuthLink().concat(httpLink);
 
   final wsLink = TransportWebSocketLink(
