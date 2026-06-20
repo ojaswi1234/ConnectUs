@@ -48,5 +48,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>ConnectUs needs camera access for video calls.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>ConnectUs needs microphone access for voice and video calls.</string>
 </dict>
 </plist>

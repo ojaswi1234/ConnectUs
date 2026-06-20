@@ -1,29 +1,49 @@
-"""Exposes a URL that specifies the behavior of this scalar."""
-directive @specifiedBy(
-  """The URL that specifies the behavior of this scalar."""
-  url: String!
-) on SCALAR
+# IMPORTANT: This file must be kept in sync with typeDefs in backend/server.js.
+# After any schema change here, run:
+#   flutter pub run build_runner build --delete-conflicting-outputs
 
-"""
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
+directive @specifiedBy(url: String!) on SCALAR
 directive @oneOf on INPUT_OBJECT
 
 type Message {
   id: ID!
+  roomId: String!
+  senderId: String!
   user: String!
   text: String!
+  createdAt: String!
 }
 
-type Mutation {
-  postMessage(user: String!, text: String!): ID!
+enum Platform { MOBILE WEB }
+
+type UserSearchResult {
+  id: ID!
+  username: String!
+  phoneNumber: String
+  isOnline: Boolean!
+}
+
+enum CallSignalType { OFFER ANSWER ICE_CANDIDATE HANGUP }
+
+type CallSignal {
+  roomId: String!
+  senderId: String!
+  type: CallSignalType!
+  payload: String!
 }
 
 type Query {
-  messages: [Message!]
+  messages(roomId: String!, after: String): [Message!]!
+  searchUsers(query: String!, platform: Platform!): [UserSearchResult!]!
+}
+
+type Mutation {
+  postMessage(roomId: String!, user: String!, text: String!): Message!
+  sendCallSignal(roomId: String!, type: CallSignalType!, payload: String!): Boolean!
+  askAssistant(prompt: String!): String!
 }
 
 type Subscription {
-  messages: [Message!]
+  messages(roomId: String!): Message!
+  callSignals(roomId: String!): CallSignal!
 }
-
