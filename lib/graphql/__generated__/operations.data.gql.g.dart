@@ -36,16 +36,12 @@ class _$GFetchChatHistoryDataSerializer
       '__typename',
       serializers.serialize(object.G__typename,
           specifiedType: const FullType(String)),
+      'messages',
+      serializers.serialize(object.messages,
+          specifiedType: const FullType(BuiltList,
+              const [const FullType(GFetchChatHistoryData_messages)])),
     ];
-    Object? value;
-    value = object.messages;
-    if (value != null) {
-      result
-        ..add('messages')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(BuiltList,
-                const [const FullType(GFetchChatHistoryData_messages)])));
-    }
+
     return result;
   }
 
@@ -199,16 +195,12 @@ class _$GListenToChatDataSerializer
       '__typename',
       serializers.serialize(object.G__typename,
           specifiedType: const FullType(String)),
+      'messages',
+      serializers.serialize(object.messages,
+          specifiedType: const FullType(
+              BuiltList, const [const FullType(GListenToChatData_messages)])),
     ];
-    Object? value;
-    value = object.messages;
-    if (value != null) {
-      result
-        ..add('messages')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(BuiltList,
-                const [const FullType(GListenToChatData_messages)])));
-    }
+
     return result;
   }
 
@@ -303,16 +295,18 @@ class _$GFetchChatHistoryData extends GFetchChatHistoryData {
   @override
   final String G__typename;
   @override
-  final BuiltList<GFetchChatHistoryData_messages>? messages;
+  final BuiltList<GFetchChatHistoryData_messages> messages;
 
   factory _$GFetchChatHistoryData(
           [void Function(GFetchChatHistoryDataBuilder)? updates]) =>
       (new GFetchChatHistoryDataBuilder()..update(updates))._build();
 
-  _$GFetchChatHistoryData._({required this.G__typename, this.messages})
+  _$GFetchChatHistoryData._({required this.G__typename, required this.messages})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         G__typename, r'GFetchChatHistoryData', 'G__typename');
+    BuiltValueNullFieldError.checkNotNull(
+        messages, r'GFetchChatHistoryData', 'messages');
   }
 
   @override
@@ -372,7 +366,7 @@ class GFetchChatHistoryDataBuilder
     final $v = _$v;
     if ($v != null) {
       _G__typename = $v.G__typename;
-      _messages = $v.messages?.toBuilder();
+      _messages = $v.messages.toBuilder();
       _$v = null;
     }
     return this;
@@ -399,12 +393,12 @@ class GFetchChatHistoryDataBuilder
           new _$GFetchChatHistoryData._(
               G__typename: BuiltValueNullFieldError.checkNotNull(
                   G__typename, r'GFetchChatHistoryData', 'G__typename'),
-              messages: _messages?.build());
+              messages: messages.build());
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'messages';
-        _messages?.build();
+        messages.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'GFetchChatHistoryData', _$failedField, e.toString());
@@ -646,16 +640,18 @@ class _$GListenToChatData extends GListenToChatData {
   @override
   final String G__typename;
   @override
-  final BuiltList<GListenToChatData_messages>? messages;
+  final BuiltList<GListenToChatData_messages> messages;
 
   factory _$GListenToChatData(
           [void Function(GListenToChatDataBuilder)? updates]) =>
       (new GListenToChatDataBuilder()..update(updates))._build();
 
-  _$GListenToChatData._({required this.G__typename, this.messages})
+  _$GListenToChatData._({required this.G__typename, required this.messages})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         G__typename, r'GListenToChatData', 'G__typename');
+    BuiltValueNullFieldError.checkNotNull(
+        messages, r'GListenToChatData', 'messages');
   }
 
   @override
@@ -714,7 +710,7 @@ class GListenToChatDataBuilder
     final $v = _$v;
     if ($v != null) {
       _G__typename = $v.G__typename;
-      _messages = $v.messages?.toBuilder();
+      _messages = $v.messages.toBuilder();
       _$v = null;
     }
     return this;
@@ -741,12 +737,12 @@ class GListenToChatDataBuilder
           new _$GListenToChatData._(
               G__typename: BuiltValueNullFieldError.checkNotNull(
                   G__typename, r'GListenToChatData', 'G__typename'),
-              messages: _messages?.build());
+              messages: messages.build());
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'messages';
-        _messages?.build();
+        messages.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'GListenToChatData', _$failedField, e.toString());

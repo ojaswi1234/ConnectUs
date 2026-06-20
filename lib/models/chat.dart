@@ -1,14 +1,24 @@
 
-class Chat {
-  final String roomId;
-  final String lastMessage;
+class Chats {
   final String contactName;
-  final DateTime timestamp;
+  String lastMessage;
+  DateTime lastMessageTime;
+  int unreadCount;
 
-  Chat({
-    required this.roomId,
-    required this.lastMessage,
+  Chats({
     required this.contactName,
-    required this.timestamp,
+    required this.lastMessage,
+    required this.lastMessageTime,
+    this.unreadCount = 0,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Chats &&
+          runtimeType == other.runtimeType &&
+          contactName == other.contactName;
+
+  @override
+  int get hashCode => contactName.hashCode;
 }

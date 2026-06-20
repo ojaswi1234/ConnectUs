@@ -12,7 +12,9 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 class ChatArea extends ConsumerStatefulWidget {
   final String userName;
-  const ChatArea({super.key, required this.userName});
+  final Function(String message, DateTime time)? onMessageSent;
+
+  const ChatArea({super.key, required this.userName, this.onMessageSent});
 
   @override
   ConsumerState<ChatArea> createState() => _ChatAreaState();
@@ -35,6 +37,8 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   // Subscription handlers
   supabase.RealtimeChannel? _statusChannel;
   StreamSubscription? _messageSubscription;
+  Timer? _blockPoller;
+  supabase.RealtimeChannel? _blockChannel;
 
   // Local Storage
   late Box _chatBox;
@@ -48,12 +52,23 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     // Ensure 'local_chats' box is open (done in main.dart)
     _chatBox = Hive.box('local_chats');
     _initializeChatSetup();
+    _startBlockStatusPoller();
+  }
+
+  void _startBlockStatusPoller() {
+    _blockPoller = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (mounted && _targetUserId != null) {
+        _checkBlockStatus();
+      }
+    });
   }
 
   @override
   void dispose() {
     _statusChannel?.unsubscribe(); // Stop listening to status
+    _blockChannel?.unsubscribe();
     _messageSubscription?.cancel();
+    _blockPoller?.cancel();
     _scrollController.dispose();
     _controller.dispose();
     super.dispose();
@@ -95,6 +110,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           await _fetchHistoryFromSupabase(); // Load old messages
           _startStatusSubscription();
           _startMessageSubscription();
+          _startBlockSubscription();
         }
       }
     }
@@ -147,7 +163,8 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     if (_targetUserId == null) return;
     final client = supabase.Supabase.instance.client;
 
-    _statusChannel = client.channel('public:users');
+    _statusChannel = client.channel('user-status-${_targetUserId!}');
+
     _statusChannel!
         .onPostgresChanges(
           event: supabase.PostgresChangeEvent.update,
@@ -159,23 +176,32 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
             value: _targetUserId!,
           ),
           callback: (payload) {
+            debugPrint('Status payload: ${payload.newRecord}');
             if (payload.newRecord.containsKey('is_online')) {
               if (mounted) {
                 setState(() {
-                  _isTargetOnline = payload.newRecord['is_online'];
+                  _isTargetOnline = payload.newRecord['is_online'] ?? false;
                 });
               }
             }
           },
         )
-        .subscribe();
+        .subscribe((status, [err]) {
+          debugPrint('Status subscription state: $status');
+          if (status == 'CHANNEL_ERROR' || status == 'TIMED_OUT') {
+            // Retry after delay
+            Future.delayed(const Duration(seconds: 3), _startStatusSubscription);
+          }
+        });
   }
 
   void _startMessageSubscription() {
     if (_roomId == "loading") return;
     final client = ref.read(clientProvider);
 
-    final messageSubscriptionRequest = GListenToChatReq();
+    final messageSubscriptionRequest = GListenToChatReq(
+      (b) => b..vars.roomId = _roomId,
+    );
 
     _messageSubscription =
         client.request(messageSubscriptionRequest).listen((response) {
@@ -189,11 +215,13 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           final messageMap = {
             'content': newMsg.text,
             'user': newMsg.user,
-            'createdAt': DateTime.now().toIso8601String()
+            'createdAt': newMsg.createdAt ?? DateTime.now().toIso8601String()
           };
           currentMessages.add(messageMap);
           // Only save to local cache. The sender is responsible for Supabase.
           _saveToLocal(currentMessages);
+
+          widget.onMessageSent?.call(newMsg.text, DateTime.tryParse(newMsg.createdAt ?? '') ?? DateTime.now());
 
           if (mounted) {
             setState(() {});
@@ -205,6 +233,26 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   }
 
   // --- BLOCKING LOGIC ---
+  void _startBlockSubscription() {
+    if (_myUserId == null || _targetUserId == null) return;
+    final client = supabase.Supabase.instance.client;
+    
+    _blockChannel = client.channel('blocks-check');
+    _blockChannel!
+      .onPostgresChanges(
+        event: supabase.PostgresChangeEvent.all,
+        schema: 'public',
+        table: 'blocks',
+        filter: supabase.PostgresChangeFilter(
+          type: supabase.PostgresChangeFilterType.inFilter,
+          column: 'blocker_id',
+          value: [_myUserId!, _targetUserId!],
+        ),
+        callback: (payload) => _checkBlockStatus(),
+      )
+      .subscribe();
+  }
+
   Future<void> _checkBlockStatus() async {
     if (_myUserId == null || _targetUserId == null) return;
     final client = supabase.Supabase.instance.client;
@@ -268,7 +316,10 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     _chatBox.put(_roomId, messages);
   }
 
-  void _sendChat() {
+  Future<void> _sendChat() async {
+    // Double-check block status right before sending
+    await _checkBlockStatus();
+
     if (_isBlocked) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -292,14 +343,16 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     // Save the new complete history to Supabase
     _updateHistoryInSupabase(currentMessages);
 
+    widget.onMessageSent?.call(newMessage['content'] as String, DateTime.now());
+
     setState(() {});
 
     // Send via GraphQL for real-time delivery
     final client = ref.read(clientProvider);
     final sendMessageReq = GsendMessageReq((b) => b
-      ..vars.user = widget.userName
-      ..vars.text = _controller.text
-      ..vars.roomId = _roomId);
+      ..vars.roomId = _roomId
+      ..vars.user = _myUsername!
+      ..vars.text = _controller.text);
 
     client.request(sendMessageReq).listen((response) {
       if (response.hasErrors) {
@@ -328,7 +381,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   Color get _statusColor {
     if (_isBlocked) return Colors.red;
     if (_isTargetOnline) return Colors.green;
-    return Colors.blue;
+    return Colors.grey;
   }
 
   String get _statusText {

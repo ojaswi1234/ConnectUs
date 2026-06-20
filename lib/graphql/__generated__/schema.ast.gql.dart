@@ -58,6 +58,24 @@ const Message = _i1.ObjectTypeDefinitionNode(
         isNonNull: true,
       ),
     ),
+    _i1.FieldDefinitionNode(
+      name: _i1.NameNode(value: 'roomId'),
+      directives: [],
+      args: [],
+      type: _i1.NamedTypeNode(
+        name: _i1.NameNode(value: 'String'),
+        isNonNull: true,
+      ),
+    ),
+    _i1.FieldDefinitionNode(
+      name: _i1.NameNode(value: 'createdAt'),
+      directives: [],
+      args: [],
+      type: _i1.NamedTypeNode(
+        name: _i1.NameNode(value: 'String'),
+        isNonNull: true,
+      ),
+    ),
   ],
 );
 const Mutation = _i1.ObjectTypeDefinitionNode(
@@ -69,6 +87,15 @@ const Mutation = _i1.ObjectTypeDefinitionNode(
       name: _i1.NameNode(value: 'postMessage'),
       directives: [],
       args: [
+        _i1.InputValueDefinitionNode(
+          name: _i1.NameNode(value: 'roomId'),
+          directives: [],
+          type: _i1.NamedTypeNode(
+            name: _i1.NameNode(value: 'String'),
+            isNonNull: true,
+          ),
+          defaultValue: null,
+        ),
         _i1.InputValueDefinitionNode(
           name: _i1.NameNode(value: 'user'),
           directives: [],
@@ -103,13 +130,23 @@ const Query = _i1.ObjectTypeDefinitionNode(
     _i1.FieldDefinitionNode(
       name: _i1.NameNode(value: 'messages'),
       directives: [],
-      args: [],
+      args: [
+        _i1.InputValueDefinitionNode(
+          name: _i1.NameNode(value: 'roomId'),
+          directives: [],
+          type: _i1.NamedTypeNode(
+            name: _i1.NameNode(value: 'String'),
+            isNonNull: true,
+          ),
+          defaultValue: null,
+        )
+      ],
       type: _i1.ListTypeNode(
         type: _i1.NamedTypeNode(
           name: _i1.NameNode(value: 'Message'),
           isNonNull: true,
         ),
-        isNonNull: false,
+        isNonNull: true,
       ),
     )
   ],
@@ -122,13 +159,23 @@ const Subscription = _i1.ObjectTypeDefinitionNode(
     _i1.FieldDefinitionNode(
       name: _i1.NameNode(value: 'messages'),
       directives: [],
-      args: [],
+      args: [
+        _i1.InputValueDefinitionNode(
+          name: _i1.NameNode(value: 'roomId'),
+          directives: [],
+          type: _i1.NamedTypeNode(
+            name: _i1.NameNode(value: 'String'),
+            isNonNull: true,
+          ),
+          defaultValue: null,
+        )
+      ],
       type: _i1.ListTypeNode(
         type: _i1.NamedTypeNode(
           name: _i1.NameNode(value: 'Message'),
           isNonNull: true,
         ),
-        isNonNull: false,
+        isNonNull: true,
       ),
     )
   ],

@@ -1,4 +1,5 @@
 // lib/main.dart
+import 'dart:async';
 import 'package:ConnectUs/pages/ai_page.dart';
 import 'package:ConnectUs/pages/config/account.dart';
 import 'package:ConnectUs/pages/home/about.dart';
@@ -100,16 +101,27 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
+  Timer? _heartbeatTimer;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _updateOnlineStatus(true);
+    _startHeartbeat();
+  }
+
+  void _startHeartbeat() {
+    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      _updateOnlineStatus(true);
+    });
   }
 
   @override
   void dispose() {
+    _heartbeatTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    _updateOnlineStatus(false);
     super.dispose();
   }
 

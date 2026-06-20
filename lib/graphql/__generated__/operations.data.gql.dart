@@ -22,7 +22,7 @@ abstract class GFetchChatHistoryData
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
-  BuiltList<GFetchChatHistoryData_messages>? get messages;
+  BuiltList<GFetchChatHistoryData_messages> get messages;
   static Serializer<GFetchChatHistoryData> get serializer =>
       _$gFetchChatHistoryDataSerializer;
 
@@ -111,7 +111,7 @@ abstract class GListenToChatData
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
-  BuiltList<GListenToChatData_messages>? get messages;
+  BuiltList<GListenToChatData_messages> get messages;
   static Serializer<GListenToChatData> get serializer =>
       _$gListenToChatDataSerializer;
 

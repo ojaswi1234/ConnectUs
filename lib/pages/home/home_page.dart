@@ -12,6 +12,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ConnectUs/components/contact_tile.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:ConnectUs/models/contact.dart' as HiveContact;
+import 'package:ConnectUs/models/chat.dart';
 
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});
@@ -29,8 +30,28 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
 
   Box<HiveContact.Contact>? contactBox;
   List<Contact> _contacts = [];
-  // Using LinkedHashSet to keep unique chats
-  final LinkedHashSet<Chats> _chats = LinkedHashSet<Chats>();
+  // Replace LinkedHashSet with a List + proper sort
+  final List<Chats> _chats = [];
+
+  void updateChatPreview(String contactName, String lastMessage, DateTime time) {
+    setState(() {
+      final existingIndex = _chats.indexWhere((c) => c.contactName == contactName);
+      if (existingIndex >= 0) {
+        // Update existing chat
+        _chats[existingIndex].lastMessage = lastMessage;
+        _chats[existingIndex].lastMessageTime = time;
+      } else {
+        // Create new chat entry
+        _chats.add(Chats(
+          contactName: contactName,
+          lastMessage: lastMessage,
+          lastMessageTime: time,
+        ));
+      }
+      // Sort: most recent first
+      _chats.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
+    });
+  }
 
   bool _isLoading = false;
   List<Contact> _registeredContacts = [];
@@ -151,15 +172,13 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   }
   
   void _createChatWithContact(Contact contact) {
-    setState(() {
-      // Logic to add manually started chats
-      // We remove first to ensure we don't have duplicates and it moves to top if using list logic
-      final chat = Chats(contactName: contact.displayName, lastMessage: 'Click here to start chatting');
-      _chats.add(chat);
-    });
+    updateChatPreview(contact.displayName, 'Click here to start chatting', DateTime.now());
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ChatArea(userName: contact.displayName)),
+      MaterialPageRoute(builder: (context) => ChatArea(
+        userName: contact.displayName,
+        onMessageSent: (lastMsg, time) => updateChatPreview(contact.displayName, lastMsg, time),
+      )),
     );
   }
 
@@ -205,8 +224,7 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // Reversed to show newest at top if we appended to end of list
-    final displayChats = _chats.toList().reversed.toList();
+    final displayChats = List<Chats>.from(_chats);
 
     return Container(
       color: const Color(0xFF1E1E1E),
@@ -250,7 +268,10 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
                                 onTap: () {
                                   Navigator.push(
                                     context, 
-                                    MaterialPageRoute(builder: (context) => ChatArea(userName: chat.contactName))
+                                    MaterialPageRoute(builder: (context) => ChatArea(
+                                      userName: chat.contactName,
+                                      onMessageSent: (lastMsg, time) => updateChatPreview(chat.contactName, lastMsg, time),
+                                    ))
                                   );
                                 },
                                 child: ContactTile(
@@ -303,21 +324,4 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
       ),
     );
   }
-}
-
-class Chats {
-  final String contactName;
-  final String lastMessage;
-
-  Chats({required this.contactName, required this.lastMessage});
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Chats &&
-          runtimeType == other.runtimeType &&
-          contactName == other.contactName;
-
-  @override
-  int get hashCode => contactName.hashCode;
 }
