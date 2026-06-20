@@ -34,17 +34,19 @@ Client initClient() {
 
   final authLink = AuthLink().concat(httpLink);
 
-  final wsLink = WebSocketLink(
-    "wss://connectus-backend-server.onrender.com/graphql",
-    autoReconnect: true,
-    inactivityTimeout: const Duration(seconds: 10),
-    initialPayload: () async {
-      final token = Supabase.instance.client.auth.currentSession?.accessToken;
-      if (token != null) {
-        return {'Authorization': 'Bearer $token'};
-      }
-      return {};
-    },
+  final wsLink = TransportWebSocketLink(
+    TransportWsClientOptions(
+      socketMaker: WebSocketMaker.url(
+        () => "wss://connectus-backend-server.onrender.com/graphql"
+      ),
+      connectionParams: () async {
+        final token = Supabase.instance.client.auth.currentSession?.accessToken;
+        if (token != null) {
+          return {'Authorization': 'Bearer $token'};
+        }
+        return {};
+      },
+    ),
   );
 
   final link = Link.split(

@@ -59,43 +59,52 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   }
 
   Future<void> _initializeChatSetup() async {
-    final client = supabase.Supabase.instance.client;
-    final user = client.auth.currentUser;
+    try {
+      final client = supabase.Supabase.instance.client;
+      final user = client.auth.currentUser;
+      debugPrint("ChatArea Init - Current user ID: ${user?.id}");
 
-    if (user != null) {
-      _myUserId = user.id;
+      if (user != null) {
+        _myUserId = user.id;
 
-      // 1. Get My Username
-      final myData = await client
-          .from('users')
-          .select('usrname')
-          .eq('id', user.id)
-          .maybeSingle();
+        // 1. Get My Username
+        final myData = await client
+            .from('users')
+            .select('usrname')
+            .eq('id', user.id)
+            .maybeSingle();
 
-      // 2. Get Target User ID & Status from their Username
-      final targetData = await client
-          .from('users')
-          .select('id, is_online')
-          .eq('usrname', widget.userName)
-          .maybeSingle();
+        // 2. Get Target User ID & Status from their Username
+        final targetData = await client
+            .from('users')
+            .select('id, is_online')
+            .eq('usrname', widget.userName)
+            .maybeSingle();
 
-      if (mounted) {
-        setState(() {
-          _myUsername = myData?['usrname'] ?? 'Anonymous';
-          if (targetData != null) {
-            _targetUserId = targetData['id'];
-            _isTargetOnline = targetData['is_online'] ?? false;
+        if (mounted) {
+          setState(() {
+            _myUsername = myData?['usrname'] ?? 'Anonymous';
+            if (targetData != null) {
+              _targetUserId = targetData['id'];
+              _isTargetOnline = targetData['is_online'] ?? false;
+            }
+          });
+          
+          debugPrint("ChatArea Init - My Username: $_myUsername, Target Username: ${widget.userName}, Target ID: $_targetUserId");
+
+          // 3. Start Subscriptions if we found the target user
+          if (_targetUserId != null) {
+            await _checkBlockStatus();
+            await _fetchHistoryFromGraphQL(); // Load old messages
+            _startStatusSubscription();
+            _startMessageSubscription();
+          } else {
+            debugPrint("ChatArea Init - Target User NOT FOUND in Supabase!");
           }
-        });
-
-        // 3. Start Subscriptions if we found the target user
-        if (_targetUserId != null) {
-          await _checkBlockStatus();
-          await _fetchHistoryFromGraphQL(); // Load old messages
-          _startStatusSubscription();
-          _startMessageSubscription();
         }
       }
+    } catch (e, stack) {
+      debugPrint("ChatArea Init CRASHED: $e\n$stack");
     }
   }
 
@@ -191,27 +200,31 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   // --- BLOCKING LOGIC ---
   Future<void> _checkBlockStatus() async {
     if (_myUserId == null || _targetUserId == null) return;
-    final client = supabase.Supabase.instance.client;
+    try {
+      final client = supabase.Supabase.instance.client;
 
-    final blockedByMe = await client
-        .from('blocks')
-        .select()
-        .eq('blocker_id', _myUserId!)
-        .eq('blocked_id', _targetUserId!)
-        .maybeSingle();
+      final blockedByMe = await client
+          .from('blocks')
+          .select()
+          .eq('blocker_id', _myUserId!)
+          .eq('blocked_id', _targetUserId!)
+          .maybeSingle();
 
-    final blockedByThem = await client
-        .from('blocks')
-        .select()
-        .eq('blocker_id', _targetUserId!)
-        .eq('blocked_id', _myUserId!)
-        .maybeSingle();
+      final blockedByThem = await client
+          .from('blocks')
+          .select()
+          .eq('blocker_id', _targetUserId!)
+          .eq('blocked_id', _myUserId!)
+          .maybeSingle();
 
-    if (mounted) {
-      setState(() {
-        _isBlockedByMe = blockedByMe != null;
-        _isBlockedByThem = blockedByThem != null;
-      });
+      if (mounted) {
+        setState(() {
+          _isBlockedByMe = blockedByMe != null;
+          _isBlockedByThem = blockedByThem != null;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error checking block status: $e");
     }
   }
 
@@ -262,7 +275,10 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
       return;
     }
 
-    if (_controller.text.trim().isEmpty || _myUsername == null) return;
+    if (_controller.text.trim().isEmpty || _myUsername == null) {
+      debugPrint("Send Chat aborted. Text is empty or _myUsername is null ($_myUsername)");
+      return;
+    }
     
     final text = _controller.text;
     final newMessage = {
@@ -283,6 +299,8 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
       ..vars.user = _myUsername!
       ..vars.text = text
       ..vars.roomId = _roomId);
+
+    debugPrint("Sending GraphQL message: text=$text, room=$_roomId, user=$_myUsername");
 
     client.request(sendMessageReq).listen((response) {
       if (response.hasErrors) {
