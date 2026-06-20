@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'dart:async';
-import 'package:supabase_flutter/supabase_flutter.dart'; //
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ConnectUs/services/ferry_client.dart';
+import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
+import 'package:ConnectUs/graphql/__generated__/schema.schema.gql.dart';
+import 'package:ConnectUs/utils/phone_utils.dart';
 
-class ContactsPage extends StatefulWidget {
+class ContactsPage extends ConsumerStatefulWidget {
   final List<Contact> registeredContacts;
   final List<Contact> nonRegisteredContacts;
   final Function(Contact) onContactTap;
@@ -23,10 +28,10 @@ class ContactsPage extends StatefulWidget {
   });
 
   @override
-  State<ContactsPage> createState() => _ContactsPageState();
+  ConsumerState<ContactsPage> createState() => _ContactsPageState();
 }
 
-class _ContactsPageState extends State<ContactsPage>
+class _ContactsPageState extends ConsumerState<ContactsPage>
     with AutomaticKeepAliveClientMixin {
   final TextEditingController _searchController = TextEditingController();
   List<Contact> _filteredRegistered = [];
@@ -61,7 +66,7 @@ class _ContactsPageState extends State<ContactsPage>
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       if (mounted) {
         if (isMobile) {
-          // Mobile Logic: Filter local device contacts
+          // Mobile Logic: local filtering
           setState(() {
             if (query.isEmpty) {
               _filteredRegistered = widget.registeredContacts;
@@ -69,24 +74,22 @@ class _ContactsPageState extends State<ContactsPage>
             } else {
               final lowerQuery = query.toLowerCase();
               _filteredRegistered = widget.registeredContacts
-                  .where(
-                      (c) => c.displayName.toLowerCase().contains(lowerQuery))
+                  .where((c) => c.displayName.toLowerCase().contains(lowerQuery))
                   .toList();
               _filteredNonRegistered = widget.nonRegisteredContacts
-                  .where(
-                      (c) => c.displayName.toLowerCase().contains(lowerQuery))
+                  .where((c) => c.displayName.toLowerCase().contains(lowerQuery))
                   .toList();
             }
           });
-        } else {
-          // Web Logic: Search Supabase via 'usrname'
-          _searchUsersOnWeb(query);
         }
+        
+        // Use GraphQL for both web and mobile
+        _searchUsersViaGraphQL(query);
       }
     });
   }
 
-  Future<void> _searchUsersOnWeb(String query) async {
+  Future<void> _searchUsersViaGraphQL(String query) async {
     if (query.trim().isEmpty) {
       setState(() {
         _webSearchResults = [];
@@ -98,28 +101,31 @@ class _ContactsPageState extends State<ContactsPage>
     setState(() => _isWebSearching = true);
 
     try {
-      // Querying the 'usrname' column specifically
-      final List<dynamic> response = await Supabase.instance.client
-          .from('users')
-          .select('usrname, phone_number')
-          .ilike('usrname', '%$query%')
-          .limit(20);
+      final client = ref.read(clientProvider);
+      
+      final req = GSearchUsersReq((b) => b
+        ..vars.query = isMobile ? normalizePhone(query) : query
+        ..vars.platform = isMobile ? GPlatform.MOBILE : GPlatform.WEB
+      );
 
-      final results = response.map((userData) {
-        final contact = Contact();
-        // Explicitly map 'usrname' to displayName
-        contact.displayName = userData['usrname'] ?? 'Unknown User';
-        if (userData['phone_number'] != null) {
-          contact.phones = [Phone(userData['phone_number'].toString())];
+      final response = await client.request(req).first;
+
+      if (response.data != null && response.data!.searchUsers != null) {
+        final results = response.data!.searchUsers!.map((userData) {
+          final contact = Contact();
+          contact.displayName = userData.username;
+          if (userData.phoneNumber != null) {
+            contact.phones = [Phone(userData.phoneNumber!)];
+          }
+          return contact;
+        }).toList();
+
+        if (mounted) {
+          setState(() {
+            _webSearchResults = results;
+            _isWebSearching = false;
+          });
         }
-        return contact;
-      }).toList();
-
-      if (mounted) {
-        setState(() {
-          _webSearchResults = results;
-          _isWebSearching = false;
-        });
       }
     } catch (e) {
       debugPrint('Web search failed: $e');
@@ -218,11 +224,15 @@ class _ContactsPageState extends State<ContactsPage>
   Widget _buildMobileList() {
     return CustomScrollView(
       slivers: [
-        if (_filteredRegistered.isNotEmpty) ...[
+        if (_searchController.text.isNotEmpty && _webSearchResults.isNotEmpty) ...[
+          _buildHeader('Search Results'),
+          _buildSliverList(_webSearchResults, true),
+        ],
+        if (_filteredRegistered.isNotEmpty && _searchController.text.isEmpty) ...[
           _buildHeader('On ConnectUs'),
           _buildSliverList(_filteredRegistered, true),
         ],
-        if (_filteredNonRegistered.isNotEmpty) ...[
+        if (_filteredNonRegistered.isNotEmpty && _searchController.text.isEmpty) ...[
           _buildHeader('Invite to ConnectUs'),
           _buildSliverList(_filteredNonRegistered, false),
         ],

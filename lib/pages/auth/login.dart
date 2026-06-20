@@ -3,6 +3,7 @@ import 'package:ConnectUs/services/session_manager.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -45,9 +46,15 @@ class _LoginState extends State<Login> {
       // when it detects the session change.
     } catch (error) {
       if (mounted) {
+        String msg = 'An unexpected error occurred';
+        if (error is AuthException) {
+          msg = error.message;
+        } else if (error is PostgrestException) {
+          msg = error.message;
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Google Login failed: ${error.toString()}'),
+            content: Text('Google Login failed: $msg'),
             backgroundColor: Colors.red,
           ),
         );
@@ -70,7 +77,7 @@ class _LoginState extends State<Login> {
 
       final response = await _sessionManager.signInWithEmailAndPassword(
         email: _email.trim(),
-        password: _password.trim(),
+        password: _password,
         rememberMe: _rememberMe,
       );
 
@@ -87,9 +94,15 @@ class _LoginState extends State<Login> {
       }
     } catch (error) {
       if (mounted) {
+        String msg = 'An unexpected error occurred';
+        if (error is AuthException) {
+          msg = error.message;
+        } else if (error is PostgrestException) {
+          msg = error.message;
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Login failed: ${error.toString()}'),
+            content: Text('Login failed: $msg'),
             backgroundColor: Colors.red,
           ),
         );

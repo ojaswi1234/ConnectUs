@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
+import 'package:ConnectUs/utils/phone_utils.dart';
 
 class RegisterPhone extends StatefulWidget {
   const RegisterPhone({super.key});
@@ -30,7 +31,7 @@ class _RegisterPhoneState extends State<RegisterPhone> {
 
       final usernameInput = _usernameController.text.trim();
       final phoneInput = _phoneController.text.trim();
-      final formattedPhone = '+91$phoneInput';
+      final formattedPhone = normalizePhone(phoneInput);
 
       // Use upsert to create or update the user record with both mandatory fields
       await _supabase.from('users').upsert({
@@ -50,9 +51,15 @@ class _RegisterPhoneState extends State<RegisterPhone> {
       }
     } catch (e) {
       if (mounted) {
+        String msg = 'An unexpected error occurred';
+        if (e is AuthException) {
+          msg = e.message;
+        } else if (e is PostgrestException) {
+          msg = e.message;
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Error: ${e.toString()}"),
+            content: Text("Error: $msg"),
             backgroundColor: Colors.red,
           ),
         );
@@ -165,7 +172,7 @@ class _RegisterPhoneState extends State<RegisterPhone> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Phone number is required';
                     }
-                    if (value.trim().length != 10) {
+                    if (!RegExp(r'^\d{10}$').hasMatch(value.trim())) {
                       return 'Enter a valid 10-digit number';
                     }
                     return null;

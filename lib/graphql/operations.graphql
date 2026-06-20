@@ -1,18 +1,58 @@
-query FetchChatHistory {
-  messages {
+query FetchChatHistory($roomId: String!, $after: String) {
+  messages(roomId: $roomId, after: $after) {
+    id
+    roomId
+    senderId
     user
     text
+    createdAt
   }
 }
 
-mutation sendMessage($user: String!, $text: String!, $roomId: String!) {
-    postMessage(user: $user, text: $text, roomId: $roomId)
-}
-
-subscription ListenToChat {
-  messages {
+mutation sendMessage($roomId: String!, $user: String!, $text: String!) {
+  postMessage(roomId: $roomId, user: $user, text: $text) {
+    id
+    roomId
+    senderId
     user
     text
+    createdAt
   }
 }
 
+subscription ListenToChat($roomId: String!) {
+  messages(roomId: $roomId) {
+    id
+    roomId
+    senderId
+    user
+    text
+    createdAt
+  }
+}
+
+query SearchUsers($query: String!, $platform: Platform!) {
+  searchUsers(query: $query, platform: $platform) {
+    id
+    username
+    phoneNumber
+    isOnline
+  }
+}
+
+mutation SendCallSignal($roomId: String!, $type: CallSignalType!, $payload: String!) {
+  sendCallSignal(roomId: $roomId, type: $type, payload: $payload)
+}
+
+subscription ListenToCallSignals($roomId: String!) {
+  callSignals(roomId: $roomId) {
+    roomId
+    senderId
+    type
+    payload
+  }
+}
+
+mutation AskAssistant($prompt: String!) {
+  askAssistant(prompt: $prompt)
+}

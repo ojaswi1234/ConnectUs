@@ -15,7 +15,7 @@ import 'package:ConnectUs/pages/landing.dart';
 import 'package:ConnectUs/pages/auth/login.dart';
 import 'package:ConnectUs/pages/auth/register.dart';
 import 'package:ConnectUs/pages/auth/register_phone.dart';
-import 'package:ConnectUs/pages/contacts_page.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:logger/logger.dart';
@@ -152,13 +152,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/login': (context) => const Login(),
         '/home': (context) => const Home(),
         'login-callback': (context) => const AuthChecker(),
-        '/contacts': (context) => ContactsPage(
-              registeredContacts: const [],
-              nonRegisteredContacts: const [],
-              onContactTap: (contact) {},
-              onInviteContact: (contact) {},
-              isLoading: false,
-            ),
+
         '/registerPhone': (context) => const RegisterPhone(),
         '/profile': (context) => const Profile(),
         '/settings': (context) => const Settings(),

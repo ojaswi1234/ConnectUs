@@ -51,9 +51,6 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_webrtc: ^1.1.0
   avatar_glow: ^3.0.1
-  langchain: ^0.8.0+1
-  langchain_ollama: ^0.4.0+1
-  langchain_openai: ^0.8.0+1
   encrypt: ^5.0.3
   archive: ^4.0.7
   path_provider: ^2.1.5
