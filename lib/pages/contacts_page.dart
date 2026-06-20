@@ -98,20 +98,17 @@ class _ContactsPageState extends State<ContactsPage>
     setState(() => _isWebSearching = true);
 
     try {
-      // Querying the 'usrname' column specifically
+      // Querying the 'usrname' column specifically - phone_number intentionally excluded on web
       final List<dynamic> response = await Supabase.instance.client
           .from('users')
-          .select('usrname, phone_number')
+          .select('id, usrname')
           .ilike('usrname', '%$query%')
           .limit(20);
 
       final results = response.map((userData) {
         final contact = Contact();
-        // Explicitly map 'usrname' to displayName
         contact.displayName = userData['usrname'] ?? 'Unknown User';
-        if (userData['phone_number'] != null) {
-          contact.phones = [Phone(userData['phone_number'].toString())];
-        }
+        // Phone number intentionally not fetched on web for privacy
         return contact;
       }).toList();
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -15,6 +16,7 @@ class _AuthCheckerState extends State<AuthChecker> {
   bool _isLoading = true;
   final _supabase = Supabase.instance.client;
   final _sessionManager = SessionManager();
+  StreamSubscription<AuthState>? _authSubscription;
 
   @override
   void initState() {
@@ -81,13 +83,19 @@ class _AuthCheckerState extends State<AuthChecker> {
   }
 
   void _listenToAuthChanges() {
-    _supabase.auth.onAuthStateChange.listen((data) {
+    _authSubscription = _supabase.auth.onAuthStateChange.listen((data) {
       if (data.event == AuthChangeEvent.signedIn) {
         _checkProfileAndNavigate();
       } else if (data.event == AuthChangeEvent.signedOut) {
         if (mounted) Navigator.of(context).pushReplacementNamed('/landing');
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 
   @override

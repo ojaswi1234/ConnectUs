@@ -10,7 +10,8 @@ import 'package:ConnectUs/graphql/__generated__/operations.data.gql.dart'
         GFetchChatHistoryData_messages,
         GListenToChatData,
         GListenToChatData_messages,
-        GsendMessageData;
+        GsendMessageData,
+        GsendMessageData_postMessage;
 import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart'
     show GFetchChatHistoryReq, GListenToChatReq, GsendMessageReq;
 import 'package:ConnectUs/graphql/__generated__/operations.var.gql.dart'
@@ -34,6 +35,7 @@ final SerializersBuilder _serializersBuilder = _$serializers.toBuilder()
   GListenToChatReq,
   GListenToChatVars,
   GsendMessageData,
+  GsendMessageData_postMessage,
   GsendMessageReq,
   GsendMessageVars,
 ])

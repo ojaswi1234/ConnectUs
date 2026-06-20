@@ -11,19 +11,20 @@ directive @oneOf on INPUT_OBJECT
 
 type Message {
   id: ID!
+  roomId: String!
   user: String!
   text: String!
+  createdAt: String!
 }
 
 type Mutation {
-  postMessage(user: String!, text: String!): ID!
+  postMessage(roomId: String!, user: String!, text: String!): Message!
 }
 
 type Query {
-  messages: [Message!]
+  messages(roomId: String!): [Message!]
 }
 
 type Subscription {
-  messages: [Message!]
+  messages(roomId: String!): Message!
 }
-

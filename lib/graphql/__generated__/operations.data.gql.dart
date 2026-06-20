@@ -53,8 +53,11 @@ abstract class GFetchChatHistoryData_messages
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
+  String get id;
+  String get roomId;
   String get user;
   String get text;
+  String get createdAt;
   static Serializer<GFetchChatHistoryData_messages> get serializer =>
       _$gFetchChatHistoryDataMessagesSerializer;
 
@@ -82,7 +85,7 @@ abstract class GsendMessageData
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
-  String get postMessage;
+  GsendMessageData_postMessage get postMessage;
   static Serializer<GsendMessageData> get serializer =>
       _$gsendMessageDataSerializer;
 
@@ -94,6 +97,41 @@ abstract class GsendMessageData
   static GsendMessageData? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
         GsendMessageData.serializer,
+        json,
+      );
+}
+
+abstract class GsendMessageData_postMessage
+    implements
+        Built<GsendMessageData_postMessage,
+            GsendMessageData_postMessageBuilder> {
+  GsendMessageData_postMessage._();
+
+  factory GsendMessageData_postMessage(
+          [void Function(GsendMessageData_postMessageBuilder b) updates]) =
+      _$GsendMessageData_postMessage;
+
+  static void _initializeBuilder(GsendMessageData_postMessageBuilder b) =>
+      b..G__typename = 'Message';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  String get id;
+  String get roomId;
+  String get user;
+  String get text;
+  String get createdAt;
+  static Serializer<GsendMessageData_postMessage> get serializer =>
+      _$gsendMessageDataPostMessageSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GsendMessageData_postMessage.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GsendMessageData_postMessage? fromJson(Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GsendMessageData_postMessage.serializer,
         json,
       );
 }
@@ -111,7 +149,7 @@ abstract class GListenToChatData
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
-  BuiltList<GListenToChatData_messages>? get messages;
+  GListenToChatData_messages get messages;
   static Serializer<GListenToChatData> get serializer =>
       _$gListenToChatDataSerializer;
 
@@ -141,8 +179,11 @@ abstract class GListenToChatData_messages
 
   @BuiltValueField(wireName: '__typename')
   String get G__typename;
+  String get id;
+  String get roomId;
   String get user;
   String get text;
+  String get createdAt;
   static Serializer<GListenToChatData_messages> get serializer =>
       _$gListenToChatDataMessagesSerializer;
 

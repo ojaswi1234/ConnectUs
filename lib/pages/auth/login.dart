@@ -70,7 +70,7 @@ class _LoginState extends State<Login> {
 
       final response = await _sessionManager.signInWithEmailAndPassword(
         email: _email.trim(),
-        password: _password.trim(),
+        password: _password,
         rememberMe: _rememberMe,
       );
 

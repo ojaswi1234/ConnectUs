@@ -7,8 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // For kIsWeb
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:ConnectUs/services/security_services.dart';
+import 'package:cryptography/cryptography.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
+
 
 class ChatArea extends ConsumerStatefulWidget {
   final String userName;
@@ -26,6 +28,10 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   String? _myUsername;
   String? _myUserId;
   String? _targetUserId;
+
+  // E2E Encryption
+  String? _targetPublicKey;        // peer's X25519 public key (base64)
+  SimpleKeyPair? _myKeyPair;       // our X25519 key pair loaded from secure storage
 
   // Status & Logic
   bool _isBlockedByMe = false;
@@ -66,17 +72,21 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     if (user != null) {
       _myUserId = user.id;
 
-      // 1. Get My Username
+      // 1. Load / generate our own E2E key pair
+      _myKeyPair = await SecurityService.loadKeyPair();
+      _myKeyPair ??= await SecurityService.generateAndStoreKeyPair();
+
+      // 2. Get My Username
       final myData = await client
           .from('users')
           .select('usrname')
           .eq('id', user.id)
           .maybeSingle();
 
-      // 2. Get Target User ID & Status from their Username
+      // 3. Get Target User ID, Status & public_key from their Username
       final targetData = await client
           .from('users')
-          .select('id, is_online')
+          .select('id, is_online, public_key')
           .eq('usrname', widget.userName)
           .maybeSingle();
 
@@ -86,10 +96,11 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           if (targetData != null) {
             _targetUserId = targetData['id'];
             _isTargetOnline = targetData['is_online'] ?? false;
+            _targetPublicKey = targetData['public_key'] as String?;
           }
         });
 
-        // 3. Start Subscriptions if we found the target user
+        // 4. Start Subscriptions if we found the target user
         if (_targetUserId != null) {
           await _checkBlockStatus();
           await _fetchHistoryFromSupabase(); // Load old messages
@@ -175,30 +186,30 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     if (_roomId == "loading") return;
     final client = ref.read(clientProvider);
 
-    final messageSubscriptionRequest = GListenToChatReq();
+    // The updated schema delivers one Message per event, not a list
+    final messageSubscriptionRequest = GListenToChatReq((b) => b
+      ..vars.roomId = _roomId);
 
     _messageSubscription =
         client.request(messageSubscriptionRequest).listen((response) {
-      if (response.data != null &&
-          response.data!.messages != null &&
-          response.data!.messages!.isNotEmpty) {
-        final newMsg = response.data!.messages!.last;
-        // Only process messages from the other user
-        if (newMsg.user != _myUsername) {
-          final currentMessages = List<dynamic>.from(_localHistory);
-          final messageMap = {
-            'content': newMsg.text,
-            'user': newMsg.user,
-            'createdAt': DateTime.now().toIso8601String()
-          };
-          currentMessages.add(messageMap);
-          // Only save to local cache. The sender is responsible for Supabase.
-          _saveToLocal(currentMessages);
+      final newMsg = response.data?.messages;
+      if (newMsg == null) return;
+      // Only process messages from the other user
+      if (newMsg.user != _myUsername) {
+        final currentMessages = List<dynamic>.from(_localHistory);
+        final messageMap = {
+          'content': newMsg.text,
+          'user': newMsg.user,
+          'createdAt': newMsg.createdAt,
 
-          if (mounted) {
-            setState(() {});
-            _scrollToBottom();
-          }
+        };
+        currentMessages.add(messageMap);
+        // Only save to local cache. The sender is responsible for Supabase.
+        _saveToLocal(currentMessages);
+
+        if (mounted) {
+          setState(() {});
+          _scrollToBottom();
         }
       }
     });
@@ -256,10 +267,12 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   }
 
   // --- HELPERS ---
+  /// Room ID is derived from immutable user UUIDs, not usernames.
+  /// This ensures history survives username changes.
   String get _roomId {
-    if (_myUsername == null) return "loading";
-    final users = [_myUsername!, widget.userName]..sort();
-    return users.join("_");
+    if (_myUserId == null || _targetUserId == null) return "loading";
+    final ids = [_myUserId!, _targetUserId!]..sort();
+    return ids.join("_");
   }
 
   List<dynamic> get _localHistory => _chatBox.get(_roomId, defaultValue: []);
@@ -279,8 +292,33 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     }
 
     if (_controller.text.trim().isEmpty || _myUsername == null) return;
+    final plainText = _controller.text;
+    _controller.clear();
+    _scrollToBottom();
+
+    _encryptAndSend(plainText);
+  }
+
+  Future<void> _encryptAndSend(String plainText) async {
+    // Encrypt if we have the peer's public key; otherwise send as plaintext
+    String content;
+    if (_targetPublicKey != null && _myKeyPair != null) {
+      try {
+        content = await SecurityService.encryptMessage(
+          plainText,
+          _targetPublicKey!,
+          myKeyPair: _myKeyPair,
+        );
+      } catch (e) {
+        debugPrint('Encryption error, sending plaintext: $e');
+        content = plainText; // fallback
+      }
+    } else {
+      content = plainText; // E2E not yet set up for this peer
+    }
+
     final newMessage = {
-      'content': _controller.text,
+      'content': content,
       'user': _myUsername,
       'createdAt': DateTime.now().toIso8601String()
     };
@@ -289,16 +327,16 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
     // Save to local cache for instant UI update
     _saveToLocal(currentMessages);
-    // Save the new complete history to Supabase
+    // Persist to Supabase
     _updateHistoryInSupabase(currentMessages);
 
-    setState(() {});
+    if (mounted) setState(() {});
 
-    // Send via GraphQL for real-time delivery
+    // Send via GraphQL for real-time delivery to the peer
     final client = ref.read(clientProvider);
     final sendMessageReq = GsendMessageReq((b) => b
-      ..vars.user = widget.userName
-      ..vars.text = _controller.text
+      ..vars.user = _myUsername!
+      ..vars.text = content
       ..vars.roomId = _roomId);
 
     client.request(sendMessageReq).listen((response) {
@@ -306,9 +344,6 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
         debugPrint('Error sending message: ${response.graphqlErrors}');
       }
     });
-
-    _controller.clear();
-    _scrollToBottom();
   }
 
   void _scrollToBottom() {
@@ -410,12 +445,26 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
               // reverse: true, // Set to false to show oldest messages first
               itemBuilder: (context, index) {
                 final rawMsg = _localHistory[index];
-                final content = rawMsg is Map ? rawMsg['content'] : '';
-                final user = rawMsg is Map ? rawMsg['user'] : '';
+                final content = rawMsg is Map ? rawMsg['content'] as String? ?? '' : '';
+                final user = rawMsg is Map ? rawMsg['user'] as String? ?? '' : '';
 
-                final decrypted = SecurityService.decryptMessage(content);
-                return _buildMessageBubble(
-                    decrypted, user == _myUsername, user);
+                // Show plaintext for own messages; for received messages decrypt if possible
+                // Decryption is async but we handle it via FutureBuilder for received messages
+                if (user == _myUsername || _targetPublicKey == null || _myKeyPair == null) {
+                  // Own message or no E2E — display raw (was never encrypted by us here)
+                  return _buildMessageBubble(content, user == _myUsername, user);
+                }
+                return FutureBuilder<String>(
+                  future: SecurityService.decryptMessage(
+                    content,
+                    _targetPublicKey!,
+                    myKeyPair: _myKeyPair,
+                  ),
+                  builder: (context, snap) {
+                    final text = snap.data ?? content;
+                    return _buildMessageBubble(text, false, user);
+                  },
+                );
               },
             ),
           ),

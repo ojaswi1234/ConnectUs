@@ -17,16 +17,13 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(GListenToChatReq.serializer)
       ..add(GListenToChatVars.serializer)
       ..add(GsendMessageData.serializer)
+      ..add(GsendMessageData_postMessage.serializer)
       ..add(GsendMessageReq.serializer)
       ..add(GsendMessageVars.serializer)
       ..addBuilderFactory(
           const FullType(BuiltList,
               const [const FullType(GFetchChatHistoryData_messages)]),
-          () => new ListBuilder<GFetchChatHistoryData_messages>())
-      ..addBuilderFactory(
-          const FullType(
-              BuiltList, const [const FullType(GListenToChatData_messages)]),
-          () => new ListBuilder<GListenToChatData_messages>()))
+          () => new ListBuilder<GFetchChatHistoryData_messages>()))
     .build();
 
 // ignore_for_file: deprecated_member_use_from_same_package,type=lint

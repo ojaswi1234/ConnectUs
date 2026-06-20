@@ -16,6 +16,7 @@ abstract class GFetchChatHistoryVars
           [void Function(GFetchChatHistoryVarsBuilder b) updates]) =
       _$GFetchChatHistoryVars;
 
+  String get roomId;
   static Serializer<GFetchChatHistoryVars> get serializer =>
       _$gFetchChatHistoryVarsSerializer;
 
@@ -64,6 +65,7 @@ abstract class GListenToChatVars
           [void Function(GListenToChatVarsBuilder b) updates]) =
       _$GListenToChatVars;
 
+  String get roomId;
   static Serializer<GListenToChatVars> get serializer =>
       _$gListenToChatVarsSerializer;
 

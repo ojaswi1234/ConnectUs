@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
+import 'package:ConnectUs/services/security_services.dart';
 
 class RegisterPhone extends StatefulWidget {
   const RegisterPhone({super.key});
@@ -32,12 +33,17 @@ class _RegisterPhoneState extends State<RegisterPhone> {
       final phoneInput = _phoneController.text.trim();
       final formattedPhone = '+91$phoneInput';
 
+      // Generate E2E key pair for this user and get the public key to store
+      await SecurityService.generateAndStoreKeyPair();
+      final publicKeyB64 = await SecurityService.getLocalPublicKeyBase64();
+
       // Use upsert to create or update the user record with both mandatory fields
       await _supabase.from('users').upsert({
         'id': user.id,
         'usrname': usernameInput,
         'phone_number': formattedPhone,
         'email': user.email,
+        'public_key': publicKeyB64,   // Upload E2E public key
         'updated_at': DateTime.now().toIso8601String(),
       });
 
@@ -165,8 +171,8 @@ class _RegisterPhoneState extends State<RegisterPhone> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Phone number is required';
                     }
-                    if (value.trim().length != 10) {
-                      return 'Enter a valid 10-digit number';
+                    if (!RegExp(r'^\d{10}$').hasMatch(value.trim())) {
+                      return 'Enter a valid 10-digit number (digits only)';
                     }
                     return null;
                   },

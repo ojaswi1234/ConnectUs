@@ -27,14 +27,35 @@ class _$GFetchChatHistoryVarsSerializer
   Iterable<Object?> serialize(
       Serializers serializers, GFetchChatHistoryVars object,
       {FullType specifiedType = FullType.unspecified}) {
-    return <Object?>[];
+    final result = <Object?>[
+      'roomId',
+      serializers.serialize(object.roomId,
+          specifiedType: const FullType(String)),
+    ];
+
+    return result;
   }
 
   @override
   GFetchChatHistoryVars deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    return new GFetchChatHistoryVarsBuilder().build();
+    final result = new GFetchChatHistoryVarsBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case 'roomId':
+          result.roomId = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+      }
+    }
+
+    return result.build();
   }
 }
 
@@ -102,23 +123,50 @@ class _$GListenToChatVarsSerializer
   @override
   Iterable<Object?> serialize(Serializers serializers, GListenToChatVars object,
       {FullType specifiedType = FullType.unspecified}) {
-    return <Object?>[];
+    final result = <Object?>[
+      'roomId',
+      serializers.serialize(object.roomId,
+          specifiedType: const FullType(String)),
+    ];
+
+    return result;
   }
 
   @override
   GListenToChatVars deserialize(
       Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    return new GListenToChatVarsBuilder().build();
+    final result = new GListenToChatVarsBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case 'roomId':
+          result.roomId = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+      }
+    }
+
+    return result.build();
   }
 }
 
 class _$GFetchChatHistoryVars extends GFetchChatHistoryVars {
+  @override
+  final String roomId;
+
   factory _$GFetchChatHistoryVars(
           [void Function(GFetchChatHistoryVarsBuilder)? updates]) =>
       (new GFetchChatHistoryVarsBuilder()..update(updates))._build();
 
-  _$GFetchChatHistoryVars._() : super._();
+  _$GFetchChatHistoryVars._({required this.roomId}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        roomId, r'GFetchChatHistoryVars', 'roomId');
+  }
 
   @override
   GFetchChatHistoryVars rebuild(
@@ -132,17 +180,22 @@ class _$GFetchChatHistoryVars extends GFetchChatHistoryVars {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GFetchChatHistoryVars;
+    return other is GFetchChatHistoryVars && roomId == other.roomId;
   }
 
   @override
   int get hashCode {
-    return 378426416;
+    var _$hash = 0;
+    _$hash = $jc(_$hash, roomId.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
   String toString() {
-    return newBuiltValueToStringHelper(r'GFetchChatHistoryVars').toString();
+    return (newBuiltValueToStringHelper(r'GFetchChatHistoryVars')
+          ..add('roomId', roomId))
+        .toString();
   }
 }
 
@@ -150,7 +203,20 @@ class GFetchChatHistoryVarsBuilder
     implements Builder<GFetchChatHistoryVars, GFetchChatHistoryVarsBuilder> {
   _$GFetchChatHistoryVars? _$v;
 
+  String? _roomId;
+  String? get roomId => _$this._roomId;
+  set roomId(String? roomId) => _$this._roomId = roomId;
+
   GFetchChatHistoryVarsBuilder();
+
+  GFetchChatHistoryVarsBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _roomId = $v.roomId;
+      _$v = null;
+    }
+    return this;
+  }
 
   @override
   void replace(GFetchChatHistoryVars other) {
@@ -167,7 +233,10 @@ class GFetchChatHistoryVarsBuilder
   GFetchChatHistoryVars build() => _build();
 
   _$GFetchChatHistoryVars _build() {
-    final _$result = _$v ?? new _$GFetchChatHistoryVars._();
+    final _$result = _$v ??
+        new _$GFetchChatHistoryVars._(
+            roomId: BuiltValueNullFieldError.checkNotNull(
+                roomId, r'GFetchChatHistoryVars', 'roomId'));
     replace(_$result);
     return _$result;
   }
@@ -289,11 +358,17 @@ class GsendMessageVarsBuilder
 }
 
 class _$GListenToChatVars extends GListenToChatVars {
+  @override
+  final String roomId;
+
   factory _$GListenToChatVars(
           [void Function(GListenToChatVarsBuilder)? updates]) =>
       (new GListenToChatVarsBuilder()..update(updates))._build();
 
-  _$GListenToChatVars._() : super._();
+  _$GListenToChatVars._({required this.roomId}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        roomId, r'GListenToChatVars', 'roomId');
+  }
 
   @override
   GListenToChatVars rebuild(void Function(GListenToChatVarsBuilder) updates) =>
@@ -306,17 +381,22 @@ class _$GListenToChatVars extends GListenToChatVars {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GListenToChatVars;
+    return other is GListenToChatVars && roomId == other.roomId;
   }
 
   @override
   int get hashCode {
-    return 491119253;
+    var _$hash = 0;
+    _$hash = $jc(_$hash, roomId.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
   String toString() {
-    return newBuiltValueToStringHelper(r'GListenToChatVars').toString();
+    return (newBuiltValueToStringHelper(r'GListenToChatVars')
+          ..add('roomId', roomId))
+        .toString();
   }
 }
 
@@ -324,7 +404,20 @@ class GListenToChatVarsBuilder
     implements Builder<GListenToChatVars, GListenToChatVarsBuilder> {
   _$GListenToChatVars? _$v;
 
+  String? _roomId;
+  String? get roomId => _$this._roomId;
+  set roomId(String? roomId) => _$this._roomId = roomId;
+
   GListenToChatVarsBuilder();
+
+  GListenToChatVarsBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _roomId = $v.roomId;
+      _$v = null;
+    }
+    return this;
+  }
 
   @override
   void replace(GListenToChatVars other) {
@@ -341,7 +434,10 @@ class GListenToChatVarsBuilder
   GListenToChatVars build() => _build();
 
   _$GListenToChatVars _build() {
-    final _$result = _$v ?? new _$GListenToChatVars._();
+    final _$result = _$v ??
+        new _$GListenToChatVars._(
+            roomId: BuiltValueNullFieldError.checkNotNull(
+                roomId, r'GListenToChatVars', 'roomId'));
     replace(_$result);
     return _$result;
   }

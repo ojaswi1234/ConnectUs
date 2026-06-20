@@ -1,0 +1,20 @@
+Analyzing ConnectUs...                                          
+
+   info • Don't use 'BuildContext's across async gaps • lib/pages/auth/profile.dart:64:28 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/pages/auth/register.dart:39:30 • use_build_context_synchronously
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/pages/chat/chat_area.dart:471:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/pages/chat/chat_area.dart:473:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/pages/chat/video.dart:87:56 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/pages/chat/video.dart:90:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/pages/chat/video.dart:126:34 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/pages/chat/video.dart:192:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/pages/config/settings.dart:81:39 • deprecated_member_use
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/pages/home/home.dart:175:36 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/pages/home/home.dart:179:42 • use_build_context_synchronously
+   info • The prefix 'HiveContact' isn't a lower_case_with_underscores identifier • lib/pages/home/home_page.dart:14:51 • library_prefixes
+   info • The type name 'Home_Page' isn't an UpperCamelCase identifier • lib/pages/home/home_page.dart:16:7 • camel_case_types
+   info • The type name '_Home_PageState' isn't an UpperCamelCase identifier • lib/pages/home/home_page.dart:23:7 • camel_case_types
+   info • Don't use 'BuildContext's across async gaps • lib/pages/home/home_page.dart:129:30 • use_build_context_synchronously
+   info • The file name 'AuthChecker.dart' isn't a lower_case_with_underscores identifier • lib/services/AuthChecker.dart:1:1 • file_names
+   info • The package name 'ConnectUs' isn't a lower_case_with_underscores identifier • pubspec.yaml:1:7 • package_names
+

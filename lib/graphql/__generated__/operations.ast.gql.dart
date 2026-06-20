@@ -7,15 +7,44 @@ import 'package:gql/ast.dart' as _i1;
 const FetchChatHistory = _i1.OperationDefinitionNode(
   type: _i1.OperationType.query,
   name: _i1.NameNode(value: 'FetchChatHistory'),
-  variableDefinitions: [],
+  variableDefinitions: [
+    _i1.VariableDefinitionNode(
+      variable: _i1.VariableNode(name: _i1.NameNode(value: 'roomId')),
+      type: _i1.NamedTypeNode(
+        name: _i1.NameNode(value: 'String'),
+        isNonNull: true,
+      ),
+      defaultValue: _i1.DefaultValueNode(value: null),
+      directives: [],
+    )
+  ],
   directives: [],
   selectionSet: _i1.SelectionSetNode(selections: [
     _i1.FieldNode(
       name: _i1.NameNode(value: 'messages'),
       alias: null,
-      arguments: [],
+      arguments: [
+        _i1.ArgumentNode(
+          name: _i1.NameNode(value: 'roomId'),
+          value: _i1.VariableNode(name: _i1.NameNode(value: 'roomId')),
+        )
+      ],
       directives: [],
       selectionSet: _i1.SelectionSetNode(selections: [
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'id'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'roomId'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
         _i1.FieldNode(
           name: _i1.NameNode(value: 'user'),
           alias: null,
@@ -25,6 +54,13 @@ const FetchChatHistory = _i1.OperationDefinitionNode(
         ),
         _i1.FieldNode(
           name: _i1.NameNode(value: 'text'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'createdAt'),
           alias: null,
           arguments: [],
           directives: [],
@@ -73,6 +109,10 @@ const sendMessage = _i1.OperationDefinitionNode(
       alias: null,
       arguments: [
         _i1.ArgumentNode(
+          name: _i1.NameNode(value: 'roomId'),
+          value: _i1.VariableNode(name: _i1.NameNode(value: 'roomId')),
+        ),
+        _i1.ArgumentNode(
           name: _i1.NameNode(value: 'user'),
           value: _i1.VariableNode(name: _i1.NameNode(value: 'user')),
         ),
@@ -80,28 +120,23 @@ const sendMessage = _i1.OperationDefinitionNode(
           name: _i1.NameNode(value: 'text'),
           value: _i1.VariableNode(name: _i1.NameNode(value: 'text')),
         ),
-        _i1.ArgumentNode(
-          name: _i1.NameNode(value: 'roomId'),
-          value: _i1.VariableNode(name: _i1.NameNode(value: 'roomId')),
-        ),
       ],
       directives: [],
-      selectionSet: null,
-    )
-  ]),
-);
-const ListenToChat = _i1.OperationDefinitionNode(
-  type: _i1.OperationType.subscription,
-  name: _i1.NameNode(value: 'ListenToChat'),
-  variableDefinitions: [],
-  directives: [],
-  selectionSet: _i1.SelectionSetNode(selections: [
-    _i1.FieldNode(
-      name: _i1.NameNode(value: 'messages'),
-      alias: null,
-      arguments: [],
-      directives: [],
       selectionSet: _i1.SelectionSetNode(selections: [
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'id'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'roomId'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
         _i1.FieldNode(
           name: _i1.NameNode(value: 'user'),
           alias: null,
@@ -111,6 +146,79 @@ const ListenToChat = _i1.OperationDefinitionNode(
         ),
         _i1.FieldNode(
           name: _i1.NameNode(value: 'text'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'createdAt'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
+    )
+  ]),
+);
+const ListenToChat = _i1.OperationDefinitionNode(
+  type: _i1.OperationType.subscription,
+  name: _i1.NameNode(value: 'ListenToChat'),
+  variableDefinitions: [
+    _i1.VariableDefinitionNode(
+      variable: _i1.VariableNode(name: _i1.NameNode(value: 'roomId')),
+      type: _i1.NamedTypeNode(
+        name: _i1.NameNode(value: 'String'),
+        isNonNull: true,
+      ),
+      defaultValue: _i1.DefaultValueNode(value: null),
+      directives: [],
+    )
+  ],
+  directives: [],
+  selectionSet: _i1.SelectionSetNode(selections: [
+    _i1.FieldNode(
+      name: _i1.NameNode(value: 'messages'),
+      alias: null,
+      arguments: [
+        _i1.ArgumentNode(
+          name: _i1.NameNode(value: 'roomId'),
+          value: _i1.VariableNode(name: _i1.NameNode(value: 'roomId')),
+        )
+      ],
+      directives: [],
+      selectionSet: _i1.SelectionSetNode(selections: [
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'id'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'roomId'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'user'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'text'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'createdAt'),
           alias: null,
           arguments: [],
           directives: [],
