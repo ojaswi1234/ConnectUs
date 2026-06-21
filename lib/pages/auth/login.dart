@@ -3,6 +3,7 @@ import 'package:ConnectUs/services/session_manager.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -82,7 +83,31 @@ class _LoginState extends State<Login> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.of(context).pushReplacementNamed('/home');
+
+          // NEW: Check if profile is complete before routing
+          final user = Supabase.instance.client.auth.currentUser;
+          if (user != null) {
+            final profileData = await Supabase.instance.client
+                .from('users')
+                .select('phone_number, usrname')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            final bool hasPhone = profileData != null &&
+                profileData['phone_number'] != null &&
+                profileData['phone_number'].toString().trim().isNotEmpty;
+            final bool hasUsername = profileData != null &&
+                profileData['usrname'] != null &&
+                profileData['usrname'].toString().trim().isNotEmpty;
+
+            if (!hasPhone || !hasUsername) {
+              Navigator.of(context).pushReplacementNamed('/registerPhone');
+            } else {
+              Navigator.of(context).pushReplacementNamed('/home');
+            }
+          } else {
+            Navigator.of(context).pushReplacementNamed('/home');
+          }
         }
       }
     } catch (error) {

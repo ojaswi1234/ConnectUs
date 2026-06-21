@@ -47,7 +47,6 @@ class _AuthCheckerState extends State<AuthChecker> {
         return;
       }
 
-      // Check if user has a phone number in the public 'users' table
       final data = await _supabase
           .from('users')
           .select('phone_number, usrname')
@@ -55,19 +54,26 @@ class _AuthCheckerState extends State<AuthChecker> {
           .maybeSingle();
 
       if (mounted) {
-        // If user record doesn't exist OR phone_number is null, go to RegisterPhone
-        if (data == null ||
-            data['phone_number'] == null ||
-            data['usrname'] == null) {
+        final bool hasPhone = data != null && 
+            data['phone_number'] != null && 
+            data['phone_number'].toString().trim().isNotEmpty;
+        final bool hasUsername = data != null && 
+            data['usrname'] != null && 
+            data['usrname'].toString().trim().isNotEmpty;
+
+        if (!hasPhone || !hasUsername) {
           Navigator.of(context).pushReplacementNamed('/registerPhone');
         } else {
-          // Profile complete -> Home
           Navigator.of(context).pushReplacementNamed('/home');
         }
       }
     } catch (e) {
       debugPrint('Error checking profile: $e');
-      if (mounted) setState(() => _isLoading = false);
+      // On error, stay on landing instead of guessing
+      if (mounted) {
+        setState(() => _isLoading = false);
+        Navigator.of(context).pushReplacementNamed('/landing');
+      }
     }
   }
 

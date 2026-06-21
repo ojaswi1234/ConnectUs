@@ -45,6 +45,8 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   StreamSubscription? _messageSubscription;
   Timer? _blockPoller;
   supabase.RealtimeChannel? _blockChannel;
+  Timer? _statusRetryTimer;        // ADD
+  Timer? _offlinePollTimer;       // ADD
 
   // Local Storage
   late Box _chatBox;
@@ -60,6 +62,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     _initializeChatSetup();
     _startBlockStatusPoller();
     _updateMyRoomPresence(true); // ENTER room
+    _startOfflinePolling();        // ADD
   }
 
   void _startBlockStatusPoller() {
@@ -73,8 +76,19 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   @override
   void dispose() {
     _updateMyRoomPresence(false); // LEAVE room
-    _statusChannel?.unsubscribe(); // Stop listening to status
-    _blockChannel?.unsubscribe();
+    
+    // ADD: Cancel all timers first
+    _statusRetryTimer?.cancel();
+    _offlinePollTimer?.cancel();
+    
+    // ADD: Fully remove channel from client, not just unsubscribe
+    if (_statusChannel != null) {
+      supabase.Supabase.instance.client.removeChannel(_statusChannel!);
+    }
+    if (_blockChannel != null) {
+      supabase.Supabase.instance.client.removeChannel(_blockChannel!);
+    }
+    
     _messageSubscription?.cancel();
     _blockPoller?.cancel();
     _scrollController.dispose();
@@ -183,9 +197,59 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   }
 
   // --- STATUS AND MESSAGE SUBSCRIPTIONS ---
+
+  // NEW: Poll every 5 seconds while offline to catch missed updates
+  void _startOfflinePolling() {
+    _offlinePollTimer?.cancel();
+    _offlinePollTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
+      if (!mounted || _isTargetOnline || _targetUserId == null) return;
+      
+      // Direct query fallback
+      await _fetchTargetStatus();
+      
+      // If still offline, ensure subscription is alive
+      if (!_isTargetOnline) {
+        _startStatusSubscription();
+      }
+    });
+  }
+
+  // NEW: Direct status fetch fallback
+  Future<void> _fetchTargetStatus() async {
+    if (_targetUserId == null) return;
+    try {
+      final client = supabase.Supabase.instance.client;
+      final data = await client
+          .from('users')
+          .select('is_online, current_room')
+          .eq('id', _targetUserId!)
+          .maybeSingle();
+
+      if (data != null && mounted) {
+        final theirRoom = data['current_room'] as String?;
+        final nowInRoom = theirRoom == _roomId;
+        final isOnline = data['is_online'] ?? false;
+        setState(() {
+          _isTargetOnline = nowInRoom || (isOnline && theirRoom == null);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching target status: $e');
+    }
+  }
+
   void _startStatusSubscription() {
     if (_targetUserId == null) return;
+
+    // Cancel any pending retry
+    _statusRetryTimer?.cancel();
+
     final client = supabase.Supabase.instance.client;
+
+    // REMOVE old channel completely (prevents stale state when reopening chat)
+    if (_statusChannel != null) {
+      client.removeChannel(_statusChannel!);
+    }
 
     _statusChannel = client.channel('user-status-${_targetUserId!}');
 
@@ -201,14 +265,13 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           ),
           callback: (payload) {
             debugPrint('Status payload: ${payload.newRecord}');
-            
-            // Check if they are in the SAME room
+
             final theirRoom = payload.newRecord['current_room'] as String?;
             final nowInRoom = theirRoom == _roomId;
-            
+
             // Fallback to is_online if current_room is null
             final isOnline = payload.newRecord['is_online'] ?? false;
-            
+
             if (mounted) {
               setState(() {
                 _isTargetOnline = nowInRoom || (isOnline && theirRoom == null);
@@ -217,9 +280,18 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           },
         )
         .subscribe((status, [err]) {
-          debugPrint('Status subscription state: $status');
-          if (status == 'CHANNEL_ERROR' || status == 'TIMED_OUT') {
-            Future.delayed(const Duration(seconds: 3), _startStatusSubscription);
+          debugPrint('Status subscription state: $status, err: $err');
+
+          if (status == 'SUBSCRIBED') {
+            // Success: cancel retry timer, immediately sync status
+            _statusRetryTimer?.cancel();
+            _fetchTargetStatus();
+          } else {
+            // Any non-subscribed state → retry in 3 seconds
+            _statusRetryTimer?.cancel();
+            _statusRetryTimer = Timer(const Duration(seconds: 3), () {
+              if (mounted) _startStatusSubscription();
+            });
           }
         });
   }
