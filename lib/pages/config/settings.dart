@@ -132,11 +132,15 @@ class _SettingsPageState extends State<SettingsPage> {
                           _InfoTile(icon: Icons.email_outlined, label: 'Email', value: _profile?['email'] ?? 'Not set'),
                           const SizedBox(height: 32),
                           // Actions
-                          _ActionTile(icon: Icons.block, label: 'Blocked Users', color: Colors.redAccent, onTap: () {}),
+                          _ActionTile(icon: Icons.block, label: 'Blocked Users', color: Colors.redAccent, onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Blocked Users list is currently empty.')));
+                          }),
                           const SizedBox(height: 12),
-                          _ActionTile(icon: Icons.notifications_outlined, label: 'Notifications', color: AppTheme.logoCyan, onTap: () {}),
+                          _ActionTile(icon: Icons.notifications_outlined, label: 'Notifications', color: AppTheme.logoCyan, hasSwitch: true, switchValue: true, onTap: () {}),
                           const SizedBox(height: 12),
-                          _ActionTile(icon: Icons.privacy_tip_outlined, label: 'Privacy', color: AppTheme.logoTeal, onTap: () {}),
+                          _ActionTile(icon: Icons.privacy_tip_outlined, label: 'Privacy', color: AppTheme.logoTeal, onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Privacy settings clicked')));
+                          }),
                           const SizedBox(height: 32),
                           // Logout
                           GestureDetector(
@@ -194,26 +198,57 @@ class _InfoTile extends StatelessWidget {
   }
 }
 
-class _ActionTile extends StatelessWidget {
+class _ActionTile extends StatefulWidget {
   final IconData icon;
   final String label;
   final Color color;
   final VoidCallback onTap;
-  const _ActionTile({required this.icon, required this.label, required this.color, required this.onTap});
+  final bool hasSwitch;
+  final bool switchValue;
+
+  const _ActionTile({required this.icon, required this.label, required this.color, required this.onTap, this.hasSwitch = false, this.switchValue = false});
+
+  @override
+  State<_ActionTile> createState() => _ActionTileState();
+}
+
+class _ActionTileState extends State<_ActionTile> {
+  late bool _currentSwitchValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentSwitchValue = widget.switchValue;
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.hasSwitch ? () {
+        setState(() {
+          _currentSwitchValue = !_currentSwitchValue;
+        });
+      } : widget.onTap,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: AppTheme.cardShadow,
         child: Row(
           children: [
-            Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(14)), child: Icon(icon, color: color, size: 22)),
+            Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: widget.color.withOpacity(0.1), borderRadius: BorderRadius.circular(14)), child: Icon(widget.icon, color: widget.color, size: 22)),
             const SizedBox(width: 16),
-            Expanded(child: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark))),
-            Icon(Icons.arrow_forward_ios, size: 16, color: AppTheme.textMuted.withOpacity(0.5)),
+            Expanded(child: Text(widget.label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark))),
+            if (widget.hasSwitch)
+              Switch(
+                value: _currentSwitchValue,
+                activeColor: AppTheme.coral,
+                onChanged: (val) {
+                  setState(() {
+                    _currentSwitchValue = val;
+                  });
+                },
+              )
+            else
+              Icon(Icons.arrow_forward_ios, size: 16, color: AppTheme.textMuted.withOpacity(0.5)),
           ],
         ),
       ),

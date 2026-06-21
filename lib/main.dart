@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ConnectUs/services/AuthChecker.dart';
 import 'package:ConnectUs/pages/config/settings.dart';
-import 'package:ConnectUs/pages/home/home.dart';
+import 'package:ConnectUs/pages/home/home_page.dart';
 import 'package:ConnectUs/pages/landing.dart';
 import 'package:ConnectUs/pages/auth/login.dart';
 import 'package:ConnectUs/pages/auth/register.dart';
@@ -262,7 +262,7 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
         '/landing': (context) => const Landing(),
         '/getStarted': (context) => const Register(),
         '/login': (context) => const Login(),
-        '/home': (context) => const Home(),
+        '/home': (context) => const Home_Page(),
         'login-callback': (context) => const AuthChecker(),
         '/contacts': (context) => ContactsPage(
               registeredContacts: const [],

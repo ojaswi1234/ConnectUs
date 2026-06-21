@@ -16,17 +16,12 @@ class Landing extends StatelessWidget {
           child: Column(
             children: [
               const Spacer(flex: 2),
-              // Brand Logo (PRESERVED)
+              // Brand Logo (Updated)
               Container(
                 width: 140,
                 height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [AppTheme.logoCyan, AppTheme.logoTeal],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
                   boxShadow: [
                     BoxShadow(
                       color: AppTheme.logoCyan.withOpacity(0.4),
@@ -35,10 +30,11 @@ class Landing extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.chat_bubble_rounded,
-                  color: Colors.white,
-                  size: 64,
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/removebg.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(height: 40),

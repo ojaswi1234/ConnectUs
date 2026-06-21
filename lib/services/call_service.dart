@@ -23,6 +23,7 @@ class CallService extends ChangeNotifier {
   String? _calleeUsername;
   String? _callType; // 'voice' or 'video'
   bool _isCaller = false;
+  bool _isSpeakerOn = false;
 
   final Map<String, dynamic> _configuration = {
     'iceServers': [
@@ -36,6 +37,7 @@ class CallService extends ChangeNotifier {
   String? get callType => _callType;
   String? get callerUsername => _callerUsername;
   String? get calleeUsername => _calleeUsername;
+  bool get isSpeakerOn => _isSpeakerOn;
 
   final StreamController<Map<String, dynamic>> _incomingCallController = StreamController.broadcast();
   Stream<Map<String, dynamic>> get incomingCallStream => _incomingCallController.stream;
@@ -293,10 +295,10 @@ class CallService extends ChangeNotifier {
   }
 
   Future<void> toggleSpeaker() async {
-    // Basic flutter_webrtc speaker toggle
     try {
-      final isSpeaker = true; // Hardcoded or tracked, Helper doesn't always expose a getter
-      await Helper.setSpeakerphoneOn(!isSpeaker);
+      _isSpeakerOn = !_isSpeakerOn;
+      await Helper.setSpeakerphoneOn(_isSpeakerOn);
+      notifyListeners();
     } catch (e) {
       debugPrint("Error toggling speaker: $e");
     }
@@ -323,6 +325,7 @@ class CallService extends ChangeNotifier {
     _callerUsername = null;
     _calleeUsername = null;
     _callType = null;
+    _isSpeakerOn = false;
     
     Future.delayed(const Duration(milliseconds: 500), () {
       _setCallState(CallState.idle);
