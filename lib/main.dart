@@ -31,6 +31,7 @@ import 'package:ConnectUs/services/call_notification_service.dart';
 import 'package:ConnectUs/pages/chat/voice.dart';
 import 'package:ConnectUs/pages/chat/video.dart';
 import 'package:ConnectUs/services/chat_sync_service.dart';
+import 'package:ConnectUs/providers/theme_provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -241,6 +242,8 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
@@ -252,10 +255,34 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
           child: child!,
         );
       },
+      themeMode: themeMode,
       theme: ThemeData(
         useMaterial3: true,
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        visualDensity: VisualDensity.compact,
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: AppTheme.bgWarm,
+        colorScheme: const ColorScheme.light(
+          primary: AppTheme.coral,
+          surface: AppTheme.surface,
+          onSurface: AppTheme.textDark,
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: AppTheme.textDark),
+          bodyMedium: TextStyle(color: AppTheme.textDark),
+        ),
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF121212),
+        colorScheme: const ColorScheme.dark(
+          primary: AppTheme.coral,
+          surface: Color(0xFF1E1E2E),
+          onSurface: Colors.white,
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white),
+        ),
       ),
       routes: {
         '/': (context) => const AuthChecker(),
