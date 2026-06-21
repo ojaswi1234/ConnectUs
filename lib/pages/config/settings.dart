@@ -5,6 +5,7 @@ import 'package:ConnectUs/utils/app_theme.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ConnectUs/providers/theme_provider.dart';
+import 'package:ConnectUs/pages/ai_page.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -147,6 +148,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         _ActionTile(icon: Icons.privacy_tip_outlined, label: 'Privacy', color: AppTheme.logoTeal, onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Privacy settings clicked')));
                         }),
+                        const SizedBox(height: 12),
+                        _ActionTile(
+                          icon: Icons.auto_awesome,
+                          label: 'AI Chat Assistant',
+                          color: AppTheme.coral,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const AIPage()),
+                            );
+                          },
+                        ),
                         const SizedBox(height: 32),
                         GestureDetector(
                           onTap: _logout,

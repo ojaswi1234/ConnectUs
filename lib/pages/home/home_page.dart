@@ -15,6 +15,7 @@ import 'package:ConnectUs/models/contact.dart' as HiveContact;
 import 'package:ConnectUs/models/chat.dart';
 import 'package:ConnectUs/pages/home/status.dart';
 import 'package:ConnectUs/pages/chat/contact_selection_page.dart';
+import 'package:ConnectUs/pages/ai_page.dart';
 
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});
@@ -304,6 +305,30 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
               Text('Chats', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: colorScheme.onSurface)),
               Row(
                 children: [
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AIPage()),
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 12),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.auto_awesome,
+                        color: AppTheme.accent,
+                      ),
+                    ),
+                  ),
                   GestureDetector(
                     onTap: _openingCamera,
                     child: Container(

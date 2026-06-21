@@ -100,4 +100,17 @@ class AppTheme {
     systemNavigationBarColor: headerDark,
     systemNavigationBarIconBrightness: Brightness.light,
   );
+
+  static const TextStyle titleStyle = TextStyle(
+    color: textDark,
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const TextStyle subtitleStyle = TextStyle(
+    color: textMuted,
+    fontSize: 14,
+  );
+
+  static BoxDecoration get cardDecoration => cardShadow;
 }
