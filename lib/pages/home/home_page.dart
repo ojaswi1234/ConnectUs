@@ -37,6 +37,7 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   
   int _selectedNavIndex = 3; // 3 = Chat tab default
   int _selectedTabFilter = 0; // 0=All, 1=Personal, 2=Work
+  bool _isSearchVisible = false;
 
   final ImagePicker _picker = ImagePicker();
   File? _imageFile;
@@ -289,6 +290,8 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
       return matchesSearch && matchesTab;
     }).toList();
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -298,7 +301,7 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Chats', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+              Text('Chats', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: colorScheme.onSurface)),
               Row(
                 children: [
                   GestureDetector(
@@ -306,24 +309,24 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
                     child: Container(
                       margin: const EdgeInsets.only(right: 12),
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
-                      child: const Icon(Icons.camera_alt_outlined, color: AppTheme.textDark),
+                      decoration: BoxDecoration(color: colorScheme.surface, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
+                      child: Icon(Icons.camera_alt_outlined, color: colorScheme.onSurface),
                     ),
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Toggle search bar
-                      if (_searchController.text.isNotEmpty) {
-                        _searchController.clear();
-                        _onSearchChanged();
-                      } else {
-                        // Focus could be requested here
-                      }
+                      setState(() {
+                        _isSearchVisible = !_isSearchVisible;
+                        if (!_isSearchVisible) {
+                          _searchController.clear();
+                          _onSearchChanged();
+                        }
+                      });
                     },
                     child: Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
-                      child: const Icon(Icons.search, color: AppTheme.textDark),
+                      decoration: BoxDecoration(color: colorScheme.surface, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
+                      child: Icon(Icons.search, color: colorScheme.onSurface),
                     ),
                   ),
                 ],
@@ -331,18 +334,20 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
             ],
           ),
         ),
-        if (_searchController.text.isNotEmpty || true) // Show search bar if you want
+        if (_isSearchVisible)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: TextField(
               controller: _searchController,
               onChanged: (_) => _onSearchChanged(),
+              style: TextStyle(color: colorScheme.onSurface),
               decoration: InputDecoration(
                 hintText: 'Search chats...',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: TextStyle(color: AppTheme.textMuted.withOpacity(0.5)),
+                prefixIcon: const Icon(Icons.search, color: AppTheme.textMuted),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                 filled: true,
-                fillColor: AppTheme.surface,
+                fillColor: colorScheme.surface,
               ),
             ),
           ),
@@ -408,9 +413,10 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   Widget build(BuildContext context) {
     super.build(context);
     SystemChrome.setSystemUIOverlayStyle(AppTheme.lightOverlay);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.bgWarm,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -467,12 +473,12 @@ class _TabPill extends StatelessWidget {
   const _TabPill({required this.label, required this.active});
 
   @override
-  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
         gradient: active ? AppTheme.coralGradient : null,
-        color: active ? null : AppTheme.surface,
+        color: active ? null : colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: active ? [BoxShadow(color: AppTheme.coral.withOpacity(0.3), blurRadius: 12)] : null,
       ),
@@ -496,13 +502,22 @@ class _ChatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeString = _formatTime(chat.lastMessageTime);
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: AppTheme.cardShadow,
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(color: AppTheme.coral.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 8)),
+              BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4, offset: const Offset(0, 2)),
+            ],
+          ),
           child: Row(
             children: [
               // Avatar with cyan ring
@@ -529,7 +544,7 @@ class _ChatTile extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(chat.contactName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textDark)),
+                          child: Text(chat.contactName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colorScheme.onSurface)),
                         ),
                         Text(timeString, style: TextStyle(fontSize: 12, color: AppTheme.textMuted.withOpacity(0.7))),
                       ],

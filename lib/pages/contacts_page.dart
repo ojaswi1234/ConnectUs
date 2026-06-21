@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'dart:async';
-import 'package:supabase_flutter/supabase_flutter.dart'; //
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ContactsPage extends StatefulWidget {
   final List<Contact> registeredContacts;
@@ -26,8 +26,7 @@ class ContactsPage extends StatefulWidget {
   State<ContactsPage> createState() => _ContactsPageState();
 }
 
-class _ContactsPageState extends State<ContactsPage>
-    with AutomaticKeepAliveClientMixin {
+class _ContactsPageState extends State<ContactsPage> with AutomaticKeepAliveClientMixin {
   final TextEditingController _searchController = TextEditingController();
   List<Contact> _filteredRegistered = [];
   List<Contact> _filteredNonRegistered = [];
@@ -69,12 +68,10 @@ class _ContactsPageState extends State<ContactsPage>
             } else {
               final lowerQuery = query.toLowerCase();
               _filteredRegistered = widget.registeredContacts
-                  .where(
-                      (c) => c.displayName.toLowerCase().contains(lowerQuery))
+                  .where((c) => c.displayName.toLowerCase().contains(lowerQuery))
                   .toList();
               _filteredNonRegistered = widget.nonRegisteredContacts
-                  .where(
-                      (c) => c.displayName.toLowerCase().contains(lowerQuery))
+                  .where((c) => c.displayName.toLowerCase().contains(lowerQuery))
                   .toList();
             }
           });
@@ -98,7 +95,6 @@ class _ContactsPageState extends State<ContactsPage>
     setState(() => _isWebSearching = true);
 
     try {
-      // Querying the 'usrname' column specifically
       final List<dynamic> response = await Supabase.instance.client
           .from('users')
           .select('usrname')
@@ -107,12 +103,7 @@ class _ContactsPageState extends State<ContactsPage>
 
       final results = response.map((userData) {
         final contact = Contact();
-        // Explicitly map 'usrname' to displayName
         contact.displayName = userData['usrname'] ?? 'Unknown User';
-        // Remove phone number to prevent enumeration
-        // if (userData['phone_number'] != null) {
-        //   contact.phones = [Phone(userData['phone_number'].toString())];
-        // }
         return contact;
       }).toList();
 
@@ -129,46 +120,78 @@ class _ContactsPageState extends State<ContactsPage>
   }
 
   Widget _buildContactTile(Contact contact, bool isRegistered) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Card(
-        color: isRegistered
-            ? AppTheme.accentDark.withAlpha(20)
-            : AppTheme.accent.withAlpha(10),
-        margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundColor: isRegistered ? Colors.green : AppTheme.accentDark,
-            child: Text(
-              contact.displayName.isNotEmpty
-                  ? contact.displayName[0].toUpperCase()
-                  : '?',
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold),
-            ),
+      padding: const EdgeInsets.only(bottom: 12),
+      child: GestureDetector(
+        onTap: () {
+          if (isRegistered || !isMobile) {
+            Navigator.pop(context);
+            widget.onContactTap(contact); // Triggers chat initiation
+          } else {
+            widget.onInviteContact(contact);
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(color: AppTheme.coral.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 5)),
+            ],
           ),
-          title: Text(
-            contact.displayName,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: isRegistered ? AppTheme.cyanRingGradient : null,
+                  border: isRegistered ? null : Border.all(color: AppTheme.textMuted.withOpacity(0.3), width: 2),
+                ),
+                child: CircleAvatar(
+                  radius: 26,
+                  backgroundColor: AppTheme.bgCool,
+                  child: Text(
+                    contact.displayName.isNotEmpty ? contact.displayName[0].toUpperCase() : '?',
+                    style: TextStyle(color: isRegistered ? AppTheme.logoTeal : AppTheme.textMuted, fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      contact.displayName,
+                      style: TextStyle(color: colorScheme.onSurface, fontWeight: FontWeight.w700, fontSize: 16),
+                    ),
+                    if (contact.phones.isNotEmpty && isMobile) ...[
+                      const SizedBox(height: 4),
+                      Text(contact.phones.first.number, style: const TextStyle(color: AppTheme.textMuted, fontSize: 13)),
+                    ]
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isRegistered ? AppTheme.logoCyan.withOpacity(0.1) : AppTheme.textMuted.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  isRegistered ? 'Message' : 'Invite',
+                  style: TextStyle(
+                    color: isRegistered ? AppTheme.logoTeal : AppTheme.textMuted,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
           ),
-          subtitle: contact.phones.isNotEmpty
-              ? Text(isMobile ? contact.phones.first.number : "",
-                  style: const TextStyle(color: Colors.white70))
-              : null,
-          trailing: Icon(
-            isRegistered ? Icons.chat_bubble : Icons.person_add,
-            color: isRegistered ? Colors.green : AppTheme.accentDark,
-          ),
-          onTap: () {
-            if (isRegistered || !isMobile) {
-              Navigator.pop(context);
-              widget.onContactTap(contact); // Triggers chat initiation
-            } else {
-              widget.onInviteContact(contact);
-            }
-          },
         ),
       ),
     );
@@ -177,33 +200,30 @@ class _ContactsPageState extends State<ContactsPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title:
-            const Text('Select Contact', style: TextStyle(color: Colors.black)),
-        backgroundColor: AppTheme.accentDark,
-        iconTheme: const IconThemeData(color: Colors.black),
+        title: Text('Select Contact', style: TextStyle(color: colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: colorScheme.onSurface),
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: TextField(
               controller: _searchController,
-              style: TextStyle(color: isMobile ? Colors.white : Colors.black),
+              style: TextStyle(color: colorScheme.onSurface),
               decoration: InputDecoration(
-                hintText:
-                    isMobile ? 'Search contacts...' : 'Search via UserName',
-                prefixIcon: Icon(Icons.search,
-                    color: isMobile ? Colors.grey : Colors.black),
+                hintText: isMobile ? 'Search contacts...' : 'Search via Username',
+                hintStyle: TextStyle(color: AppTheme.textMuted.withOpacity(0.5)),
+                prefixIcon: const Icon(Icons.search, color: AppTheme.textMuted),
                 filled: true,
-                fillColor:
-                    isMobile ? Colors.grey.shade800 : AppTheme.accentDark,
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none),
+                fillColor: colorScheme.surface,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
               ),
               onChanged: _filterContacts,
             ),
@@ -233,39 +253,32 @@ class _ContactsPageState extends State<ContactsPage>
 
   Widget _buildWebList() {
     if (_isWebSearching) {
-      return const Center(
-          child: CircularProgressIndicator(color: AppTheme.accent));
+      return const Center(child: CircularProgressIndicator(color: AppTheme.coral));
     }
     if (_webSearchResults.isEmpty) {
-      return const Center(
-          child: Text("No users found", style: TextStyle(color: Colors.white)));
+      return const Center(child: Text("No users found", style: TextStyle(color: AppTheme.textMuted)));
     }
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       itemCount: _webSearchResults.length,
-      itemBuilder: (context, index) =>
-          _buildContactTile(_webSearchResults[index], true),
+      itemBuilder: (context, index) => _buildContactTile(_webSearchResults[index], true),
     );
   }
 
   Widget _buildHeader(String text) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(text,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
+        child: Text(text, style: const TextStyle(color: AppTheme.textMuted, fontWeight: FontWeight.bold, fontSize: 14)),
       ),
     );
   }
 
   Widget _buildSliverList(List<Contact> list, bool reg) {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-            (c, i) => _buildContactTile(list[i], reg),
-            childCount: list.length),
+        delegate: SliverChildBuilderDelegate((c, i) => _buildContactTile(list[i], reg), childCount: list.length),
       ),
     );
   }
