@@ -31,6 +31,7 @@ import 'package:ConnectUs/services/security_services.dart';
 import 'package:ConnectUs/services/call_notification_service.dart';
 import 'package:ConnectUs/pages/chat/voice.dart';
 import 'package:ConnectUs/pages/chat/video.dart';
+import 'package:ConnectUs/services/chat_sync_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -126,6 +127,8 @@ class MainApp extends ConsumerStatefulWidget {
 class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
   Timer? _heartbeatTimer;
   StreamSubscription? _incomingCallSub;
+  ChatSyncService? _chatSync;
+  StreamSubscription? _syncSub;
 
   @override
   void initState() {
@@ -133,6 +136,9 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _updateOnlineStatus(true);
     _startHeartbeat();
+
+    // Initialize chat sync
+    _initChatSync();
 
     CallNotificationService.initialize(
       onAccept: (payload) async {
@@ -191,10 +197,18 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
     });
   }
 
+  Future<void> _initChatSync() async {
+    _chatSync = ChatSyncService();
+    await _chatSync!.initialize();
+    await _chatSync!.fetchMissedMessages(); // Catch up on startup
+  }
+
   @override
   void dispose() {
     _heartbeatTimer?.cancel();
     _incomingCallSub?.cancel();
+    _syncSub?.cancel();
+    _chatSync?.dispose();
     WidgetsBinding.instance.removeObserver(this);
     _updateOnlineStatus(false);
     super.dispose();
@@ -204,6 +218,7 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _updateOnlineStatus(true);
+      _chatSync?.fetchMissedMessages(); // Catch up when coming back online
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       _updateOnlineStatus(false);

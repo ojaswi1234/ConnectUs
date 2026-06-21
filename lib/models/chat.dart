@@ -2,6 +2,7 @@
 class Chats {
   final String contactName;
   String? supabaseUsername;
+  String? roomId; // ADD THIS
   String lastMessage;
   DateTime lastMessageTime;
   int unreadCount;
@@ -9,6 +10,7 @@ class Chats {
   Chats({
     required this.contactName,
     this.supabaseUsername,
+    this.roomId,
     required this.lastMessage,
     required this.lastMessageTime,
     this.unreadCount = 0,

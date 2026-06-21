@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'package:ConnectUs/providers/call_provider.dart';
 import 'package:ConnectUs/pages/chat/voice.dart';
 import 'package:ConnectUs/pages/chat/video.dart';
+import 'package:ConnectUs/services/chat_sync_service.dart';
 
 class ChatArea extends ConsumerStatefulWidget {
   final String userName;
@@ -47,6 +48,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   supabase.RealtimeChannel? _blockChannel;
   Timer? _statusRetryTimer;        // ADD
   Timer? _offlinePollTimer;       // ADD
+  StreamSubscription? _syncSubscription;
 
   // Local Storage
   late Box _chatBox;
@@ -63,6 +65,16 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     _startBlockStatusPoller();
     _updateMyRoomPresence(true); // ENTER room
     _startOfflinePolling();        // ADD
+
+    // Listen to global sync for this room
+    _syncSubscription = ChatSyncService().messageStream.listen((event) {
+      if (event['room_id'] == _roomId && mounted) {
+        final messages = event['messages'] as List;
+        _saveToLocal(messages);
+        setState(() {});
+        _scrollToBottom();
+      }
+    });
   }
 
   void _startBlockStatusPoller() {
@@ -80,6 +92,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     // ADD: Cancel all timers first
     _statusRetryTimer?.cancel();
     _offlinePollTimer?.cancel();
+    _syncSubscription?.cancel(); // ADD
     
     // ADD: Fully remove channel from client, not just unsubscribe
     if (_statusChannel != null) {
@@ -155,9 +168,6 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
   // Fetch the full message history from Supabase when the chat opens
   Future<void> _fetchHistoryFromSupabase() async {
-    // Only fetch from Supabase on Web
-    if (!kIsWeb) return;
-    
     if (_roomId == "loading") return;
     try {
       final client = supabase.Supabase.instance.client;
@@ -168,11 +178,23 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           .maybeSingle();
 
       if (response != null && response['messages'] != null) {
-        final history = List.from(response['messages']);
-        _saveToLocal(history); // Cache locally even on web
-        if (mounted) {
-          setState(() {});
-          _scrollToBottom();
+        final remoteMessages = List.from(response['messages']);
+        final localMessages = List.from(_localHistory);
+
+        // Merge: deduplicate
+        final localKeys = localMessages.map((m) => '${m['user']}:${m['content']}:${m['createdAt']}').toSet();
+        final newOnes = remoteMessages.where((m) {
+          final key = '${m['user']}:${m['content']}:${m['createdAt']}';
+          return !localKeys.contains(key);
+        }).toList();
+
+        if (newOnes.isNotEmpty) {
+          final merged = [...localMessages, ...newOnes];
+          _saveToLocal(merged);
+          if (mounted) {
+            setState(() {});
+            _scrollToBottom();
+          }
         }
       }
     } catch (e) {
@@ -418,10 +440,8 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   // --- HELPERS ---
   String get _roomId {
     if (_myUsername == null) return "loading";
-    final users = [_myUsername!, widget.userName]..sort();
-    final rawId = users.join("_");
-    final bytes = utf8.encode(rawId);
-    return sha256.convert(bytes).toString();
+    final users = [_myUsername!, widget.supabaseUsername ?? widget.userName]..sort();
+    return users.join('_'); // Readable: alice_bob
   }
 
   List<dynamic> get _localHistory => _chatBox.get(_roomId, defaultValue: []);
@@ -450,18 +470,16 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     final currentMessages = List.from(_localHistory);
     currentMessages.add(newMessage);
 
-    // 1. Always save to local (Hive) — instant, works offline
+    // 1. Always save to local (fast)
     _saveToLocal(currentMessages);
 
-    // 2. Web only: persist to Supabase for cross-device sync
-    if (kIsWeb) {
-      _updateHistoryInSupabase(currentMessages);
-    }
+    // 2. ALWAYS save to Supabase (for offline sync & cross-device)
+    _updateHistoryInSupabase(currentMessages);
 
     widget.onMessageSent?.call(newMessage['content'] as String, DateTime.now());
     setState(() {});
 
-    // 3. Send via GraphQL for real-time delivery (both platforms)
+    // 3. Send via GraphQL for real-time delivery
     final client = ref.read(clientProvider);
     final sendMessageReq = GSendMessageReq((b) => b
       ..vars.roomId = _roomId

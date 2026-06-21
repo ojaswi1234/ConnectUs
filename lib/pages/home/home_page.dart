@@ -13,6 +13,7 @@ import 'package:ConnectUs/components/contact_tile.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
 import 'package:ConnectUs/models/contact.dart' as HiveContact;
 import 'package:ConnectUs/models/chat.dart';
+import 'package:ConnectUs/services/chat_sync_service.dart';
 
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});
@@ -33,21 +34,21 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   // Replace LinkedHashSet with a List + proper sort
   final List<Chats> _chats = [];
 
-  void updateChatPreview(String contactName, String lastMessage, DateTime time, {String? supabaseUsername}) {
+  void updateChatPreview(String contactName, String lastMessage, DateTime time, {String? supabaseUsername, String? roomId}) {
     setState(() {
       final existingIndex = _chats.indexWhere((c) => c.contactName == contactName);
       if (existingIndex >= 0) {
         // Update existing chat
         _chats[existingIndex].lastMessage = lastMessage;
         _chats[existingIndex].lastMessageTime = time;
-        if (supabaseUsername != null) {
-          _chats[existingIndex].supabaseUsername = supabaseUsername;
-        }
+        if (supabaseUsername != null) _chats[existingIndex].supabaseUsername = supabaseUsername;
+        if (roomId != null) _chats[existingIndex].roomId = roomId;
       } else {
         // Create new chat entry
         _chats.add(Chats(
           contactName: contactName,
           supabaseUsername: supabaseUsername,
+          roomId: roomId,
           lastMessage: lastMessage,
           lastMessageTime: time,
         ));
@@ -62,6 +63,8 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   List<Contact> _nonRegisteredContacts = [];
   Map<String, String> _phoneToUsername = {};
   Timer? _debounceTimer;
+  StreamSubscription? _syncSubscription;
+  String? _myUsername;
 
   @override
   bool get wantKeepAlive => true;
@@ -71,6 +74,55 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
     super.initState();
     _initializeHive();
     _loadContacts();
+    _initSyncListener();
+  }
+
+  Future<void> _initSyncListener() async {
+    // Get my username for room ID matching
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      final data = await Supabase.instance.client
+          .from('users')
+          .select('usrname')
+          .eq('id', user.id)
+          .maybeSingle();
+      _myUsername = data?['usrname'];
+    }
+
+    _syncSubscription = ChatSyncService().messageStream.listen((event) {
+      final roomId = event['room_id'] as String;
+      final messages = event['messages'] as List;
+      if (messages.isEmpty || _myUsername == null) return;
+
+      final otherUser = ChatSyncService().getOtherUserFromRoomId(roomId);
+      final lastMsg = messages.last as Map;
+      final content = lastMsg['content'] ?? '';
+      final time = DateTime.tryParse(lastMsg['createdAt'] ?? '') ?? DateTime.now();
+
+      // Find or create chat tile
+      setState(() {
+        final idx = _chats.indexWhere((c) => c.supabaseUsername == otherUser || c.roomId == roomId);
+        if (idx >= 0) {
+          _chats[idx].lastMessage = content;
+          _chats[idx].lastMessageTime = time;
+          _chats[idx].roomId = roomId;
+          if (event['type'] == 'catchup') {
+            _chats[idx].unreadCount += (event['new_count'] as int? ?? 0);
+          }
+        } else {
+          // Create tile if missing (e.g., first message from new contact)
+          _chats.add(Chats(
+            contactName: otherUser,
+            supabaseUsername: otherUser,
+            roomId: roomId,
+            lastMessage: content,
+            lastMessageTime: time,
+            unreadCount: event['type'] == 'catchup' ? (event['new_count'] as int? ?? 1) : 1,
+          ));
+        }
+        _chats.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
+      });
+    });
   }
 
   void _initializeHive() {
@@ -182,7 +234,15 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
       if (supabaseUsername != null) break;
     }
 
-    updateChatPreview(contact.displayName, 'Click here to start chatting', DateTime.now(), supabaseUsername: supabaseUsername);
+    final roomId = _getRoomId(_myUsername ?? 'me', supabaseUsername ?? contact.displayName);
+
+    updateChatPreview(
+      contact.displayName,
+      'Click here to start chatting',
+      DateTime.now(),
+      supabaseUsername: supabaseUsername,
+      roomId: roomId,
+    );
 
     Navigator.push(
       context,
@@ -192,6 +252,11 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
         onMessageSent: (lastMsg, time) => updateChatPreview(contact.displayName, lastMsg, time),
       )),
     );
+  }
+
+  String _getRoomId(String userA, String userB) {
+    final users = [userA, userB]..sort();
+    return users.join('_');
   }
 
   void _inviteContact(Contact contact) {
@@ -230,6 +295,7 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   void dispose() {
     _debounceTimer?.cancel();
     _searchController.dispose();
+    _syncSubscription?.cancel();
     super.dispose();
   }
 
@@ -290,7 +356,7 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
                                 child: ContactTile(
                                   contactName: chat.contactName,
                                   lastMessage: chat.lastMessage,
-                                  unreadCount: 0,
+                                  unreadCount: chat.unreadCount,
                                 ),
                               );
                             },
