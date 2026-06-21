@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ConnectUs/services/AuthChecker.dart';
-import 'package:ConnectUs/pages/auth/profile.dart';
 import 'package:ConnectUs/pages/config/settings.dart';
 import 'package:ConnectUs/pages/home/home.dart';
 import 'package:ConnectUs/pages/landing.dart';
@@ -273,8 +272,7 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
               isLoading: false,
             ),
         '/registerPhone': (context) => const RegisterPhone(),
-        '/profile': (context) => const Profile(),
-        '/settings': (context) => const Settings(),
+        '/settings': (context) => const SettingsPage(),
         '/ai': (context) => const AIPage(),
         '/about': (context) => About(),
         '/account': (context) => const Account(),

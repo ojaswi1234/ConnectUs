@@ -30,6 +30,19 @@ class AppTheme {
   static const Color receivedBubble = Color(0xFFFFFFFF);
   static const Color receivedBubbleBorder = Color(0xFFE8E8E8);
 
+  // Backward compatibility aliases (old code uses these)
+  static const Color accentDark = headerDark;
+  static const Color accent = coral;
+  static const Color background = bgWarm;
+  static const Color highlight = logoCyan;
+
+  static ButtonStyle get elevatedButtonStyle => ElevatedButton.styleFrom(
+    backgroundColor: coral,
+    foregroundColor: Colors.white,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+  );
+
   // Gradients
   static const LinearGradient coralGradient = LinearGradient(
     colors: [sentBubbleStart, sentBubbleEnd],
