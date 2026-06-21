@@ -1,12 +1,14 @@
 
 class Chats {
   final String contactName;
+  String? supabaseUsername;
   String lastMessage;
   DateTime lastMessageTime;
   int unreadCount;
 
   Chats({
     required this.contactName,
+    this.supabaseUsername,
     required this.lastMessage,
     required this.lastMessageTime,
     this.unreadCount = 0,

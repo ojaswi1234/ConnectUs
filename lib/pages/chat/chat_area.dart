@@ -17,9 +17,10 @@ import 'package:ConnectUs/pages/chat/video.dart';
 
 class ChatArea extends ConsumerStatefulWidget {
   final String userName;
+  final String? supabaseUsername;
   final Function(String message, DateTime time)? onMessageSent;
 
-  const ChatArea({super.key, required this.userName, this.onMessageSent});
+  const ChatArea({super.key, required this.userName, this.supabaseUsername, this.onMessageSent});
 
   @override
   ConsumerState<ChatArea> createState() => _ChatAreaState();
@@ -94,10 +95,11 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           .maybeSingle();
 
       // 2. Get Target User ID & Status from their Username
+      final lookupName = widget.supabaseUsername ?? widget.userName;
       final targetData = await client
           .from('users')
           .select('id, is_online')
-          .eq('usrname', widget.userName)
+          .eq('usrname', lookupName)
           .maybeSingle();
 
       if (mounted) {
@@ -175,11 +177,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           event: supabase.PostgresChangeEvent.update,
           schema: 'public',
           table: 'users',
-          filter: supabase.PostgresChangeFilter(
-            type: supabase.PostgresChangeFilterType.eq,
-            column: 'id',
-            value: _targetUserId!,
-          ),
+          filter: supabase.PostgresChangeFilter.eq('id', _targetUserId!),
           callback: (payload) {
             debugPrint('Status payload: ${payload.newRecord}');
             if (payload.newRecord.containsKey('is_online')) {
@@ -194,7 +192,6 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
         .subscribe((status, [err]) {
           debugPrint('Status subscription state: $status');
           if (status == 'CHANNEL_ERROR' || status == 'TIMED_OUT') {
-            // Retry after delay
             Future.delayed(const Duration(seconds: 3), _startStatusSubscription);
           }
         });
@@ -241,21 +238,25 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   void _startBlockSubscription() {
     if (_myUserId == null || _targetUserId == null) return;
     final client = supabase.Supabase.instance.client;
-    
+
     _blockChannel = client.channel('blocks-check');
     _blockChannel!
-      .onPostgresChanges(
-        event: supabase.PostgresChangeEvent.all,
-        schema: 'public',
-        table: 'blocks',
-        filter: supabase.PostgresChangeFilter(
-          type: supabase.PostgresChangeFilterType.inFilter,
-          column: 'blocker_id',
-          value: [_myUserId!, _targetUserId!],
-        ),
-        callback: (payload) => _checkBlockStatus(),
-      )
-      .subscribe();
+        .onPostgresChanges(
+          event: supabase.PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'blocks',
+          callback: (payload) {
+            final record = payload.newRecord.isNotEmpty ? payload.newRecord : payload.oldRecord;
+            final blockerId = record['blocker_id'];
+            final blockedId = record['blocked_id'];
+
+            if ((blockerId == _myUserId && blockedId == _targetUserId) ||
+                (blockerId == _targetUserId && blockedId == _myUserId)) {
+              _checkBlockStatus();
+            }
+          },
+        )
+        .subscribe();
   }
 
   Future<void> _checkBlockStatus() async {

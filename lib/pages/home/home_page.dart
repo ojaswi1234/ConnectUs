@@ -33,17 +33,21 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   // Replace LinkedHashSet with a List + proper sort
   final List<Chats> _chats = [];
 
-  void updateChatPreview(String contactName, String lastMessage, DateTime time) {
+  void updateChatPreview(String contactName, String lastMessage, DateTime time, {String? supabaseUsername}) {
     setState(() {
       final existingIndex = _chats.indexWhere((c) => c.contactName == contactName);
       if (existingIndex >= 0) {
         // Update existing chat
         _chats[existingIndex].lastMessage = lastMessage;
         _chats[existingIndex].lastMessageTime = time;
+        if (supabaseUsername != null) {
+          _chats[existingIndex].supabaseUsername = supabaseUsername;
+        }
       } else {
         // Create new chat entry
         _chats.add(Chats(
           contactName: contactName,
+          supabaseUsername: supabaseUsername,
           lastMessage: lastMessage,
           lastMessageTime: time,
         ));
@@ -56,7 +60,7 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   bool _isLoading = false;
   List<Contact> _registeredContacts = [];
   List<Contact> _nonRegisteredContacts = [];
-  Set<String>? _cachedRegisteredNumbers;
+  Map<String, String> _phoneToUsername = {};
   Timer? _debounceTimer;
 
   @override
@@ -96,35 +100,34 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
     await _fetchContactsFromDevice();
   }
 
-  Future<Set<String>> _fetchRegisteredPhoneNumbers() async {
-     if (_cachedRegisteredNumbers != null) return _cachedRegisteredNumbers!;
+  Future<Map<String, String>> _fetchRegisteredUsers() async {
     try {
-      final response = await Supabase.instance.client.from('users').select('phone_number');
-      final phoneNumbers = (response as List)
-          .map((row) => row['phone_number'] as String)
-          .where((number) => number.isNotEmpty)
-          .map((number) => _normalizePhoneNumber(number))
-          .where((number) => number.isNotEmpty)
-          .toSet();
-      _cachedRegisteredNumbers = phoneNumbers;
-      return phoneNumbers;
+      final response = await Supabase.instance.client.from('users').select('phone_number, usrname');
+      final Map<String, String> phoneToUsername = {};
+      for (final row in response as List) {
+        final phone = _normalizePhoneNumber(row['phone_number'] as String? ?? '');
+        final username = row['usrname'] as String? ?? '';
+        if (phone.isNotEmpty && username.isNotEmpty) {
+          phoneToUsername[phone] = username;
+        }
+      }
+      return phoneToUsername;
     } catch (e) {
-      debugPrint('Error fetching registered phone numbers: $e');
-      return <String>{};
+      debugPrint('Error fetching registered users: $e');
+      return {};
     }
   }
-  
+
   Future<void> _categorizeContacts() async {
-    final registeredNumbers = await _fetchRegisteredPhoneNumbers();
+    _phoneToUsername = await _fetchRegisteredUsers();
+    final registeredNumbers = _phoneToUsername.keys.toSet();
     _registeredContacts = [];
     _nonRegisteredContacts = [];
     for (final contact in _contacts) {
       bool isRegistered = false;
       for (final phone in contact.phones) {
         final normalized = _normalizePhoneNumber(phone.number);
-        if (registeredNumbers.contains(normalized) ||
-            registeredNumbers.contains('91$normalized') ||
-            (normalized.length > 2 && registeredNumbers.contains(normalized.substring(2)))) {
+        if (registeredNumbers.contains(normalized)) {
           isRegistered = true;
           break;
         }
@@ -172,11 +175,20 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   }
   
   void _createChatWithContact(Contact contact) {
-    updateChatPreview(contact.displayName, 'Click here to start chatting', DateTime.now());
+    String? supabaseUsername;
+    for (final phone in contact.phones) {
+      final normalized = _normalizePhoneNumber(phone.number);
+      supabaseUsername = _phoneToUsername[normalized];
+      if (supabaseUsername != null) break;
+    }
+
+    updateChatPreview(contact.displayName, 'Click here to start chatting', DateTime.now(), supabaseUsername: supabaseUsername);
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ChatArea(
         userName: contact.displayName,
+        supabaseUsername: supabaseUsername,
         onMessageSent: (lastMsg, time) => updateChatPreview(contact.displayName, lastMsg, time),
       )),
     );
@@ -270,6 +282,7 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
                                     context, 
                                     MaterialPageRoute(builder: (context) => ChatArea(
                                       userName: chat.contactName,
+                                      supabaseUsername: chat.supabaseUsername,
                                       onMessageSent: (lastMsg, time) => updateChatPreview(chat.contactName, lastMsg, time),
                                     ))
                                   );
