@@ -32,6 +32,7 @@ import 'package:ConnectUs/pages/chat/voice.dart';
 import 'package:ConnectUs/pages/chat/video.dart';
 import 'package:ConnectUs/services/chat_sync_service.dart';
 import 'package:ConnectUs/providers/theme_provider.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

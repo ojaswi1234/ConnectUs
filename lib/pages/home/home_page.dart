@@ -473,6 +473,7 @@ class _TabPill extends StatelessWidget {
   const _TabPill({required this.label, required this.active});
 
   @override
+  Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
