@@ -177,7 +177,11 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           event: supabase.PostgresChangeEvent.update,
           schema: 'public',
           table: 'users',
-          filter: supabase.PostgresChangeFilter.eq('id', _targetUserId!),
+          filter: supabase.PostgresChangeFilter(
+            type: supabase.PostgresChangeFilterType.eq,
+            column: 'id',
+            value: _targetUserId!,
+          ),
           callback: (payload) {
             debugPrint('Status payload: ${payload.newRecord}');
             if (payload.newRecord.containsKey('is_online')) {
