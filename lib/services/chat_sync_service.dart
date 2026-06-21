@@ -16,6 +16,14 @@ class ChatSyncService {
   String? _myUsername;
   bool _initialized = false;
 
+  /// Rooms that have unsaved local messages not yet flushed to Supabase.
+  final Set<String> _pendingSyncRooms = {};
+
+  /// Called by chat_area on every send to mark the room as dirty.
+  void markPendingSync(String roomId) {
+    _pendingSyncRooms.add(roomId);
+  }
+
   Future<void> initialize() async {
     if (_initialized) return;
     final user = supabase.Supabase.instance.client.auth.currentUser;
@@ -117,6 +125,39 @@ class ChatSyncService {
       }
     } catch (e) {
       debugPrint('Error fetching missed messages: $e');
+    }
+  }
+
+  /// Flush all pending (dirty) local chat rooms to Supabase.
+  /// Call this on: app paused/detached, periodic timer, or when recipient goes offline.
+  Future<void> syncAllLocalChatsToSupabase() async {
+    if (kIsWeb || _pendingSyncRooms.isEmpty) return;
+    final user = supabase.Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+
+    final box = Hive.box('local_chats');
+    final client = supabase.Supabase.instance.client;
+
+    // Snapshot and clear the set before async work to avoid double-flush.
+    final roomsToSync = Set<String>.from(_pendingSyncRooms);
+    _pendingSyncRooms.clear();
+
+    for (final roomId in roomsToSync) {
+      try {
+        final messages = List.from(box.get(roomId, defaultValue: []) as List);
+        if (messages.isEmpty) continue;
+
+        await client.from('messages').upsert({
+          'room_id': roomId,
+          'user_id': user.id,
+          'messages': messages,
+        });
+        debugPrint('[ChatSyncService] Flushed $roomId (${messages.length} msgs) to Supabase.');
+      } catch (e) {
+        // Re-queue if sync failed so next flush can retry.
+        _pendingSyncRooms.add(roomId);
+        debugPrint('[ChatSyncService] Sync failed for $roomId: $e');
+      }
     }
   }
 

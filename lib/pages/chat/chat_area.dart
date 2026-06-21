@@ -48,6 +48,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   supabase.RealtimeChannel? _blockChannel;
   Timer? _statusRetryTimer;        // ADD
   Timer? _offlinePollTimer;       // ADD
+  Timer? _syncTimer;              // Periodic 30-second Supabase flush
   StreamSubscription? _syncSubscription;
 
   // Local Storage
@@ -65,6 +66,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     _startBlockStatusPoller();
     _updateMyRoomPresence(true); // ENTER room
     _startOfflinePolling();        // ADD
+    _startPeriodicSync();          // Background Supabase flush every 30 s
 
     // Listen to global sync for this room
     _syncSubscription = ChatSyncService().messageStream.listen((event) {
@@ -92,6 +94,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     // ADD: Cancel all timers first
     _statusRetryTimer?.cancel();
     _offlinePollTimer?.cancel();
+    _syncTimer?.cancel();
     _syncSubscription?.cancel(); // ADD
     
     // ADD: Fully remove channel from client, not just unsubscribe
@@ -251,9 +254,15 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
         final theirRoom = data['current_room'] as String?;
         final nowInRoom = theirRoom == _roomId;
         final isOnline = data['is_online'] ?? false;
+        final wasOnline = _isTargetOnline;
         setState(() {
           _isTargetOnline = nowInRoom || (isOnline && theirRoom == null);
         });
+
+        // Recipient just went offline — flush pending messages immediately.
+        if (wasOnline && !_isTargetOnline) {
+          ChatSyncService().syncAllLocalChatsToSupabase();
+        }
       }
     } catch (e) {
       debugPrint('Error fetching target status: $e');
@@ -450,6 +459,13 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     _chatBox.put(_roomId, messages);
   }
 
+  /// Periodic timer: flush any pending messages to Supabase every 30 seconds.
+  void _startPeriodicSync() {
+    _syncTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      ChatSyncService().syncAllLocalChatsToSupabase();
+    });
+  }
+
   Future<void> _sendChat() async {
     await _checkBlockStatus();
     if (_isBlocked) {
@@ -470,16 +486,18 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     final currentMessages = List.from(_localHistory);
     currentMessages.add(newMessage);
 
-    // 1. Always save to local (fast)
+    // 1. Always save locally (instant — no network round-trip).
     _saveToLocal(currentMessages);
 
-    // 2. ALWAYS save to Supabase (for offline sync & cross-device)
-    _updateHistoryInSupabase(currentMessages);
+    // 2. Mark room as dirty so the next flush writes it to Supabase.
+    //    Actual Supabase write is deferred to: periodic timer, app pause,
+    //    or the moment the recipient is detected offline.
+    ChatSyncService().markPendingSync(_roomId);
 
     widget.onMessageSent?.call(newMessage['content'] as String, DateTime.now());
     setState(() {});
 
-    // 3. Send via GraphQL for real-time delivery
+    // 3. Send via GraphQL for real-time delivery to online recipients.
     final client = ref.read(clientProvider);
     final sendMessageReq = GSendMessageReq((b) => b
       ..vars.roomId = _roomId

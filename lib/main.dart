@@ -222,6 +222,8 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       _updateOnlineStatus(false);
+      // Flush all pending local messages to Supabase before the OS sleeps the app.
+      ChatSyncService().syncAllLocalChatsToSupabase();
     }
   }
 
