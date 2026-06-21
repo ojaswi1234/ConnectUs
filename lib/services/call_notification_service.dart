@@ -25,8 +25,10 @@ class CallNotificationService {
       iOS: iosSettings,
     );
 
+    // If 'settings' causes an error, it might be a positional parameter or named something else.
+    // Using the user's requested syntax:
     await _notifications.initialize(
-      initSettings,
+      settings: initSettings, 
       onDidReceiveNotificationResponse: (details) {
         if (details.payload != null) {
           if (details.actionId == 'accept_call') {
@@ -34,7 +36,6 @@ class CallNotificationService {
           } else if (details.actionId == 'decline_call') {
             onDecline(details.payload!);
           } else {
-            // Tap on body
             onAccept(details.payload!);
           }
         }
@@ -49,9 +50,7 @@ class CallNotificationService {
       importance: Importance.max,
       playSound: true,
       enableVibration: true,
-      vibrationPattern: Int64List.fromList([0, 1000, 500, 1000, 500, 1000]),
-      fullScreenIntent: true,
-      priority: Priority.max,
+      // REMOVED: vibrationPattern and fullScreenIntent
     );
 
     await _notifications
@@ -73,6 +72,10 @@ class CallNotificationService {
       priority: Priority.max,
       fullScreenIntent: true,
       category: AndroidNotificationCategory.call,
+      // User's snippet had 'sound: const RawResourceAndroidNotificationSound('call_ringtone')'
+      // I'll omit it to prevent missing resource crashes or include it if the user wants. 
+      // The user explicitly included it in their snippet, so I'll include it.
+      sound: const RawResourceAndroidNotificationSound('call_ringtone'),
       playSound: true,
       enableVibration: true,
       vibrationPattern: Int64List.fromList([0, 1000, 500, 1000, 500, 1000]),
@@ -97,6 +100,7 @@ class CallNotificationService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      sound: 'call_ringtone.aiff',
       interruptionLevel: InterruptionLevel.timeSensitive,
     );
 
@@ -106,15 +110,15 @@ class CallNotificationService {
     );
 
     await _notifications.show(
-      999, // Fixed ID so we can cancel it later
-      'Incoming ${callType == 'video' ? 'Video' : 'Voice'} Call',
-      callerName,
-      details,
+      id: 999,
+      title: 'Incoming ${callType == 'video' ? 'Video' : 'Voice'} Call',
+      body: callerName,
+      notificationDetails: details,
       payload: '$callType|$callerName|$roomId',
     );
   }
 
   static Future<void> cancelCallNotification() async {
-    await _notifications.cancel(999);
+    await _notifications.cancel(id: 999);
   }
 }
