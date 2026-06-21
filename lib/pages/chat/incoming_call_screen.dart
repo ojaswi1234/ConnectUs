@@ -4,6 +4,7 @@ import 'package:ConnectUs/pages/chat/voice.dart';
 import 'package:ConnectUs/pages/chat/video.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ConnectUs/providers/call_provider.dart';
+import 'package:ConnectUs/services/call_notification_service.dart';
 
 class IncomingCallScreen extends ConsumerWidget {
   final Map<String, dynamic> callData;
@@ -49,7 +50,8 @@ class IncomingCallScreen extends ConsumerWidget {
                 _buildButton(
                   icon: Icons.call_end,
                   color: Colors.red,
-                  onPressed: () {
+                  onPressed: () async {
+                    await CallNotificationService.cancelCallNotification();
                     ref.read(callServiceProvider).declineCall();
                     Navigator.pop(context);
                   },
@@ -58,6 +60,7 @@ class IncomingCallScreen extends ConsumerWidget {
                   icon: Icons.call,
                   color: Colors.green,
                   onPressed: () async {
+                    await CallNotificationService.cancelCallNotification();
                     Navigator.pop(context); // Close incoming screen
                     final callService = ref.read(callServiceProvider);
                     await callService.acceptCall();

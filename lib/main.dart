@@ -28,6 +28,9 @@ import 'package:ConnectUs/providers/call_provider.dart';
 import 'package:ConnectUs/pages/chat/incoming_call_screen.dart';
 import 'package:ConnectUs/services/encryption_key_manager.dart';
 import 'package:ConnectUs/services/security_services.dart';
+import 'package:ConnectUs/services/call_notification_service.dart';
+import 'package:ConnectUs/pages/chat/voice.dart';
+import 'package:ConnectUs/pages/chat/video.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -131,9 +134,46 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
     _updateOnlineStatus(true);
     _startHeartbeat();
 
+    CallNotificationService.initialize(
+      onAccept: (payload) async {
+        final parts = payload.split('|');
+        final callType = parts[0];
+        final callerName = parts[1];
+        
+        await CallNotificationService.cancelCallNotification();
+        final callService = ref.read(callServiceProvider);
+        await callService.acceptCall();
+
+        if (navigatorKey.currentContext != null) {
+          Navigator.push(
+            navigatorKey.currentContext!,
+            MaterialPageRoute(
+              builder: (_) => callType == 'video'
+                  ? Video(userName: callerName, callService: callService)
+                  : Voice(userName: callerName, callService: callService),
+            ),
+          );
+        }
+      },
+      onDecline: (payload) async {
+        await CallNotificationService.cancelCallNotification();
+        ref.read(callServiceProvider).declineCall();
+      },
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(callServiceProvider).initSignaling();
-      _incomingCallSub = ref.read(callServiceProvider).incomingCallStream.listen((callData) {
+      _incomingCallSub = ref.read(callServiceProvider).incomingCallStream.listen((callData) async {
+        final callerName = callData['caller'] ?? 'Unknown Caller';
+        final callType = callData['callType'] ?? 'voice';
+        final roomId = callData['roomId'] ?? 'unknown_room';
+
+        await CallNotificationService.showIncomingCall(
+          callerName: callerName,
+          callType: callType,
+          roomId: roomId,
+        );
+
         if (navigatorKey.currentContext != null) {
           showDialog(
             context: navigatorKey.currentContext!,

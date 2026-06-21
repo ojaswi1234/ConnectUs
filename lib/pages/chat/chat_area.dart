@@ -4,7 +4,7 @@ import 'package:ConnectUs/graphql/__generated__/operations.req.gql.dart';
 import 'package:ConnectUs/services/ferry_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// For kIsWeb
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:ConnectUs/services/security_services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -59,6 +59,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     _chatBox = Hive.box('local_chats');
     _initializeChatSetup();
     _startBlockStatusPoller();
+    _updateMyRoomPresence(true); // ENTER room
   }
 
   void _startBlockStatusPoller() {
@@ -71,6 +72,7 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
   @override
   void dispose() {
+    _updateMyRoomPresence(false); // LEAVE room
     _statusChannel?.unsubscribe(); // Stop listening to status
     _blockChannel?.unsubscribe();
     _messageSubscription?.cancel();
@@ -78,6 +80,18 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     _scrollController.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _updateMyRoomPresence(bool isInRoom) async {
+    if (_myUserId == null) return;
+    try {
+      await supabase.Supabase.instance.client
+          .from('users')
+          .update({'current_room': isInRoom ? _roomId : null})
+          .eq('id', _myUserId!);
+    } catch (e) {
+      debugPrint('Error updating room presence: $e');
+    }
   }
 
   Future<void> _initializeChatSetup() async {
@@ -127,6 +141,9 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
   // Fetch the full message history from Supabase when the chat opens
   Future<void> _fetchHistoryFromSupabase() async {
+    // Only fetch from Supabase on Web
+    if (!kIsWeb) return;
+    
     if (_roomId == "loading") return;
     try {
       final client = supabase.Supabase.instance.client;
@@ -137,10 +154,10 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           .maybeSingle();
 
       if (response != null && response['messages'] != null) {
-        final history = List<dynamic>.from(response['messages']);
-        _saveToLocal(history); // Update local cache with fetched history
+        final history = List.from(response['messages']);
+        _saveToLocal(history); // Cache locally even on web
         if (mounted) {
-          setState(() {}); // Refresh UI
+          setState(() {});
           _scrollToBottom();
         }
       }
@@ -184,12 +201,18 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
           ),
           callback: (payload) {
             debugPrint('Status payload: ${payload.newRecord}');
-            if (payload.newRecord.containsKey('is_online')) {
-              if (mounted) {
-                setState(() {
-                  _isTargetOnline = payload.newRecord['is_online'] ?? false;
-                });
-              }
+            
+            // Check if they are in the SAME room
+            final theirRoom = payload.newRecord['current_room'] as String?;
+            final nowInRoom = theirRoom == _roomId;
+            
+            // Fallback to is_online if current_room is null
+            final isOnline = payload.newRecord['is_online'] ?? false;
+            
+            if (mounted) {
+              setState(() {
+                _isTargetOnline = nowInRoom || (isOnline && theirRoom == null);
+              });
             }
           },
         )
@@ -209,25 +232,32 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
       (b) => b..vars.roomId = _roomId,
     );
 
-    _messageSubscription =
-        client.request(messageSubscriptionRequest).listen((response) {
+    _messageSubscription = client.request(messageSubscriptionRequest).listen((response) {
       if (response.data != null &&
           response.data!.messages != null &&
           response.data!.messages!.isNotEmpty) {
         final newMsg = response.data!.messages!.last;
-        // Only process messages from the other user
+        
         if (newMsg.user != _myUsername) {
-          final currentMessages = List<dynamic>.from(_localHistory);
+          final currentMessages = List.from(_localHistory);
           final messageMap = {
             'content': newMsg.text,
             'user': newMsg.user,
             'createdAt': newMsg.createdAt ?? DateTime.now().toIso8601String()
           };
           currentMessages.add(messageMap);
-          // Only save to local cache. The sender is responsible for Supabase.
-          _saveToLocal(currentMessages);
 
-          widget.onMessageSent?.call(newMsg.text, DateTime.tryParse(newMsg.createdAt ?? '') ?? DateTime.now());
+          // Platform-aware storage
+          if (kIsWeb) {
+            _updateHistoryInSupabase(currentMessages);
+          } else {
+            _saveToLocal(currentMessages);
+          }
+
+          widget.onMessageSent?.call(
+            newMsg.text,
+            DateTime.tryParse(newMsg.createdAt ?? '') ?? DateTime.now(),
+          );
 
           if (mounted) {
             setState(() {});
@@ -329,37 +359,37 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
   }
 
   Future<void> _sendChat() async {
-    // Double-check block status right before sending
     await _checkBlockStatus();
-
     if (_isBlocked) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("You cannot message this user."),
-            backgroundColor: Colors.red),
+        const SnackBar(content: Text("You cannot message this user."), backgroundColor: Colors.red),
       );
       return;
     }
 
     if (_controller.text.trim().isEmpty || _myUsername == null) return;
+    
     final newMessage = {
       'content': _controller.text,
       'user': _myUsername,
       'createdAt': DateTime.now().toIso8601String()
     };
-    final currentMessages = List<dynamic>.from(_localHistory);
+    
+    final currentMessages = List.from(_localHistory);
     currentMessages.add(newMessage);
 
-    // Save to local cache for instant UI update
+    // 1. Always save to local (Hive) — instant, works offline
     _saveToLocal(currentMessages);
-    // Save the new complete history to Supabase
-    _updateHistoryInSupabase(currentMessages);
+
+    // 2. Web only: persist to Supabase for cross-device sync
+    if (kIsWeb) {
+      _updateHistoryInSupabase(currentMessages);
+    }
 
     widget.onMessageSent?.call(newMessage['content'] as String, DateTime.now());
-
     setState(() {});
 
-    // Send via GraphQL for real-time delivery
+    // 3. Send via GraphQL for real-time delivery (both platforms)
     final client = ref.read(clientProvider);
     final sendMessageReq = GSendMessageReq((b) => b
       ..vars.roomId = _roomId
