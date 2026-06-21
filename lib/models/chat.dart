@@ -1,8 +1,7 @@
-
 class Chats {
   final String contactName;
   String? supabaseUsername;
-  String? roomId; // ADD THIS
+  String? roomId;
   String lastMessage;
   DateTime lastMessageTime;
   int unreadCount;
@@ -17,12 +16,7 @@ class Chats {
   });
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Chats &&
-          runtimeType == other.runtimeType &&
-          contactName == other.contactName;
-
+  bool operator ==(Object other) => identical(this, other) || other is Chats && runtimeType == other.runtimeType && contactName == other.contactName;
   @override
   int get hashCode => contactName.hashCode;
 }

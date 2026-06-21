@@ -1,133 +1,121 @@
-import 'dart:io';
-
-import 'package:ConnectUs/utils/app_theme.dart';
-import 'package:avatar_glow/avatar_glow.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-// Theme colors
+import 'package:flutter/services.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 
 class Landing extends StatelessWidget {
   const Landing({super.key});
 
-  bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(AppTheme.lightOverlay);
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: Center(
-        child: SingleChildScrollView(
-          clipBehavior: Clip.none,
+      backgroundColor: AppTheme.bgWarm,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: !isMobile ? 80 : 170),
-              AvatarGlow(
-                glowColor: AppTheme.accent,
-                duration: const Duration(seconds: 2),
-                repeat: true,
-                animate: true,
-                glowRadiusFactor: 0.2,
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/images/removebg.png',
-                    width: 220,
-                    height: 220,
-                    color: AppTheme.accentDark,
-                    colorBlendMode: BlendMode.softLight,
-                    fit: BoxFit.cover,
+              const Spacer(flex: 2),
+              // Brand Logo (PRESERVED)
+              Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [AppTheme.logoCyan, AppTheme.logoTeal],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.logoCyan.withOpacity(0.4),
+                      blurRadius: 40,
+                      spreadRadius: 10,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.chat_bubble_rounded,
+                  color: Colors.white,
+                  size: 64,
                 ),
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 40),
               const Text(
-                "ConnectUs",
+                'ConnectUs',
                 style: TextStyle(
-                  color: AppTheme.accentDark,
-                  fontFamily: 'EduNSWACTCursive',
-                  fontSize: 40,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.none,
+                  color: AppTheme.textDark,
+                  letterSpacing: -1,
                 ),
               ),
-              const SizedBox(height: 30),
-              const Text(
-                "Chat, Connect, Grow",
+              const SizedBox(height: 12),
+              Text(
+                'Connect together with\nyour friends.',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: AppTheme.accent,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  decoration: TextDecoration.none,
+                  fontSize: 16,
+                  height: 1.5,
+                  color: AppTheme.textMuted.withOpacity(0.8),
                 ),
               ),
-              const SizedBox(height: 50),
-              MaterialButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/getStarted');
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                color: AppTheme.accentDark,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 15,
-                ),
-                textColor: const Color.fromARGB(255, 41, 24, 24),
-                minWidth: isMobile ? 330 : 150,
-                child: const Text(
-                  "Get Started",
-                  style: TextStyle(
-                    color: AppTheme.background,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.none,
+              const Spacer(flex: 3),
+              // Primary CTA
+              GestureDetector(
+                onTap: () => Navigator.pushNamed(context, '/getStarted'),
+                child: Container(
+                  width: double.infinity,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.coralGradient,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.coral.withOpacity(0.4),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Get Started',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
-              SizedBox(
-                  height: isMobile ? 50 : 100,
-                  width: isMobile ? 330 : double.infinity,
-                  child: isMobile
-                      ? null
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            TextButton(
-                              child: const Text("Try our Android App",
-                                  style: TextStyle(color: AppTheme.accent)),
-                              onPressed: () {},
-                            ),
-                            const VerticalDivider(
-                              color: AppTheme.accent,
-                              thickness: 1,
-                              indent: 30,
-                              endIndent: 30,
-                            ),
-                            TextButton(
-                              child: const Text(
-                                "Try our iOS App",
-                                style: TextStyle(color: AppTheme.accent),
-                              ),
-                              onPressed: () {},
-                            ),
-                            const VerticalDivider(
-                              color: AppTheme.accent,
-                              thickness: 1,
-                              indent: 30,
-                              endIndent: 30,
-                            ),
-                            TextButton(
-                              child: const Text("Try our Desktop App",
-                                  style: TextStyle(color: AppTheme.accent)),
-                              onPressed: () {},
-                            )
-                          ],
-                        )),
+              const SizedBox(height: 16),
+              // Secondary CTA
+              GestureDetector(
+                onTap: () => Navigator.pushNamed(context, '/login'),
+                child: Container(
+                  width: double.infinity,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: AppTheme.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppTheme.receivedBubbleBorder),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'I already have an account',
+                      style: TextStyle(
+                        color: AppTheme.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40),
             ],
           ),
         ),

@@ -1,70 +1,37 @@
-import 'dart:core';
 import 'dart:async';
 import 'dart:io';
-import 'package:ConnectUs/pages/chat/chat_area.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:collection';
-import 'package:ConnectUs/utils/app_theme.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:hive/hive.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ConnectUs/components/contact_tile.dart';
+import 'package:ConnectUs/pages/chat/chat_area.dart';
+import 'package:ConnectUs/pages/config/settings.dart';
 import 'package:ConnectUs/pages/contacts_page.dart';
+import 'package:ConnectUs/utils/app_theme.dart';
 import 'package:ConnectUs/models/contact.dart' as HiveContact;
 import 'package:ConnectUs/models/chat.dart';
-import 'package:ConnectUs/services/chat_sync_service.dart';
 
 class Home_Page extends StatefulWidget {
   const Home_Page({super.key});
-
   @override
   State<Home_Page> createState() => _Home_PageState();
 }
 
 class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixin {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _searchController = TextEditingController();
-  
   bool get isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-  bool get isDesktop => kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
-
-  Box<HiveContact.Contact>? contactBox;
+  Box? contactBox;
   List<Contact> _contacts = [];
-  // Replace LinkedHashSet with a List + proper sort
   final List<Chats> _chats = [];
-
-  void updateChatPreview(String contactName, String lastMessage, DateTime time, {String? supabaseUsername, String? roomId}) {
-    setState(() {
-      final existingIndex = _chats.indexWhere((c) => c.contactName == contactName);
-      if (existingIndex >= 0) {
-        // Update existing chat
-        _chats[existingIndex].lastMessage = lastMessage;
-        _chats[existingIndex].lastMessageTime = time;
-        if (supabaseUsername != null) _chats[existingIndex].supabaseUsername = supabaseUsername;
-        if (roomId != null) _chats[existingIndex].roomId = roomId;
-      } else {
-        // Create new chat entry
-        _chats.add(Chats(
-          contactName: contactName,
-          supabaseUsername: supabaseUsername,
-          roomId: roomId,
-          lastMessage: lastMessage,
-          lastMessageTime: time,
-        ));
-      }
-      // Sort: most recent first
-      _chats.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
-    });
-  }
-
+  String? _myUsername;
   bool _isLoading = false;
   List<Contact> _registeredContacts = [];
   List<Contact> _nonRegisteredContacts = [];
   Map<String, String> _phoneToUsername = {};
   Timer? _debounceTimer;
-  StreamSubscription? _syncSubscription;
-  String? _myUsername;
+  int _selectedNavIndex = 3; // Chat tab default
 
   @override
   bool get wantKeepAlive => true;
@@ -74,78 +41,31 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
     super.initState();
     _initializeHive();
     _loadContacts();
-    _initSyncListener();
+    _loadMyUsername();
   }
 
-  Future<void> _initSyncListener() async {
-    // Get my username for room ID matching
+  Future<void> _loadMyUsername() async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user != null) {
-      final data = await Supabase.instance.client
-          .from('users')
-          .select('usrname')
-          .eq('id', user.id)
-          .maybeSingle();
+      final data = await Supabase.instance.client.from('users').select('usrname').eq('id', user.id).maybeSingle();
       _myUsername = data?['usrname'];
     }
-
-    _syncSubscription = ChatSyncService().messageStream.listen((event) {
-      final roomId = event['room_id'] as String;
-      final messages = event['messages'] as List;
-      if (messages.isEmpty || _myUsername == null) return;
-
-      final otherUser = ChatSyncService().getOtherUserFromRoomId(roomId);
-      final lastMsg = messages.last as Map;
-      final content = lastMsg['content'] ?? '';
-      final time = DateTime.tryParse(lastMsg['createdAt'] ?? '') ?? DateTime.now();
-
-      // Find or create chat tile
-      setState(() {
-        final idx = _chats.indexWhere((c) => c.supabaseUsername == otherUser || c.roomId == roomId);
-        if (idx >= 0) {
-          _chats[idx].lastMessage = content;
-          _chats[idx].lastMessageTime = time;
-          _chats[idx].roomId = roomId;
-          if (event['type'] == 'catchup') {
-            _chats[idx].unreadCount += (event['new_count'] as int? ?? 0);
-          }
-        } else {
-          // Create tile if missing (e.g., first message from new contact)
-          _chats.add(Chats(
-            contactName: otherUser,
-            supabaseUsername: otherUser,
-            roomId: roomId,
-            lastMessage: content,
-            lastMessageTime: time,
-            unreadCount: event['type'] == 'catchup' ? (event['new_count'] as int? ?? 1) : 1,
-          ));
-        }
-        _chats.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
-      });
-    });
   }
 
   void _initializeHive() {
-    try {
-      contactBox = Hive.box<HiveContact.Contact>('contacts');
-    } catch (e) {
-      debugPrint('Error accessing Hive box: $e');
-    }
+    try { contactBox = Hive.box('contacts'); } catch (e) { debugPrint('Hive error: $e'); }
   }
 
   Future<void> _loadContacts() async {
     if (contactBox != null && contactBox!.isNotEmpty) {
       final hiveContacts = contactBox!.values.toList();
-      _contacts = hiveContacts.map((hiveContact) {
-        final contact = Contact();
-        final contactName = hiveContact.name.isNotEmpty ? hiveContact.name : 'Unknown Contact';
-        contact.name.first = contactName;
-        contact.displayName = contactName;
-        contact.phones = [Phone(hiveContact.phoneNumber)];
-        return contact;
+      _contacts = hiveContacts.map((hc) {
+        final c = Contact();
+        c.name.first = hc.name;
+        c.displayName = hc.name;
+        c.phones = [Phone(hc.phoneNumber)];
+        return c;
       }).toList();
-
-      setState(() => _isLoading = false);
       await _categorizeContacts();
       return;
     }
@@ -155,19 +75,14 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
   Future<Map<String, String>> _fetchRegisteredUsers() async {
     try {
       final response = await Supabase.instance.client.from('users').select('phone_number, usrname');
-      final Map<String, String> phoneToUsername = {};
-      for (final row in response as List) {
-        final phone = _normalizePhoneNumber(row['phone_number'] as String? ?? '');
-        final username = row['usrname'] as String? ?? '';
-        if (phone.isNotEmpty && username.isNotEmpty) {
-          phoneToUsername[phone] = username;
-        }
+      final Map<String, String> map = {};
+      for (final row in response) {
+        final phone = _normalizePhone(row['phone_number'] ?? '');
+        final username = row['usrname'] ?? '';
+        if (phone.isNotEmpty && username.isNotEmpty) map[phone] = username;
       }
-      return phoneToUsername;
-    } catch (e) {
-      debugPrint('Error fetching registered users: $e');
-      return {};
-    }
+      return map;
+    } catch (e) { return {}; }
   }
 
   Future<void> _categorizeContacts() async {
@@ -175,231 +90,346 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
     final registeredNumbers = _phoneToUsername.keys.toSet();
     _registeredContacts = [];
     _nonRegisteredContacts = [];
-    for (final contact in _contacts) {
-      bool isRegistered = false;
-      for (final phone in contact.phones) {
-        final normalized = _normalizePhoneNumber(phone.number);
-        if (registeredNumbers.contains(normalized)) {
-          isRegistered = true;
-          break;
-        }
+    for (final c in _contacts) {
+      bool isReg = false;
+      for (final p in c.phones) {
+        if (registeredNumbers.contains(_normalizePhone(p.number))) { isReg = true; break; }
       }
-      if (isRegistered) {
-        _registeredContacts.add(contact);
-      } else {
-        _nonRegisteredContacts.add(contact);
-      }
+      if (isReg) _registeredContacts.add(c); else _nonRegisteredContacts.add(c);
     }
+    if (mounted) setState(() {});
   }
 
-  String _normalizePhoneNumber(String phoneNumber) {
-    String normalized = phoneNumber.replaceAll(RegExp(r'\D'), '');
-    if (normalized.startsWith('0')) normalized = normalized.substring(1);
-    if (normalized.startsWith('91') && normalized.length == 12) return normalized.substring(2);
-    return normalized;
+  String _normalizePhone(String phone) {
+    String n = phone.replaceAll(RegExp(r'\D'), '');
+    if (n.startsWith('0')) n = n.substring(1);
+    if (n.startsWith('91') && n.length == 12) n = n.substring(2);
+    return n;
   }
 
   Future<void> _fetchContactsFromDevice() async {
-    if (isMobile) {
-      if (!await FlutterContacts.requestPermission()) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Permission denied to access contacts.')));
-        return;
-      }
-      setState(() { _isLoading = true; _registeredContacts = []; });
-      try {
-        final contacts = await FlutterContacts.getContacts(withProperties: true, withPhoto: false);
-        if (contactBox != null) {
-          await contactBox!.clear();
-          for (final contact in contacts) {
-            final hiveContact = HiveContact.Contact(
-              name: contact.displayName.isNotEmpty ? contact.displayName : 'Unknown Contact',
-              phoneNumber: contact.phones.isNotEmpty ? contact.phones.first.number : '',
-            );
-            await contactBox!.add(hiveContact);
-          }
-        }
-        _contacts = contacts;
-        await _categorizeContacts();
-      } finally {
-        setState(() => _isLoading = false);
-      }
+    if (!isMobile) return;
+    if (!await FlutterContacts.requestPermission()) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Permission denied')));
+      return;
     }
+    setState(() => _isLoading = true);
+    try {
+      final contacts = await FlutterContacts.getContacts(withProperties: true, withPhoto: false);
+      if (contactBox != null) {
+        await contactBox!.clear();
+        for (final c in contacts) {
+          await contactBox!.add(HiveContact.Contact(name: c.displayName, phoneNumber: c.phones.isNotEmpty ? c.phones.first.number : ''));
+        }
+      }
+      _contacts = contacts;
+      await _categorizeContacts();
+    } finally { setState(() => _isLoading = false); }
   }
-  
+
   void _createChatWithContact(Contact contact) {
     String? supabaseUsername;
-    for (final phone in contact.phones) {
-      final normalized = _normalizePhoneNumber(phone.number);
-      supabaseUsername = _phoneToUsername[normalized];
-      if (supabaseUsername != null) break;
+    for (final p in contact.phones) {
+      final n = _normalizePhone(p.number);
+      if (_phoneToUsername.containsKey(n)) { supabaseUsername = _phoneToUsername[n]; break; }
     }
-
     final roomId = _getRoomId(_myUsername ?? 'me', supabaseUsername ?? contact.displayName);
-
-    updateChatPreview(
-      contact.displayName,
-      'Click here to start chatting',
-      DateTime.now(),
+    _updateChatPreview(contact.displayName, 'Start a conversation...', DateTime.now(), supabaseUsername: supabaseUsername, roomId: roomId);
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ChatArea(
+      userName: contact.displayName,
       supabaseUsername: supabaseUsername,
-      roomId: roomId,
-    );
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ChatArea(
-        userName: contact.displayName,
-        supabaseUsername: supabaseUsername,
-        onMessageSent: (lastMsg, time) => updateChatPreview(contact.displayName, lastMsg, time),
-      )),
-    );
+      onMessageSent: (msg, time) => _updateChatPreview(contact.displayName, msg, time),
+    )));
   }
 
-  String _getRoomId(String userA, String userB) {
-    final users = [userA, userB]..sort();
-    return users.join('_');
+  String _getRoomId(String a, String b) {
+    final u = [a, b]..sort();
+    return u.join('_');
   }
 
-  void _inviteContact(Contact contact) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Invite ${contact.displayName} to ConnectUs')),
-    );
+  void _updateChatPreview(String name, String last, DateTime time, {String? supabaseUsername, String? roomId}) {
+    setState(() {
+      final idx = _chats.indexWhere((c) => c.contactName == name);
+      if (idx >= 0) {
+        _chats[idx].lastMessage = last;
+        _chats[idx].lastMessageTime = time;
+        if (supabaseUsername != null) _chats[idx].supabaseUsername = supabaseUsername;
+        if (roomId != null) _chats[idx].roomId = roomId;
+      } else {
+        _chats.add(Chats(contactName: name, supabaseUsername: supabaseUsername, roomId: roomId, lastMessage: last, lastMessageTime: time));
+      }
+      _chats.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
+    });
   }
 
-  void _showContactFlowDialog() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ContactsPage(
-          registeredContacts: _registeredContacts,
-          nonRegisteredContacts: _nonRegisteredContacts,
-          onContactTap: _createChatWithContact,
-          onInviteContact: _inviteContact,
-          isLoading: _isLoading,
-        ),
-      ),
-    );
-  }
-
-  Future<void> _refreshChatList() async {
-    // Logic to reload chats from backend could go here if you had a Persistent Store API
+  void _showContactFlow() {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ContactsPage(
+      registeredContacts: _registeredContacts,
+      nonRegisteredContacts: _nonRegisteredContacts,
+      onContactTap: _createChatWithContact,
+      onInviteContact: (c) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invite ${c.displayName}'))),
+      isLoading: _isLoading,
+    )));
   }
 
   void _onSearchChanged() {
     _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-      setState(() {});
-    });
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () => setState(() {}));
   }
 
   @override
   void dispose() {
     _debounceTimer?.cancel();
     _searchController.dispose();
-    _syncSubscription?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final displayChats = List<Chats>.from(_chats);
+    SystemChrome.setSystemUIOverlayStyle(AppTheme.lightOverlay);
+    final displayChats = _searchController.text.isEmpty
+        ? List<Chats>.from(_chats)
+        : _chats.where((c) => c.contactName.toLowerCase().contains(_searchController.text.toLowerCase())).toList();
 
-    return Container(
-      color: const Color(0xFF1E1E1E),
-      child: Stack(
-        children: [
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Form(
-                  key: _formKey,
-                  child: TextFormField(
-                    style: const TextStyle(color: AppTheme.accent),
-                    cursorColor: AppTheme.accent,
-                    onChanged: (_) => _onSearchChanged(),
-                    decoration: InputDecoration(
-                      hintText: 'Search Name/Number.....',
-                      hintStyle: const TextStyle(color: AppTheme.accent),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
-                      prefixIcon: const Icon(Icons.search, color: AppTheme.accentDark),
-                      filled: true,
-                      fillColor: const Color.fromARGB(255, 41, 41, 41),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    ),
-                    controller: _searchController,
+    return Scaffold(
+      backgroundColor: AppTheme.bgWarm,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Chats', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+                      GestureDetector(
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage())),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
+                          child: const Icon(Icons.search, color: AppTheme.textDark),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: RefreshIndicator(
-                    onRefresh: _refreshChatList,
-                    child: displayChats.isNotEmpty
-                        ? ListView.builder(
-                            itemCount: displayChats.length,
-                            itemBuilder: (context, index) {
-                              final chat = displayChats[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context, 
-                                    MaterialPageRoute(builder: (context) => ChatArea(
-                                      userName: chat.contactName,
-                                      supabaseUsername: chat.supabaseUsername,
-                                      onMessageSent: (lastMsg, time) => updateChatPreview(chat.contactName, lastMsg, time),
-                                    ))
-                                  );
-                                },
-                                child: ContactTile(
-                                  contactName: chat.contactName,
-                                  lastMessage: chat.lastMessage,
-                                  unreadCount: chat.unreadCount,
-                                ),
-                              );
-                            },
-                          )
-                        : ListView(
+                const SizedBox(height: 20),
+                // Tabs
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      _TabPill(label: 'All', active: true),
+                      const SizedBox(width: 10),
+                      _TabPill(label: 'Personal', active: false),
+                      const SizedBox(width: 10),
+                      _TabPill(label: 'Work', active: false),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Chat List
+                Expanded(
+                  child: displayChats.isNotEmpty
+                      ? ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          itemCount: displayChats.length,
+                          itemBuilder: (context, index) {
+                            final chat = displayChats[index];
+                            return _ChatTile(
+                              chat: chat,
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatArea(
+                                userName: chat.contactName,
+                                supabaseUsername: chat.supabaseUsername,
+                                onMessageSent: (msg, time) => _updateChatPreview(chat.contactName, msg, time),
+                              ))),
+                            );
+                          },
+                        )
+                      : Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-                              Center(
-                                child: Text(
-                                  'No chats available. Start a new chat!',
-                                  style: TextStyle(color: Colors.grey.shade400, fontSize: 16),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
+                              Icon(Icons.chat_bubble_outline, size: 64, color: AppTheme.textMuted.withOpacity(0.3)),
+                              const SizedBox(height: 16),
+                              Text('No conversations yet', style: TextStyle(color: AppTheme.textMuted.withOpacity(0.5), fontSize: 16)),
                             ],
                           ),
+                        ),
+                ),
+                const SizedBox(height: 100), // Space for bottom nav
+              ],
+            ),
+            // Floating Bottom Nav
+            Positioned(
+              bottom: 24,
+              left: 24,
+              right: 24,
+              child: Container(
+                height: 70,
+                decoration: AppTheme.pillDark,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _NavIcon(icon: Icons.call_outlined, index: 0, selected: _selectedNavIndex, onTap: (i) => setState(() => _selectedNavIndex = i)),
+                    _NavIcon(icon: Icons.person_outline, index: 1, selected: _selectedNavIndex, onTap: (i) => setState(() => _selectedNavIndex = i)),
+                    // Center FAB
+                    GestureDetector(
+                      onTap: _showContactFlow,
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.coralGradient,
+                          shape: BoxShape.circle,
+                          boxShadow: [BoxShadow(color: AppTheme.coral.withOpacity(0.5), blurRadius: 20, offset: const Offset(0, 8))],
+                        ),
+                        child: const Icon(Icons.add, color: Colors.white, size: 28),
+                      ),
+                    ),
+                    _NavIcon(icon: Icons.chat_bubble, index: 3, selected: _selectedNavIndex, onTap: (i) => setState(() => _selectedNavIndex = i)),
+                    _NavIcon(icon: Icons.settings_outlined, index: 4, selected: _selectedNavIndex, onTap: (i) {
+                      setState(() => _selectedNavIndex = i);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+                    }),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TabPill extends StatelessWidget {
+  final String label;
+  final bool active;
+  const _TabPill({required this.label, required this.active});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        gradient: active ? AppTheme.coralGradient : null,
+        color: active ? null : AppTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: active ? [BoxShadow(color: AppTheme.coral.withOpacity(0.3), blurRadius: 12)] : null,
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: active ? Colors.white : AppTheme.textMuted,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _ChatTile extends StatelessWidget {
+  final Chats chat;
+  final VoidCallback onTap;
+  const _ChatTile({required this.chat, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final timeString = _formatTime(chat.lastMessageTime);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: AppTheme.cardShadow,
+          child: Row(
+            children: [
+              // Avatar with cyan ring
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: AppTheme.cyanRingGradient,
+                ),
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: AppTheme.bgCool,
+                  child: Text(
+                    chat.contactName.isNotEmpty ? chat.contactName[0].toUpperCase() : '?',
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textDark),
                   ),
                 ),
               ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(chat.contactName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textDark)),
+                        ),
+                        Text(timeString, style: TextStyle(fontSize: 12, color: AppTheme.textMuted.withOpacity(0.7))),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      chat.lastMessage,
+                      style: TextStyle(fontSize: 14, color: AppTheme.textMuted.withOpacity(0.8)),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              if (chat.unreadCount > 0)
+                Container(
+                  margin: const EdgeInsets.only(left: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(gradient: AppTheme.coralGradient, borderRadius: BorderRadius.circular(20)),
+                  child: Text('${chat.unreadCount}', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
             ],
           ),
-          Positioned(
-            bottom: 10,
-            right: 20,
-            child: Column(
-              children: [
-                MaterialButton(
-                  onPressed: () => Navigator.pushNamed(context, '/ai'),
-                  padding: const EdgeInsets.all(18),
-                  shape: const CircleBorder(side: BorderSide(color: AppTheme.accentDark)),
-                  child: const Icon(Icons.assistant, size: 20, color: AppTheme.accent),
-                ),
-                const SizedBox(height: 14),
-                FloatingActionButton(
-                  shape: const CircleBorder(side: BorderSide(color: AppTheme.accentDark)),
-                  onPressed: _showContactFlowDialog,
-                  backgroundColor: AppTheme.accent,
-                  child: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF1E1E1E), size: 24),
-                ),
-              ],
-            ),
-          )
-        ],
+        ),
+      ),
+    );
+  }
+
+  String _formatTime(DateTime t) {
+    final now = DateTime.now();
+    if (t.day == now.day && t.month == now.month && t.year == now.year) {
+      return '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+    }
+    return '${t.day}/${t.month}';
+  }
+}
+
+class _NavIcon extends StatelessWidget {
+  final IconData icon;
+  final int index;
+  final int selected;
+  final Function(int) onTap;
+  const _NavIcon({required this.icon, required this.index, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final isActive = index == selected;
+    return GestureDetector(
+      onTap: () => onTap(index),
+      child: Icon(
+        icon,
+        color: isActive ? AppTheme.logoCyan : Colors.white.withOpacity(0.5),
+        size: 24,
       ),
     );
   }

@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ConnectUs/utils/app_theme.dart';
 
 class RegisterPhone extends StatefulWidget {
   const RegisterPhone({super.key});
-
   @override
   State<RegisterPhone> createState() => _RegisterPhoneState();
 }
 
 class _RegisterPhoneState extends State<RegisterPhone> {
-  final _formKey = GlobalKey<FormState>(); // Form key for validation
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _phoneController = TextEditingController();
+  final _usernameController = TextEditingController();
   bool _isLoading = false;
   final _supabase = Supabase.instance.client;
 
   Future<void> _saveProfile() async {
-    // Check if the form is valid before proceeding
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
+    if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
-
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception("User not authenticated");
@@ -32,7 +27,6 @@ class _RegisterPhoneState extends State<RegisterPhone> {
       final phoneInput = _phoneController.text.trim();
       final formattedPhone = '+91$phoneInput';
 
-      // Use upsert to create or update the user record with both mandatory fields
       await _supabase.from('users').upsert({
         'id': user.id,
         'usrname': usernameInput,
@@ -43,18 +37,14 @@ class _RegisterPhoneState extends State<RegisterPhone> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Profile completed successfully!")),
+          const SnackBar(content: Text("Profile completed!"), backgroundColor: AppTheme.logoTeal),
         );
-        // Navigate to home after successful save
         Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error: ${e.toString()}"),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text("Error: ${e.toString()}"), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -64,133 +54,112 @@ class _RegisterPhoneState extends State<RegisterPhone> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(AppTheme.lightOverlay);
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        title: const Text('Complete Profile'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: AppTheme.accentDark,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(32.0),
+      backgroundColor: AppTheme.bgWarm,
+      body: SafeArea(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
           child: Form(
-            key: _formKey, // Assign the key to the Form widget
+            key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.person_pin, size: 80, color: AppTheme.accent),
-                const SizedBox(height: 24),
-                const Text(
-                  'One last step!',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Please provide a username and phone number to continue.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: AppTheme.muted, fontSize: 16),
-                ),
-                const SizedBox(height: 48),
-
-                // Mandatory Username Field
-                TextFormField(
-                  controller: _usernameController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                    hintText: 'e.g. john_doe',
-                    labelStyle: const TextStyle(color: AppTheme.accent),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.accent),
+                const SizedBox(height: 40),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                          color: AppTheme.accentDark, width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red, width: 2),
-                    ),
+                    child: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textDark),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Username is required';
-                    }
-                    return null;
-                  },
+                ),
+                const SizedBox(height: 40),
+                const Text('One last\nstep!', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: AppTheme.textDark, height: 1.2)),
+                const SizedBox(height: 12),
+                Text('Please provide a username and phone number to continue.', style: TextStyle(fontSize: 16, color: AppTheme.textMuted.withOpacity(0.8))),
+                const SizedBox(height: 48),
+                _GlassInput(
+                  hint: 'Username',
+                  icon: Icons.person_outline,
+                  controller: _usernameController,
+                  validator: (v) => v == null || v.trim().isEmpty ? 'Username is required' : null,
                 ),
                 const SizedBox(height: 20),
-
-                // Mandatory Phone Number Field
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    prefixText: '+91 ',
-                    prefixStyle: const TextStyle(
-                        color: AppTheme.accent, fontWeight: FontWeight.bold),
-                    labelStyle: const TextStyle(color: AppTheme.accent),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.accent),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                          color: AppTheme.accentDark, width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red, width: 2),
+                Container(
+                  decoration: AppTheme.cardShadow,
+                  child: TextFormField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    style: const TextStyle(color: AppTheme.textDark),
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) return 'Phone number is required';
+                      if (v.trim().length != 10) return 'Enter a valid 10-digit number';
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Phone Number',
+                      prefixText: '+91 ',
+                      prefixStyle: const TextStyle(color: AppTheme.textDark, fontWeight: FontWeight.w600, fontSize: 16),
+                      hintStyle: TextStyle(color: AppTheme.textMuted.withOpacity(0.5)),
+                      prefixIcon: const Icon(Icons.phone_outlined, color: AppTheme.textMuted),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Phone number is required';
-                    }
-                    if (value.trim().length != 10) {
-                      return 'Enter a valid 10-digit number';
-                    }
-                    return null;
-                  },
                 ),
-                const SizedBox(height: 32),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: AppTheme.elevatedButtonStyle.copyWith(
-                      padding: WidgetStateProperty.all(
-                          const EdgeInsets.symmetric(vertical: 16)),
+                const SizedBox(height: 40),
+                GestureDetector(
+                  onTap: _isLoading ? null : _saveProfile,
+                  child: Container(
+                    width: double.infinity,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.coralGradient,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [BoxShadow(color: AppTheme.coral.withOpacity(0.4), blurRadius: 20, offset: const Offset(0, 10))],
                     ),
-                    onPressed: _isLoading ? null : _saveProfile,
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.black)
-                        : const Text('Save and Finish',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Center(
+                      child: _isLoading
+                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                          : const Text('Save and Finish', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600)),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassInput extends StatelessWidget {
+  final String hint;
+  final IconData icon;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
+  const _GlassInput({required this.hint, required this.icon, this.controller, this.validator});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: AppTheme.cardShadow,
+      child: TextFormField(
+        controller: controller,
+        style: const TextStyle(color: AppTheme.textDark),
+        validator: validator,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: AppTheme.textMuted.withOpacity(0.5)),
+          prefixIcon: Icon(icon, color: AppTheme.textMuted, size: 22),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         ),
       ),
     );

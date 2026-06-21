@@ -15,6 +15,7 @@ import 'package:ConnectUs/providers/call_provider.dart';
 import 'package:ConnectUs/pages/chat/voice.dart';
 import 'package:ConnectUs/pages/chat/video.dart';
 import 'package:ConnectUs/services/chat_sync_service.dart';
+import 'package:flutter/services.dart';
 
 class ChatArea extends ConsumerStatefulWidget {
   final String userName;
@@ -542,102 +543,109 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(AppTheme.darkOverlay);
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        backgroundColor: AppTheme.accentDark,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: _statusColor, width: 2.5),
-              ),
-              child: const CircleAvatar(
-                backgroundColor: AppTheme.accent,
-                radius: 18,
-                child: Icon(Icons.person, color: Colors.black, size: 20),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.userName,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  _statusText,
-                  style: TextStyle(
-                      color: _statusColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.call, color: Colors.black),
-            onPressed: () {
-              final callService = ref.read(callServiceProvider);
-              callService.initiateCall(widget.userName, 'voice');
-              Navigator.push(context, MaterialPageRoute(builder: (_) => Voice(userName: widget.userName, callService: callService)));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.videocam, color: Colors.black),
-            onPressed: () {
-              final callService = ref.read(callServiceProvider);
-              callService.initiateCall(widget.userName, 'video');
-              Navigator.push(context, MaterialPageRoute(builder: (_) => Video(userName: widget.userName, callService: callService)));
-            },
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Colors.black),
-            onSelected: (value) {
-              if (value == 'block') _toggleBlock();
-            },
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem<String>(
-                  value: 'block',
-                  child: Text(_isBlockedByMe ? 'Unblock User' : 'Block User'),
-                ),
-              ];
-            },
-          ),
-        ],
-      ),
+      backgroundColor: AppTheme.bgCool,
       body: Column(
         children: [
+          // Dark Gradient Header
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppTheme.headerDark, AppTheme.headerDark.withOpacity(0.95)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 20),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(14)),
+                        child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Avatar
+                    Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(shape: BoxShape.circle, gradient: AppTheme.cyanRingGradient),
+                      child: CircleAvatar(
+                        radius: 22,
+                        backgroundColor: AppTheme.bgCool,
+                        child: Text(
+                          widget.userName.isNotEmpty ? widget.userName[0].toUpperCase() : '?',
+                          style: const TextStyle(color: AppTheme.textDark, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.userName, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text(
+                            _isBlocked ? 'Blocked' : (_isTargetOnline ? 'Online' : 'Offline'),
+                            style: TextStyle(color: _isBlocked ? Colors.redAccent : (_isTargetOnline ? AppTheme.online : Colors.white.withOpacity(0.5)), fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(icon: const Icon(Icons.call, color: Colors.white), onPressed: () {
+                      final callService = ref.read(callServiceProvider);
+                      callService.initiateCall(widget.userName, 'voice');
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => Voice(userName: widget.userName, callService: callService)));
+                    }),
+                    IconButton(icon: const Icon(Icons.videocam, color: Colors.white), onPressed: () {
+                      final callService = ref.read(callServiceProvider);
+                      callService.initiateCall(widget.userName, 'video');
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => Video(userName: widget.userName, callService: callService)));
+                    }),
+                    PopupMenuButton(
+                      icon: const Icon(Icons.more_vert, color: Colors.white),
+                      color: AppTheme.headerDark,
+                      itemBuilder: (_) => [
+                        PopupMenuItem(
+                          value: 'block',
+                          child: Row(
+                            children: [
+                              Icon(_isBlockedByMe ? Icons.block_flipped : Icons.block, color: _isBlockedByMe ? Colors.green : Colors.red, size: 20),
+                              const SizedBox(width: 12),
+                              Text(_isBlockedByMe ? 'Unblock' : 'Block User', style: const TextStyle(color: Colors.white)),
+                            ],
+                          ),
+                          onTap: _toggleBlock,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Messages
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               itemCount: _localHistory.length,
-              // reverse: true, // Set to false to show oldest messages first
               itemBuilder: (context, index) {
-                final rawMsg = _localHistory[index];
-                final content = rawMsg is Map ? rawMsg['content'] : '';
-                final user = rawMsg is Map ? rawMsg['user'] : '';
-
+                final raw = _localHistory[index];
+                final content = raw is Map ? raw['content'] : '';
+                final user = raw is Map ? raw['user'] : '';
                 final decrypted = SecurityService.decryptMessage(content);
-                return _buildMessageBubble(
-                    decrypted, user == _myUsername, user);
+                return _buildMessageBubble(decrypted, user == _myUsername, user);
               },
             ),
           ),
+          // Bottom Input
           _buildInputArea(),
         ],
       ),
@@ -648,21 +656,38 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isMe ? Colors.blueGrey[800] : AppTheme.accentDark,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(12),
-            topRight: const Radius.circular(12),
-            bottomLeft: isMe ? const Radius.circular(12) : Radius.zero,
-            bottomRight: isMe ? Radius.zero : const Radius.circular(12),
-          ),
-        ),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        decoration: isMe
+            ? BoxDecoration(
+                gradient: AppTheme.coralGradient,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(4),
+                ),
+                boxShadow: [
+                  BoxShadow(color: AppTheme.coral.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
+                ],
+              )
+            : BoxDecoration(
+                color: AppTheme.receivedBubble,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(4),
+                  bottomRight: Radius.circular(20),
+                ),
+                border: Border.all(color: AppTheme.receivedBubbleBorder),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
+                ],
+              ),
         child: Text(
           content,
-          style: TextStyle(
-              color: isMe ? Colors.white : Colors.black, fontSize: 16),
+          style: TextStyle(color: isMe ? Colors.white : AppTheme.textDark, fontSize: 15, height: 1.4),
         ),
       ),
     );
@@ -670,40 +695,45 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
   Widget _buildInputArea() {
     return Container(
-      padding: const EdgeInsets.all(16.0),
-      color: Colors.black12,
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 20, offset: const Offset(0, 8)),
+        ],
+      ),
       child: Row(
         children: [
+          IconButton(icon: Icon(Icons.attach_file, color: AppTheme.textMuted.withOpacity(0.6)), onPressed: () {}),
+          IconButton(icon: Icon(Icons.camera_alt_outlined, color: AppTheme.textMuted.withOpacity(0.6)), onPressed: () {}),
           Expanded(
             child: TextField(
               controller: _controller,
               enabled: !_isBlocked,
               onSubmitted: (_) => _sendChat(),
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppTheme.textDark, fontSize: 15),
               decoration: InputDecoration(
-                hintText: _isBlocked
-                    ? 'You cannot reply to this conversation'
-                    : 'Type a message...',
-                hintStyle: TextStyle(
-                    color: _isBlocked
-                        ? Colors.redAccent
-                        : AppTheme.hint.withOpacity(0.5)),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.05),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none),
+                hintText: _isBlocked ? 'You cannot reply' : 'Type a message...',
+                hintStyle: TextStyle(color: AppTheme.textMuted.withOpacity(0.4)),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          CircleAvatar(
-            backgroundColor: _isBlocked ? Colors.grey : AppTheme.accent,
-            child: IconButton(
-              icon: const Icon(Icons.send, color: Colors.black),
-              onPressed: _isBlocked ? null : _sendChat,
+          GestureDetector(
+            onTap: _isBlocked ? null : _sendChat,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                gradient: _isBlocked ? const LinearGradient(colors: [Colors.grey, Colors.grey]) : AppTheme.coralGradient,
+                shape: BoxShape.circle,
+                boxShadow: _isBlocked
+                    ? []
+                    : [BoxShadow(color: AppTheme.coral.withOpacity(0.4), blurRadius: 12, offset: const Offset(0, 4))],
+              ),
+              child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
             ),
           ),
         ],
