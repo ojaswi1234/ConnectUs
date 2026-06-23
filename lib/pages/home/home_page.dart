@@ -141,9 +141,18 @@ class _Home_PageState extends State<Home_Page> with AutomaticKeepAliveClientMixi
     String? supabaseUsername;
     for (final p in contact.phones) {
       final n = _normalizePhone(p.number);
-      if (_phoneToUsername.containsKey(n)) { supabaseUsername = _phoneToUsername[n]; break; }
+      supabaseUsername = _phoneToUsername[n];
+      if (supabaseUsername != null) break;
     }
-    final roomId = _getRoomId(_myUsername ?? 'me', supabaseUsername ?? contact.displayName);
+
+    if (supabaseUsername == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This contact is not registered on ConnectUs')),
+      );
+      return;
+    }
+
+    final roomId = _getRoomId(_myUsername ?? 'me', supabaseUsername);
     _updateChatPreview(contact.displayName, 'Start a conversation...', DateTime.now(), supabaseUsername: supabaseUsername, roomId: roomId);
     Navigator.push(context, MaterialPageRoute(builder: (_) => ChatArea(
       userName: contact.displayName,

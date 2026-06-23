@@ -449,9 +449,15 @@ class _ChatAreaState extends ConsumerState<ChatArea> {
 
   // --- HELPERS ---
   String get _roomId {
-    if (_myUsername == null) return "loading";
-    final users = [_myUsername!, widget.supabaseUsername ?? widget.userName]..sort();
-    return users.join('_'); // Readable: alice_bob
+    if (_myUsername == null || _myUsername == 'Anonymous') return "loading";
+    final other = widget.supabaseUsername;
+    if (other == null || other.trim().isEmpty) {
+      // Cannot create valid room without the other person's username
+      debugPrint('[ChatArea] ERROR: supabaseUsername is null, cannot create roomId');
+      return "loading";
+    }
+    final users = [_myUsername!, other]..sort();
+    return users.join('_');
   }
 
   List<dynamic> get _localHistory => _chatBox.get(_roomId, defaultValue: []);

@@ -169,7 +169,6 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(callServiceProvider).initSignaling();
       _incomingCallSub = ref.read(callServiceProvider).incomingCallStream.listen((callData) async {
         final callerName = callData['caller'] ?? 'Unknown Caller';
         final callType = callData['callType'] ?? 'voice';
@@ -190,6 +189,25 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
         }
       });
     });
+
+    // Listen for auth state, THEN init signaling
+    _listenForAuthAndInitSignaling();
+  }
+
+  void _listenForAuthAndInitSignaling() {
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+      if (data.event == AuthChangeEvent.signedIn) {
+        // User just logged in — init call signaling now
+        await ref.read(callServiceProvider).initSignaling();
+      }
+    });
+
+    // If already signed in at startup, init now
+    if (Supabase.instance.client.auth.currentSession != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(callServiceProvider).initSignaling();
+      });
+    }
   }
 
   void _startHeartbeat() {

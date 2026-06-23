@@ -47,17 +47,38 @@ class CallService extends ChangeNotifier {
     notifyListeners();
   }
 
+  RealtimeChannel? _inviteChannel;
+  Timer? _signalingRetryTimer;
+
   Future<void> initSignaling() async {
     final myUsername = await _getMyUsername();
-    if (myUsername == null) return;
-    
+    if (myUsername == null) {
+      debugPrint('[CallService] No username yet, retrying in 3s...');
+      _signalingRetryTimer?.cancel();
+      _signalingRetryTimer = Timer(const Duration(seconds: 3), initSignaling);
+      return;
+    }
+
+    // Clean up old channel
+    if (_inviteChannel != null) {
+      await _inviteChannel!.unsubscribe();
+      Supabase.instance.client.removeChannel(_inviteChannel!);
+    }
+
     final personalChannelName = 'call-invite-$myUsername';
-    
-    Supabase.instance.client.channel(personalChannelName)
-      .onBroadcast(event: 'call-invite', callback: (payload) {
-        _handleIncomingInvite(payload);
-      })
-      .subscribe();
+    _inviteChannel = Supabase.instance.client.channel(personalChannelName);
+
+    _inviteChannel!
+        .onBroadcast(event: 'call-invite', callback: (payload) {
+          _handleIncomingInvite(payload);
+        })
+        .subscribe((status, [err]) {
+          debugPrint('[CallService] Invite channel status: $status, err: $err');
+          if (status != RealtimeSubscribeStatus.subscribed) {
+            _signalingRetryTimer?.cancel();
+            _signalingRetryTimer = Timer(const Duration(seconds: 5), initSignaling);
+          }
+        });
   }
 
   Future<String?> _getMyUsername() async {
@@ -305,6 +326,7 @@ class CallService extends ChangeNotifier {
   }
 
   Future<void> _resetState() async {
+    _signalingRetryTimer?.cancel();
     _setCallState(CallState.ended);
     
     _localStream?.getTracks().forEach((track) => track.stop());

@@ -1,8 +1,10 @@
 import express from 'express';
-import { createYoga, createSchema, createPubSub } from 'graphql-yoga';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
-import { useServer } from 'graphql-ws/use/ws';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql';
+import { createSchema } from 'graphql-yoga';
+import { createPubSub } from 'graphql-yoga';
 
 const pubsub = createPubSub();
 const messagesByRoom = new Map();
@@ -61,24 +63,50 @@ const resolvers = {
 };
 
 const schema = createSchema({ typeDefs, resolvers });
+
 const app = express();
 const httpServer = createServer(app);
 
-const yoga = createYoga({
-  schema,
-  graphqlEndpoint: '/graphql',
-  graphiql: process.env.NODE_ENV !== 'production' ? { subscriptionsProtocol: 'WS' } : false,
+// HTTP GraphQL endpoint (for mutations & queries)
+app.post('/graphql', express.json(), async (req, res) => {
+  const { query, variables, operationName } = req.body;
+  const result = await execute({
+    schema,
+    document: query,
+    variableValues: variables,
+    operationName,
+  });
+  res.json(result);
 });
 
+app.get('/graphql', (req, res) => {
+  res.status(405).send('Use POST for GraphQL queries');
+});
+
+// Legacy WebSocket for Flutter gql_websocket_link
 const wsServer = new WebSocketServer({
   server: httpServer,
-  path: yoga.graphqlEndpoint,
+  path: '/graphql',
 });
 
-useServer({ schema }, wsServer);
-app.use(yoga.graphqlEndpoint, yoga);
+SubscriptionServer.create(
+  {
+    schema,
+    execute,
+    subscribe,
+    onConnect: (connectionParams) => {
+      // Optional: validate JWT from connectionParams.authorization
+      return {};
+    },
+  },
+  {
+    server: wsServer,
+    path: '/graphql',
+  }
+);
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}/graphql`);
+  console.log(`📡 WebSocket (legacy) ready at ws://localhost:${PORT}/graphql`);
 });
