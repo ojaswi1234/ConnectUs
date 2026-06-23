@@ -27,15 +27,20 @@ jobs:
       - name: Clean Project
         run: flutter clean
 
+      # This step creates the directory and injects your secrets into the temporary .env file
+      - name: Inject Secrets into Temporary .env File
+        run: |
+          mkdir -p assets
+          echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> assets/.env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> assets/.env
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> assets/.env
+
       - name: Install Dependencies
         run: flutter pub get
 
+      # Built normally without extra flags since the physical file now exists during build time
       - name: Build APK
-        run: >
-          flutter build apk --release
-          --dart-define=GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}"
-          --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
-          --dart-define=SUPABASE_URL="${{ secrets.SUPABASE_URL }}"
+        run: flutter build apk --release
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
