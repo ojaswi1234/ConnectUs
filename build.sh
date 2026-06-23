@@ -34,5 +34,9 @@ if [ -n "$SUPABASE_ANON_KEY" ]; then
   echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> assets/.env
 fi
 
+if [-n "$SUPABASE_JWT_SECRET"]; then
+  echo "SUPABASE_JWT_SECRET=$SUPABASE_JWT_SECRET" >> assets/.env
+fi
+
 # 6. Build the project for web
 flutter build web --release
